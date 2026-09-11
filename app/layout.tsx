@@ -17,7 +17,11 @@ export const metadata: Metadata = {
   description: "Dragon Stüdyo — site yayında.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html
       lang="tr"
