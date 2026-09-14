@@ -1,7 +1,23 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { DragonTopLogo } from "./components/DragonTopLogo";
+import { LanguageSwitcher } from "./components/LanguageSwitcher";
+import {
+  DEFAULT_LOCALE,
+  getDictionary,
+  type Locale,
+} from "./i18n/dictionaries";
 
 export default function Home() {
+  const [lang, setLang] = useState<Locale>(DEFAULT_LOCALE);
+  const t = getDictionary(lang);
+
+  useEffect(() => {
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
+  }, [lang]);
+
   return (
     <div className="relative m-0 min-h-dvh overflow-hidden bg-[#070708] p-0 text-white selection:bg-[#8CFF4D]/30">
       {/* Full-bleed atmosphere — dragon mark ghost, same asset as Dragon */}
@@ -44,36 +60,43 @@ export default function Home() {
       >
         <div className="flex min-w-0 items-center gap-3 sm:gap-5">
           <span className="shrink-0 text-[13px] font-medium tracking-[0.34em] text-white sm:text-[15px] sm:tracking-[0.4em]">
-            DRAGON STÜDYO
+            {t.brand}
           </span>
           <div className="mono hidden items-center gap-3 text-[10px] tracking-[0.2em] text-white/30 md:flex">
             <span className="h-px w-8 bg-white/10" />
-            <span>STUDIO • YAYINDA</span>
+            <span>{t.headerTag}</span>
           </div>
         </div>
-        <DragonTopLogo />
+        <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+          <LanguageSwitcher
+            locale={lang}
+            onChange={setLang}
+            ariaLabel={t.langAria}
+          />
+          <DragonTopLogo />
+        </div>
       </header>
 
       <main className="relative z-10 flex min-h-[calc(100dvh-56px)] flex-col items-center justify-center px-5 pb-16 pt-10 sm:min-h-[calc(100dvh-64px)] sm:px-10 sm:pt-14">
         <p className="hero-rise serif italic tracking-[0.02em] text-[clamp(22px,5vw,30px)] font-normal text-white/35">
-          Dragon awakens
+          {t.awaken}
         </p>
 
         <div className="hero-rise hero-rise-delay mono mt-3 flex items-center gap-3 text-[9px] tracking-[0.28em] text-white/25 sm:gap-4 sm:text-[10px]">
           <span className="h-px w-8 bg-white/10 sm:w-12" />
           <span className="flex items-center gap-2">
             <span className="ember-pulse inline-block h-1.5 w-1.5 rounded-full bg-[#8CFF4D]" />
-            CREATIVE STUDIO
+            {t.heroMeta}
           </span>
           <span className="h-px w-8 bg-white/10 sm:w-12" />
         </div>
 
         <h1 className="hero-rise hero-rise-delay mt-8 max-w-[18ch] text-center text-[clamp(40px,9vw,84px)] font-semibold leading-[0.92] tracking-[-0.04em] text-white sm:mt-10">
-          Dragon Stüdyo
+          {t.title}
         </h1>
 
         <p className="hero-rise hero-rise-delay-2 mt-6 max-w-[34rem] text-center text-[15px] leading-relaxed text-white/50 sm:mt-7 sm:text-[17px]">
-          Site yayında. İçerikler yakında burada olacak.
+          {t.subtitle}
         </p>
 
         <div className="hero-rise hero-rise-delay-2 mt-9 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
@@ -81,10 +104,10 @@ export default function Home() {
             href="#top"
             className="rounded-sm bg-[#8CFF4D] px-7 py-[12px] text-[12px] font-semibold tracking-[0.08em] text-black transition-transform hover:-translate-y-px sm:px-8 sm:py-[14px] sm:text-[13px]"
           >
-            Keşfet
+            {t.cta}
           </a>
           <span className="mono text-[11px] tracking-[0.18em] text-white/30">
-            YAKINDA • STUDIO
+            {t.soon}
           </span>
         </div>
       </main>
