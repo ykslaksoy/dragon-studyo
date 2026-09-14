@@ -72,12 +72,12 @@ body {
 @keyframes atmosphere-drift {
   0%,
   100% {
-    opacity: 0.18;
+    opacity: 0.28;
     transform: translate(-50%, -50%) scale(1);
   }
   50% {
-    opacity: 0.26;
-    transform: translate(-50%, -48%) scale(1.03);
+    opacity: 0.36;
+    transform: translate(-50%, -48%) scale(1.04);
   }
 }
 

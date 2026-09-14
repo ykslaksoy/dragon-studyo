@@ -15,7 +15,7 @@ export default function Home() {
       />
       <div
         aria-hidden
-        className="atmosphere-drift pointer-events-none fixed left-1/2 top-[42%] z-0 w-[min(720px,96vw)] -translate-x-1/2 -translate-y-1/2"
+        className="atmosphere-drift pointer-events-none fixed left-1/2 top-[38%] z-0 w-[min(860px,110vw)] -translate-x-1/2 -translate-y-1/2 opacity-[0.28]"
       >
         <Image
           src="/dragon-mark.png"
@@ -34,7 +34,7 @@ export default function Home() {
         className="pointer-events-none absolute inset-0 z-[1]"
         style={{
           background:
-            "linear-gradient(180deg, #070708 0%, transparent 18%, transparent 62%, #070708 100%)",
+            "linear-gradient(180deg, #070708 0%, transparent 12%, transparent 68%, #070708 100%)",
         }}
       />
 
@@ -79,7 +79,7 @@ export default function Home() {
         <div className="hero-rise hero-rise-delay-2 mt-9 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
           <a
             href="#top"
-            className="rounded-full bg-[#8CFF4D] px-7 py-[12px] text-[12px] font-semibold tracking-[0.08em] text-black transition-transform hover:-translate-y-px sm:px-8 sm:py-[14px] sm:text-[13px]"
+            className="rounded-sm bg-[#8CFF4D] px-7 py-[12px] text-[12px] font-semibold tracking-[0.08em] text-black transition-transform hover:-translate-y-px sm:px-8 sm:py-[14px] sm:text-[13px]"
           >
             Keşfet
           </a>
