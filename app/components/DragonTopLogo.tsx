@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 
 type Phase = "hidden" | "opening" | "open";
 
-const REVEAL_MS = 3000;
-const OPEN_MS = 900;
+const REVEAL_MS = 2400;
+const OPEN_MS = 750;
 
 function phaseFromSearch(): Phase | null {
   if (typeof window === "undefined") return null;
@@ -18,8 +18,8 @@ function phaseFromSearch(): Phase | null {
 }
 
 /**
- * Same top-logo treatment as ykslaksoy/dragon:
- * hidden → eye-open reveal → idle blink.
+ * Top dragon-eyes mark — brighter / more alive than the base asset:
+ * boosted brightness+saturation, lime glow, subtle pulse when open.
  * Optional `?logo=hidden|opening|open` locks phase for QA screenshots.
  */
 export function DragonTopLogo() {
@@ -60,21 +60,23 @@ export function DragonTopLogo() {
 
     let timer: number;
     const schedule = () => {
-      const wait = 5500 + Math.random() * 1500;
+      // Slightly more frequent blinks → feels more alive
+      const wait = 3800 + Math.random() * 2200;
       timer = window.setTimeout(() => {
         setBlinking(true);
         window.setTimeout(() => {
           setBlinking(false);
           schedule();
-        }, 140);
+        }, 120);
       }, wait);
     };
-    timer = window.setTimeout(schedule, 500);
+    timer = window.setTimeout(schedule, 400);
     return () => window.clearTimeout(timer);
   }, [phase, locked]);
 
   const visible = phase !== "hidden";
   const lidsClosed = phase === "hidden" || blinking;
+  const alive = phase === "open" && !blinking;
 
   return (
     <div
@@ -84,8 +86,15 @@ export function DragonTopLogo() {
       data-logo-phase={phase}
       data-logo-locked={locked ? "1" : "0"}
     >
+      {/* Soft lime bloom behind the eyes */}
       <div
-        className="relative h-full w-full overflow-hidden bg-[#070708]"
+        aria-hidden
+        className={`pointer-events-none absolute inset-[-30%] z-0 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(140,255,77,0.45)_0%,rgba(140,255,77,0.12)_40%,transparent_70%)] transition-opacity duration-500 ${
+          alive ? "eyes-glow-pulse opacity-100" : "opacity-0"
+        }`}
+      />
+      <div
+        className="relative z-10 h-full w-full overflow-hidden bg-[#070708]"
         style={{
           opacity: visible ? 1 : 0,
           transform: lidsClosed ? "scaleY(0.05)" : "scaleY(1)",
@@ -93,10 +102,8 @@ export function DragonTopLogo() {
           transition: locked
             ? "none"
             : phase === "opening"
-              ? "opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1)"
-              : "opacity 0.35s ease, transform 0.14s ease",
-          filter: "none",
-          boxShadow: "none",
+              ? "opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1)"
+              : "opacity 0.3s ease, transform 0.12s ease",
           backgroundColor: "#070708",
         }}
       >
@@ -106,11 +113,11 @@ export function DragonTopLogo() {
           width={912}
           height={440}
           priority
-          className="crisp-img h-auto w-full select-none bg-[#070708]"
+          className={`dragon-eyes-alive h-auto w-full select-none bg-[#070708] ${
+            alive ? "eyes-alive-pulse" : ""
+          }`}
           draggable={false}
           style={{
-            filter: "none",
-            boxShadow: "none",
             backgroundColor: "#070708",
           }}
         />

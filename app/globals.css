@@ -69,6 +69,56 @@ body {
   filter: none !important;
 }
 
+/* Vivid dragon eyes — brighter, greener, with live pulse */
+.dragon-eyes-alive {
+  image-rendering: -webkit-optimize-contrast;
+  background: #070708 !important;
+  filter: brightness(1.45) saturate(1.7) contrast(1.2)
+    drop-shadow(0 0 6px rgba(140, 255, 77, 0.65))
+    drop-shadow(0 0 16px rgba(140, 255, 77, 0.35));
+}
+
+@keyframes eyes-alive-pulse {
+  0%,
+  100% {
+    filter: brightness(1.4) saturate(1.65) contrast(1.18)
+      drop-shadow(0 0 5px rgba(140, 255, 77, 0.55))
+      drop-shadow(0 0 14px rgba(140, 255, 77, 0.28));
+  }
+  50% {
+    filter: brightness(1.65) saturate(1.9) contrast(1.25)
+      drop-shadow(0 0 10px rgba(160, 255, 90, 0.85))
+      drop-shadow(0 0 22px rgba(140, 255, 77, 0.5));
+  }
+}
+
+@keyframes eyes-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.eyes-alive-pulse {
+  animation: eyes-alive-pulse 2.8s ease-in-out infinite;
+}
+
+.eyes-glow-pulse {
+  animation: eyes-glow-pulse 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eyes-alive-pulse,
+  .eyes-glow-pulse {
+    animation: none !important;
+  }
+}
+
 @keyframes atmosphere-drift {
   0%,
   100% {
@@ -105,7 +155,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .atmosphere-drift,
   .hero-rise,
-  .ember-pulse {
+  .ember-pulse,
+  .eyes-alive-pulse,
+  .eyes-glow-pulse {
     animation: none !important;
   }
 }
