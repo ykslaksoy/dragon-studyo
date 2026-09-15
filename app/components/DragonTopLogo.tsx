@@ -141,17 +141,17 @@ export function DragonTopLogo() {
 
   return (
     <div
-      className="dragon-logo-stage relative h-[40px] w-[100px] sm:h-[48px] sm:w-[120px]"
+      className="dragon-logo-stage relative h-[40px] w-[100px] overflow-hidden sm:h-[48px] sm:w-[120px]"
       aria-label="Dragon Stüdyo logo"
       aria-hidden={phase === "hidden"}
       data-logo-phase={phase}
       data-logo-locked={locked ? "1" : "0"}
       data-logo-blinking={blinking ? "1" : "0"}
     >
-      {/* Soft lime bloom — masked so it never reads as a hard plate */}
+      {/* Soft lime bloom — kept inside the stage so it never overflows the viewport */}
       <div
         aria-hidden
-        className={`dragon-logo-glow pointer-events-none absolute inset-[-40%] z-0 transition-opacity duration-500 ${
+        className={`dragon-logo-glow pointer-events-none absolute inset-[-12%] z-0 transition-opacity duration-500 ${
           phase === "open" && !blinking
             ? "eyes-glow-pulse opacity-100"
             : blinking
