@@ -61,7 +61,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: SCROLL_TOP_BOOT }} />
       </head>
-      <body className="m-0 flex min-h-dvh flex-col bg-[#070708] p-0 font-sans text-white">
+      <body className="m-0 flex min-h-dvh w-full max-w-[100vw] flex-col overflow-x-clip bg-[#070708] p-0 font-sans text-white">
         <ForceScrollTop />
         {children}
       </body>
