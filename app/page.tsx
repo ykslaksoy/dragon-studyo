@@ -78,7 +78,7 @@ export default function Home() {
       </header>
 
       <main className="relative z-10 flex min-h-0 w-full flex-1 flex-col items-center justify-center px-[max(1.25rem,env(safe-area-inset-left,0px))] pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] pt-3 pr-[max(1.25rem,env(safe-area-inset-right,0px))] sm:px-[max(2.5rem,env(safe-area-inset-left,0px))] sm:pr-[max(2.5rem,env(safe-area-inset-right,0px))]">
-        <div className="flex w-full max-w-[34rem] flex-col items-center">
+        <div className="flex w-full max-w-[34rem] -translate-y-[min(5vh,2.5rem)] flex-col items-center sm:translate-y-0">
           <p className="hero-rise serif italic tracking-[0.02em] text-[clamp(22px,5vw,30px)] font-normal text-white/35">
             {t.awaken}
           </p>
