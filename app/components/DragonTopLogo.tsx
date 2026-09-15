@@ -1,12 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Phase = "hidden" | "opening" | "open";
 
-const REVEAL_MS = 2400;
-const OPEN_MS = 750;
+const REVEAL_MS = 2200;
+const OPEN_MS = 820;
+/** Single blink duration — must match CSS `dragon-blink` */
+const BLINK_MS = 320;
+/** Occasional double-blink second tap */
+const DOUBLE_GAP_MS = 110;
 
 function phaseFromSearch(): Phase | null {
   if (typeof window === "undefined") return null;
@@ -14,25 +18,73 @@ function phaseFromSearch(): Phase | null {
   if (v === "hidden" || v === "closed") return "hidden";
   if (v === "open" || v === "idle") return "open";
   if (v === "opening") return "opening";
+  if (v === "blink") return "open"; // open + force a blink for QA
   return null;
 }
 
+function wantsForcedBlink(): boolean {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location.search).get("logo") === "blink";
+}
+
 /**
- * Top dragon-eyes mark — brighter / more alive than the base asset:
- * boosted brightness+saturation, lime glow, subtle pulse when open.
- * Optional `?logo=hidden|opening|open` locks phase for QA screenshots.
+ * Top dragon-eyes mark with:
+ * - Soft elliptical blend into the dark header (no hard plate edge)
+ * - Polished one-shot blink (fast close → brief hold → softer open)
  */
 export function DragonTopLogo() {
   const [phase, setPhase] = useState<Phase>("hidden");
   const [locked, setLocked] = useState(false);
   const [blinking, setBlinking] = useState(false);
+  const blinkLock = useRef(false);
+  const timers = useRef<number[]>([]);
+
+  const clearTimers = () => {
+    timers.current.forEach((id) => window.clearTimeout(id));
+    timers.current = [];
+  };
+
+  const runBlink = (double = false) => {
+    if (blinkLock.current) return;
+    blinkLock.current = true;
+    setBlinking(true);
+
+    const finish = () => {
+      setBlinking(false);
+      blinkLock.current = false;
+    };
+
+    if (double) {
+      // First blink, brief reopen, second blink
+      timers.current.push(
+        window.setTimeout(() => {
+          setBlinking(false);
+          timers.current.push(
+            window.setTimeout(() => {
+              setBlinking(true);
+              timers.current.push(
+                window.setTimeout(() => {
+                  finish();
+                }, BLINK_MS),
+              );
+            }, DOUBLE_GAP_MS),
+          );
+        }, BLINK_MS),
+      );
+    } else {
+      timers.current.push(window.setTimeout(finish, BLINK_MS));
+    }
+  };
 
   useEffect(() => {
     const fromQuery = phaseFromSearch();
     if (fromQuery) {
       setLocked(true);
       setPhase(fromQuery);
-      return;
+      if (wantsForcedBlink()) {
+        timers.current.push(window.setTimeout(() => runBlink(false), 400));
+      }
+      return () => clearTimers();
     }
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -46,11 +98,9 @@ export function DragonTopLogo() {
       () => setPhase("open"),
       REVEAL_MS + OPEN_MS,
     );
+    timers.current.push(openTimer, doneTimer);
 
-    return () => {
-      window.clearTimeout(openTimer);
-      window.clearTimeout(doneTimer);
-    };
+    return () => clearTimers();
   }, []);
 
   useEffect(() => {
@@ -58,53 +108,74 @@ export function DragonTopLogo() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
 
-    let timer: number;
+    let cancelled = false;
+    let scheduleTimer: number;
+
     const schedule = () => {
-      // Slightly more frequent blinks → feels more alive
-      const wait = 3800 + Math.random() * 2200;
-      timer = window.setTimeout(() => {
-        setBlinking(true);
-        window.setTimeout(() => {
-          setBlinking(false);
-          schedule();
-        }, 120);
+      // Natural gap between blinks (~4–8s), with occasional double
+      const wait = 4200 + Math.random() * 3800;
+      scheduleTimer = window.setTimeout(() => {
+        if (cancelled) return;
+        const double = Math.random() < 0.22;
+        runBlink(double);
+        const after = double ? BLINK_MS * 2 + DOUBLE_GAP_MS + 40 : BLINK_MS + 40;
+        timers.current.push(
+          window.setTimeout(() => {
+            if (!cancelled) schedule();
+          }, after),
+        );
       }, wait);
+      timers.current.push(scheduleTimer);
     };
-    timer = window.setTimeout(schedule, 400);
-    return () => window.clearTimeout(timer);
+
+    scheduleTimer = window.setTimeout(schedule, 900);
+    timers.current.push(scheduleTimer);
+
+    return () => {
+      cancelled = true;
+      clearTimers();
+    };
   }, [phase, locked]);
 
-  const visible = phase !== "hidden";
-  const lidsClosed = phase === "hidden" || blinking;
-  const alive = phase === "open" && !blinking;
+  const revealOpen = phase === "opening" || phase === "open";
 
   return (
     <div
-      className="relative h-[40px] w-[100px] bg-[#070708] sm:h-[48px] sm:w-[120px]"
+      className="dragon-logo-stage relative h-[40px] w-[100px] sm:h-[48px] sm:w-[120px]"
       aria-label="Dragon Stüdyo logo"
       aria-hidden={phase === "hidden"}
       data-logo-phase={phase}
       data-logo-locked={locked ? "1" : "0"}
+      data-logo-blinking={blinking ? "1" : "0"}
     >
-      {/* Soft lime bloom behind the eyes */}
+      {/* Soft lime bloom — masked so it never reads as a hard plate */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-[-30%] z-0 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(140,255,77,0.45)_0%,rgba(140,255,77,0.12)_40%,transparent_70%)] transition-opacity duration-500 ${
-          alive ? "eyes-glow-pulse opacity-100" : "opacity-0"
+        className={`dragon-logo-glow pointer-events-none absolute inset-[-40%] z-0 transition-opacity duration-500 ${
+          phase === "open" && !blinking
+            ? "eyes-glow-pulse opacity-100"
+            : blinking
+              ? "opacity-0 !duration-75"
+              : phase === "opening"
+                ? "opacity-50"
+                : "opacity-0"
         }`}
       />
+
       <div
-        className="relative z-10 h-full w-full overflow-hidden bg-[#070708]"
+        className={`dragon-logo-blend relative z-10 h-full w-full ${
+          blinking ? "dragon-blink" : ""
+        } ${phase === "opening" ? "dragon-reveal-open" : ""} ${
+          phase === "open" && !blinking ? "dragon-eyes-idle" : ""
+        } ${phase === "hidden" ? "dragon-eyes-shut" : ""}`}
         style={{
-          opacity: visible ? 1 : 0,
-          transform: lidsClosed ? "scaleY(0.05)" : "scaleY(1)",
-          transformOrigin: "50% 45%",
-          transition: locked
-            ? "none"
-            : phase === "opening"
-              ? "opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1)"
-              : "opacity 0.3s ease, transform 0.12s ease",
-          backgroundColor: "#070708",
+          ...(locked && !blinking
+            ? {
+                opacity: revealOpen ? 1 : 0,
+                clipPath:
+                  phase === "hidden" ? "inset(46% 0 46% 0)" : "inset(0% 0 0% 0)",
+              }
+            : {}),
         }}
       >
         <Image
@@ -113,14 +184,13 @@ export function DragonTopLogo() {
           width={912}
           height={440}
           priority
-          className={`dragon-eyes-alive h-auto w-full select-none bg-[#070708] ${
-            alive ? "eyes-alive-pulse" : ""
-          }`}
+          className={`dragon-eyes-alive h-auto w-full select-none ${
+            phase === "open" && !blinking ? "eyes-alive-pulse" : ""
+          } ${blinking ? "dragon-blink-dim" : ""}`}
           draggable={false}
-          style={{
-            backgroundColor: "#070708",
-          }}
         />
+        {/* Edge wash into header ink — intentional ground blend */}
+        <div aria-hidden className="dragon-logo-edge absolute inset-0 z-20" />
       </div>
     </div>
   );

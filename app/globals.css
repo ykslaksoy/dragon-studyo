@@ -69,53 +69,210 @@ body {
   filter: none !important;
 }
 
-/* Vivid dragon eyes — brighter, greener, with live pulse */
+/* —— Logo stage: seamless blend into dark header —— */
+.dragon-logo-stage {
+  background: transparent;
+  isolation: isolate;
+}
+
+/* Soft elliptical feather — kills hard PNG plate edges */
+.dragon-logo-blend {
+  transform-origin: 50% 42%;
+  will-change: clip-path, filter, opacity;
+  /* Aggressive edge dissolve into #070708 */
+  -webkit-mask-image: radial-gradient(
+    ellipse 78% 86% at 50% 48%,
+    #000 28%,
+    rgba(0, 0, 0, 0.95) 48%,
+    rgba(0, 0, 0, 0.55) 68%,
+    rgba(0, 0, 0, 0.15) 82%,
+    transparent 96%
+  );
+  mask-image: radial-gradient(
+    ellipse 78% 86% at 50% 48%,
+    #000 28%,
+    rgba(0, 0, 0, 0.95) 48%,
+    rgba(0, 0, 0, 0.55) 68%,
+    rgba(0, 0, 0, 0.15) 82%,
+    transparent 96%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* Extra edge wash matching header ink — intentional ground blend */
+.dragon-logo-edge {
+  background: radial-gradient(
+    ellipse 72% 78% at 50% 48%,
+    transparent 32%,
+    rgba(7, 7, 8, 0.35) 58%,
+    rgba(7, 7, 8, 0.85) 82%,
+    #070708 100%
+  );
+  pointer-events: none;
+}
+
+.dragon-logo-glow {
+  background: radial-gradient(
+    ellipse 55% 48% at 50% 48%,
+    rgba(140, 255, 77, 0.38) 0%,
+    rgba(140, 255, 77, 0.14) 38%,
+    transparent 72%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 70% at 50% 50%,
+    #000 20%,
+    transparent 75%
+  );
+  mask-image: radial-gradient(
+    ellipse 70% 70% at 50% 50%,
+    #000 20%,
+    transparent 75%
+  );
+}
+
+/* Vivid eyes — no hard plate fill behind the PNG */
 .dragon-eyes-alive {
   image-rendering: -webkit-optimize-contrast;
-  background: #070708 !important;
-  filter: brightness(1.45) saturate(1.7) contrast(1.2)
-    drop-shadow(0 0 6px rgba(140, 255, 77, 0.65))
-    drop-shadow(0 0 16px rgba(140, 255, 77, 0.35));
+  background: transparent !important;
+  filter: brightness(1.42) saturate(1.65) contrast(1.18)
+    drop-shadow(0 0 5px rgba(140, 255, 77, 0.55))
+    drop-shadow(0 0 14px rgba(140, 255, 77, 0.28));
+}
+
+/* First-open reveal: slow intentional lid lift via clip-path */
+@keyframes dragon-reveal-open {
+  0% {
+    opacity: 0.2;
+    clip-path: inset(46% 0 46% 0);
+    filter: brightness(0.6) saturate(1.05);
+  }
+  55% {
+    opacity: 1;
+    clip-path: inset(12% 0 12% 0);
+    filter: brightness(1.2) saturate(1.4);
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0% 0 0% 0);
+    filter: none;
+  }
+}
+
+.dragon-reveal-open {
+  animation: dragon-reveal-open 0.82s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dragon-eyes-shut {
+  opacity: 0;
+  clip-path: inset(46% 0 46% 0);
+}
+
+.dragon-eyes-idle {
+  opacity: 1;
+  clip-path: inset(0% 0 0% 0);
+}
+
+/*
+ * Polished blink via clip-path lids (not scaleY squash).
+ * Fast close → brief hold → softer open. Duration = BLINK_MS (320).
+ */
+@keyframes dragon-blink {
+  0% {
+    clip-path: inset(0% 0 0% 0);
+  }
+  /* Fast close — lids meet at eye midline */
+  18% {
+    clip-path: inset(42% 0 42% 0);
+  }
+  /* Hold shut */
+  36% {
+    clip-path: inset(46% 0 46% 0);
+  }
+  /* Softer reopen */
+  70% {
+    clip-path: inset(10% 0 10% 0);
+  }
+  100% {
+    clip-path: inset(0% 0 0% 0);
+  }
+}
+
+.dragon-blink {
+  animation: dragon-blink 320ms cubic-bezier(0.4, 0.0, 0.2, 1) both;
+}
+
+/* Dim iris + kill glow while lids are shut */
+@keyframes dragon-blink-dim {
+  0% {
+    filter: brightness(1.42) saturate(1.65) contrast(1.18)
+      drop-shadow(0 0 5px rgba(140, 255, 77, 0.55))
+      drop-shadow(0 0 14px rgba(140, 255, 77, 0.28));
+  }
+  16%,
+  40% {
+    filter: brightness(0.35) saturate(0.9) contrast(1)
+      drop-shadow(0 0 0 transparent);
+  }
+  100% {
+    filter: brightness(1.42) saturate(1.65) contrast(1.18)
+      drop-shadow(0 0 5px rgba(140, 255, 77, 0.55))
+      drop-shadow(0 0 14px rgba(140, 255, 77, 0.28));
+  }
+}
+
+.dragon-blink-dim {
+  animation: dragon-blink-dim 320ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 @keyframes eyes-alive-pulse {
   0%,
   100% {
-    filter: brightness(1.4) saturate(1.65) contrast(1.18)
-      drop-shadow(0 0 5px rgba(140, 255, 77, 0.55))
-      drop-shadow(0 0 14px rgba(140, 255, 77, 0.28));
+    filter: brightness(1.38) saturate(1.6) contrast(1.16)
+      drop-shadow(0 0 5px rgba(140, 255, 77, 0.5))
+      drop-shadow(0 0 12px rgba(140, 255, 77, 0.24));
   }
   50% {
-    filter: brightness(1.65) saturate(1.9) contrast(1.25)
-      drop-shadow(0 0 10px rgba(160, 255, 90, 0.85))
-      drop-shadow(0 0 22px rgba(140, 255, 77, 0.5));
+    filter: brightness(1.55) saturate(1.82) contrast(1.22)
+      drop-shadow(0 0 8px rgba(160, 255, 90, 0.75))
+      drop-shadow(0 0 18px rgba(140, 255, 77, 0.42));
   }
 }
 
 @keyframes eyes-glow-pulse {
   0%,
   100% {
-    opacity: 0.55;
-    transform: scale(0.95);
+    opacity: 0.5;
+    transform: scale(0.96);
   }
   50% {
-    opacity: 1;
-    transform: scale(1.05);
+    opacity: 0.95;
+    transform: scale(1.04);
   }
 }
 
 .eyes-alive-pulse {
-  animation: eyes-alive-pulse 2.8s ease-in-out infinite;
+  animation: eyes-alive-pulse 3.2s ease-in-out infinite;
 }
 
 .eyes-glow-pulse {
-  animation: eyes-glow-pulse 2.8s ease-in-out infinite;
+  animation: eyes-glow-pulse 3.2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .eyes-alive-pulse,
-  .eyes-glow-pulse {
+  .eyes-glow-pulse,
+  .dragon-blink,
+  .dragon-blink-dim,
+  .dragon-reveal-open {
     animation: none !important;
+  }
+
+  .dragon-logo-blend {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 
