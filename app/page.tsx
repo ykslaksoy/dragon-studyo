@@ -19,7 +19,7 @@ export default function Home() {
   }, [lang]);
 
   return (
-    <div className="relative m-0 h-dvh max-h-dvh w-full overflow-hidden bg-[#070708] p-0 text-white selection:bg-[#8CFF4D]/30">
+    <div className="relative mx-auto m-0 h-dvh max-h-dvh w-full max-w-[100vw] overflow-hidden bg-[#070708] p-0 text-white selection:bg-[#8CFF4D]/30">
       {/* Full-bleed atmosphere — clipped, centered behind hero */}
       <div
         aria-hidden
@@ -79,8 +79,8 @@ export default function Home() {
       </header>
 
       {/* Hero fills the first viewport and centers in it (header overlays) */}
-      <main className="absolute inset-0 z-10 flex w-full items-center justify-center px-[max(1.25rem,env(safe-area-inset-left,0px))] pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] pt-[calc(56px+env(safe-area-inset-top,0px))] pr-[max(1.25rem,env(safe-area-inset-right,0px))] sm:px-[max(2.5rem,env(safe-area-inset-left,0px))] sm:pr-[max(2.5rem,env(safe-area-inset-right,0px))] sm:pt-[calc(64px+env(safe-area-inset-top,0px))]">
-        <div className="hero-stage flex w-full max-w-[34rem] flex-col items-center">
+      <main className="absolute inset-0 z-10 mx-auto flex w-full max-w-[100vw] items-center justify-center pl-[max(1.25rem,env(safe-area-inset-left,0px))] pr-[max(1.25rem,env(safe-area-inset-right,0px))] pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] pt-[calc(56px+env(safe-area-inset-top,0px))] sm:pl-[max(2.5rem,env(safe-area-inset-left,0px))] sm:pr-[max(2.5rem,env(safe-area-inset-right,0px))] sm:pt-[calc(64px+env(safe-area-inset-top,0px))]">
+        <div className="hero-stage mx-auto flex w-full max-w-[34rem] flex-col items-center text-center">
           <p className="hero-rise serif italic tracking-[0.02em] text-[clamp(22px,5vw,30px)] font-normal text-white/35">
             {t.awaken}
           </p>
@@ -118,3 +118,4 @@ export default function Home() {
     </div>
   );
 }
+
