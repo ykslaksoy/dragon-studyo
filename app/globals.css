@@ -27,6 +27,8 @@ html {
   background: var(--ink);
   width: 100%;
   max-width: 100%;
+  /* Keep layout centered when classic scrollbars reserve the right gutter */
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -45,6 +47,7 @@ body {
 
 /* Optical lift: keep hero slightly above geometric mid on phones */
 .hero-stage {
+  margin-inline: auto;
   translate: 0 -6vh;
 }
 
@@ -361,3 +364,4 @@ body {
 .ember-pulse {
   animation: ember-pulse 4.5s ease-in-out infinite;
 }
+
