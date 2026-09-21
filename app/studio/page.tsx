@@ -229,6 +229,25 @@ export default function StudioPage() {
     setProduceNote(null);
   };
 
+  const clearUploadStorage = () => {
+    try {
+      sessionStorage.removeItem("dragon-studio-upload-v1");
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const persistUpload = (name: string, type: string, dataUrl: string) => {
+    try {
+      sessionStorage.setItem(
+        "dragon-studio-upload-v1",
+        JSON.stringify({ name, type, dataUrl, savedAt: Date.now() }),
+      );
+    } catch {
+      /* quota / private mode — preview still works in-memory */
+    }
+  };
+
   const resetUpload = () => {
     setUploadFile(null);
     setUploadPreview(null);
@@ -236,6 +255,7 @@ export default function StudioPage() {
     setPhase("wizard");
     setJobStatus([]);
     setReadyCount(0);
+    clearUploadStorage();
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -249,6 +269,32 @@ export default function StudioPage() {
     resetUpload();
   };
 
+  // Restore uploaded image after refresh / remount
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("dragon-studio-upload-v1");
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as {
+        name?: string;
+        type?: string;
+        dataUrl?: string;
+      };
+      if (!parsed?.dataUrl || !parsed.name) return;
+      setUploadPreview(parsed.dataUrl);
+      // Reconstruct a File so uploadFile checks keep working
+      void fetch(parsed.dataUrl)
+        .then((r) => r.blob())
+        .then((blob) => {
+          const file = new File([blob], parsed.name!, {
+            type: parsed.type || blob.type || "image/png",
+          });
+          setUploadFile(file);
+        });
+    } catch {
+      /* ignore corrupt cache */
+    }
+  }, []);
+
   const onPickFile = (file: File | null) => {
     if (!file) {
       resetUpload();
@@ -260,8 +306,14 @@ export default function StudioPage() {
     }
     setUploadFile(file);
     setProduceNote(null);
-    const url = URL.createObjectURL(file);
-    setUploadPreview(url);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = String(reader.result || "");
+      if (!dataUrl) return;
+      setUploadPreview(dataUrl);
+      persistUpload(file.name, file.type, dataUrl);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handlePrimary = () => {
@@ -505,7 +557,10 @@ export default function StudioPage() {
                       setChannel(null);
                       setPackId(null);
                       setConfirmed(false);
-                      resetUpload();
+                      setPhase("wizard");
+                      setJobStatus([]);
+                      setReadyCount(0);
+                      setProduceNote(null);
                     }}
                   >
                     <div className="font-medium text-white">{p.title}</div>
@@ -550,7 +605,10 @@ export default function StudioPage() {
                     onClick={() => {
                       setPackId(pack.id);
                       setConfirmed(false);
-                      resetUpload();
+                      setPhase("wizard");
+                      setJobStatus([]);
+                      setReadyCount(0);
+                      setProduceNote(null);
                     }}
                     className={`rounded-sm border p-4 text-left backdrop-blur-md transition ${
                       packId === pack.id
@@ -696,7 +754,10 @@ export default function StudioPage() {
                 disabled={step === 1}
                 onClick={() => {
                   setConfirmed(false);
-                  resetUpload();
+                  setPhase("wizard");
+                  setJobStatus([]);
+                  setReadyCount(0);
+                  setProduceNote(null);
                   setStep((s) => Math.max(1, s - 1));
                 }}
                 className="rounded-sm border border-white/20 bg-black/35 px-4 py-2 text-[12px] text-white/75 backdrop-blur-md disabled:opacity-30"
