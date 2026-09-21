@@ -161,7 +161,7 @@ function Chip({
       className={`rounded-sm border px-3 py-2 text-left text-[13px] backdrop-blur-md transition ${
         active
           ? "border-[#8CFF4D]/70 bg-[#8CFF4D]/20 text-white"
-          : "border-white/20 bg-white/[0.06] text-white/80 hover:border-white/35 hover:bg-white/[0.10]"
+          : "border-white/20 bg-black/85 text-white/80 hover:border-white/35 hover:bg-black/90"
       }`}
     >
       {children}
@@ -294,7 +294,7 @@ export default function StudioPage() {
             })}
           </ol>
 
-          <section className="mt-8 rounded-md border border-white/20 bg-white/[0.07] p-5 shadow-[0_8px_40px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:p-6">
+          <section className="mt-8 rounded-md border border-white/20 bg-black/85 p-5 shadow-[0_8px_40px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:p-6">
             {step === 1 && (
               <div className="grid gap-3 sm:grid-cols-2">
                 {PURPOSES.map((p) => (
@@ -354,7 +354,7 @@ export default function StudioPage() {
                     className={`rounded-sm border p-4 text-left backdrop-blur-md transition ${
                       packId === pack.id
                         ? "border-[#8CFF4D]/70 bg-[#8CFF4D]/20"
-                        : "border-white/20 bg-white/[0.06] hover:border-white/35 hover:bg-white/[0.10]"
+                        : "border-white/20 bg-black/85 hover:border-white/35 hover:bg-black/90"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
@@ -410,7 +410,7 @@ export default function StudioPage() {
                         bağlantısı). Şimdilik üretilecek kare listesi aşağıda.
                       </p>
                     </div>
-                    <ul className="max-h-56 overflow-y-auto rounded-sm border border-white/15 bg-white/[0.06] p-3 text-[12px] text-white/75 backdrop-blur-md">
+                    <ul className="max-h-56 overflow-y-auto rounded-sm border border-white/15 bg-black/85 p-3 text-[12px] text-white/75 backdrop-blur-md">
                       {summary.outputList.map((item) => (
                         <li
                           key={item}
