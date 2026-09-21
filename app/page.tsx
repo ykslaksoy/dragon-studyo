@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DragonTopLogo } from "./components/DragonTopLogo";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
@@ -103,12 +104,12 @@ export default function Home() {
           </p>
 
           <div className="hero-rise hero-rise-delay-2 mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
-            <a
-              href="#top"
+            <Link
+              href="/studio"
               className="rounded-sm bg-[#8CFF4D] px-7 py-[12px] text-[12px] font-semibold tracking-[0.08em] text-black transition-transform hover:-translate-y-px sm:px-8 sm:py-[14px] sm:text-[13px]"
             >
               {t.cta}
-            </a>
+            </Link>
             <span className="mono text-[11px] tracking-[0.18em] text-white/30">
               {t.soon}
             </span>
@@ -118,4 +119,5 @@ export default function Home() {
     </div>
   );
 }
+
 
