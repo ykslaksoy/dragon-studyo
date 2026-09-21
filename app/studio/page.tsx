@@ -158,10 +158,10 @@ function Chip({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-sm border px-3 py-2 text-left text-[13px] backdrop-blur-sm transition ${
+      className={`rounded-sm border px-3 py-2 text-left text-[13px] backdrop-blur-md transition ${
         active
-          ? "border-[#8CFF4D]/70 bg-[#8CFF4D]/15 text-white"
-          : "border-white/15 bg-black/25 text-white/75 hover:border-white/30 hover:bg-black/35"
+          ? "border-[#8CFF4D]/70 bg-[#8CFF4D]/20 text-white"
+          : "border-white/20 bg-white/[0.06] text-white/80 hover:border-white/35 hover:bg-white/[0.10]"
       }`}
     >
       {children}
@@ -230,7 +230,7 @@ export default function StudioPage() {
               "radial-gradient(ellipse 80% 55% at 50% 40%, rgba(140,255,77,0.07), transparent 55%), radial-gradient(ellipse 70% 50% at 50% 100%, rgba(20,24,18,0.9), #070708)",
           }}
         />
-        <div className="absolute inset-0 flex items-center justify-center pb-[min(6vh,3rem)] opacity-40">
+        <div className="absolute inset-0 flex items-center justify-center pb-[min(6vh,3rem)] opacity-55">
           <div className="atmosphere-drift w-[min(640px,88%)] max-w-full sm:w-[min(860px,70%)]">
             <Image
               src="/dragon-mark.png"
@@ -247,7 +247,7 @@ export default function StudioPage() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(7,7,8,0.55) 0%, rgba(7,7,8,0.25) 35%, rgba(7,7,8,0.45) 100%)",
+              "linear-gradient(180deg, rgba(7,7,8,0.35) 0%, rgba(7,7,8,0.12) 40%, rgba(7,7,8,0.30) 100%)",
           }}
         />
       </div>
@@ -294,7 +294,7 @@ export default function StudioPage() {
             })}
           </ol>
 
-          <section className="mt-8 rounded-md border border-white/15 bg-black/40 p-5 shadow-[0_8px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-6">
+          <section className="mt-8 rounded-md border border-white/20 bg-white/[0.07] p-5 shadow-[0_8px_40px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:p-6">
             {step === 1 && (
               <div className="grid gap-3 sm:grid-cols-2">
                 {PURPOSES.map((p) => (
@@ -351,10 +351,10 @@ export default function StudioPage() {
                       setPackId(pack.id);
                       setConfirmed(false);
                     }}
-                    className={`rounded-sm border p-4 text-left backdrop-blur-sm transition ${
+                    className={`rounded-sm border p-4 text-left backdrop-blur-md transition ${
                       packId === pack.id
-                        ? "border-[#8CFF4D]/70 bg-[#8CFF4D]/12"
-                        : "border-white/15 bg-black/25 hover:border-white/30"
+                        ? "border-[#8CFF4D]/70 bg-[#8CFF4D]/20"
+                        : "border-white/20 bg-white/[0.06] hover:border-white/35 hover:bg-white/[0.10]"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
@@ -367,7 +367,7 @@ export default function StudioPage() {
                       {pack.frames.map((f) => (
                         <li
                           key={f}
-                          className="rounded-full bg-black/40 px-2 py-0.5 text-[11px] text-white/55"
+                          className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/65"
                         >
                           {f}
                         </li>
@@ -410,7 +410,7 @@ export default function StudioPage() {
                         bağlantısı). Şimdilik üretilecek kare listesi aşağıda.
                       </p>
                     </div>
-                    <ul className="max-h-56 overflow-y-auto rounded-sm border border-white/10 bg-black/35 p-3 text-[12px] text-white/70">
+                    <ul className="max-h-56 overflow-y-auto rounded-sm border border-white/15 bg-white/[0.06] p-3 text-[12px] text-white/75 backdrop-blur-md">
                       {summary.outputList.map((item) => (
                         <li
                           key={item}
