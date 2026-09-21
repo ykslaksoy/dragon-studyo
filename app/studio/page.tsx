@@ -28,7 +28,7 @@ const PURPOSES: { id: Purpose; title: string; desc: string }[] = [
   },
 ];
 
-const PLATFORMS: Record<Purpose, { id: string; label: string }[]> = {
+const CHANNELS: Record<Purpose, { id: string; label: string }[]> = {
   marketplace: [
     { id: "amazon", label: "Amazon" },
     { id: "shopify", label: "Shopify" },
@@ -171,7 +171,7 @@ function Chip({
 export default function StudioPage() {
   const [step, setStep] = useState(1);
   const [purpose, setPurpose] = useState<Purpose | null>(null);
-  const [platform, setPlatform] = useState<string | null>(null);
+  const [channel, setChannel] = useState<string | null>(null);
   const [packId, setPackId] = useState<string | null>(null);
   const [angles, setAngles] = useState<string[]>([]);
   const [done, setDone] = useState(false);
@@ -179,12 +179,21 @@ export default function StudioPage() {
   const packs = purpose ? PACKAGES[purpose] : [];
   const selectedPack = packs.find((p) => p.id === packId) ?? null;
 
+  const canNext =
+    (step === 1 && !!purpose) ||
+    (step === 2 && !!channel) ||
+    (step === 3 && !!packId) ||
+    step === 4;
+
   const summary = useMemo(() => {
-    if (!purpose || !platform || !selectedPack) return null;
-    const purposeLabel = PURPOSES.find((p) => p.id === purpose)?.title;
-    const platformLabel = PLATFORMS[purpose].find((p) => p.id === platform)?.label;
-    return { purposeLabel, platformLabel, pack: selectedPack, angles };
-  }, [purpose, platform, selectedPack, angles]);
+    if (!purpose || !channel || !selectedPack) return null;
+    return {
+      purposeLabel: PURPOSES.find((p) => p.id === purpose)?.title,
+      channelLabel: CHANNELS[purpose].find((p) => p.id === channel)?.label,
+      pack: selectedPack,
+      angles,
+    };
+  }, [purpose, channel, selectedPack, angles]);
 
   const toggleAngle = (id: string) => {
     setAngles((prev) =>
@@ -192,14 +201,8 @@ export default function StudioPage() {
     );
   };
 
-  const canNext =
-    (step === 1 && purpose) ||
-    (step === 2 && platform) ||
-    (step === 3 && packId) ||
-    step === 4;
-
   return (
-    <div className="mx-auto min-h-dvh w-full max-w-[100vw] bg-[#070708] px-[max(1.25rem,env(safe-area-inset-left))] pb-16 pt-[max(1.25rem,env(safe-area-inset-top))] pr-[max(1.25rem,env(safe-area-inset-right))] text-white sm:px-10">
+    <div className="mx-auto min-h-dvh w-full max-w-[100vw] bg-[#070708] px-[max(1.25rem,env(safe-area-inset-left))] pb-16 pt-[max(1.25rem,env(safe-area-inset-top))] pr-[max(1.25rem,env(safe-area-inset-right))] text-white">
       <header className="mx-auto flex w-full max-w-3xl items-center justify-between gap-4">
         <Link
           href="/"
@@ -221,19 +224,16 @@ export default function StudioPage() {
           verdiğinden fazla hazır kare.
         </p>
 
-        {/* steps */}
         <ol className="mt-8 flex flex-wrap gap-2">
           {["Amaç", "Platform", "Paket", "Açılar"].map((label, i) => {
             const n = i + 1;
-            const active = step === n;
-            const doneStep = step > n;
             return (
               <li
                 key={label}
                 className={`rounded-full px-3 py-1 text-[11px] tracking-[0.12em] ${
-                  active
+                  step === n
                     ? "bg-[#8CFF4D] text-black"
-                    : doneStep
+                    : step > n
                       ? "bg-white/10 text-white/80"
                       : "bg-white/[0.04] text-white/35"
                 }`}
@@ -253,8 +253,9 @@ export default function StudioPage() {
                   active={purpose === p.id}
                   onClick={() => {
                     setPurpose(p.id);
-                    setPlatform(null);
+                    setChannel(null);
                     setPackId(null);
+                    setDone(false);
                   }}
                 >
                   <div className="font-medium text-white">{p.title}</div>
@@ -272,11 +273,14 @@ export default function StudioPage() {
                   : "FORMAT"}
               </p>
               <div className="grid gap-2 sm:grid-cols-2">
-                {PLATFORMS[purpose].map((p) => (
+                {CHANNELS[purpose].map((p) => (
                   <Chip
                     key={p.id}
-                    active={platform === p.id}
-                    onClick={() => setPlatform(p.id)}
+                    active={channel === p.id}
+                    onClick={() => {
+                      setChannel(p.id);
+                      setDone(false);
+                    }}
                   >
                     {p.label}
                   </Chip>
@@ -291,7 +295,10 @@ export default function StudioPage() {
                 <button
                   key={pack.id}
                   type="button"
-                  onClick={() => setPackId(pack.id)}
+                  onClick={() => {
+                    setPackId(pack.id);
+                    setDone(false);
+                  }}
                   className={`rounded-sm border p-4 text-left transition ${
                     packId === pack.id
                       ? "border-[#8CFF4D]/70 bg-[#8CFF4D]/10"
@@ -329,7 +336,10 @@ export default function StudioPage() {
                   <Chip
                     key={a.id}
                     active={angles.includes(a.id)}
-                    onClick={() => toggleAngle(a.id)}
+                    onClick={() => {
+                      toggleAngle(a.id);
+                      setDone(false);
+                    }}
                   >
                     {a.label}
                   </Chip>
@@ -343,7 +353,7 @@ export default function StudioPage() {
                   </p>
                   <p className="mt-1">
                     <span className="text-white/40">Kanal:</span>{" "}
-                    {summary.platformLabel}
+                    {summary.channelLabel}
                   </p>
                   <p className="mt-1">
                     <span className="text-white/40">Paket:</span>{" "}
@@ -354,7 +364,8 @@ export default function StudioPage() {
                     {summary.angles.length
                       ? summary.angles
                           .map(
-                            (id) => ANGLES.find((a) => a.id === id)?.label ?? id,
+                            (id) =>
+                              ANGLES.find((a) => a.id === id)?.label ?? id,
                           )
                           .join(", ")
                       : "Yok (sadece paket)"}
@@ -363,8 +374,8 @@ export default function StudioPage() {
               )}
               {done && (
                 <p className="mt-4 text-[13px] text-[#8CFF4D]">
-                  Seçim kaydedildi (önizleme). Üretim motoru bir sonraki
-                  adımda bağlanacak.
+                  Seçim kaydedildi (önizleme). Üretim motoru bir sonraki adımda
+                  bağlanacak.
                 </p>
               )}
             </div>
