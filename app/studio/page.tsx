@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Purpose = "marketplace" | "live" | "creator" | "artistic";
 
@@ -182,6 +182,11 @@ export default function StudioPage() {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
   const [produceNote, setProduceNote] = useState<string | null>(null);
+  const [phase, setPhase] = useState<"wizard" | "producing" | "done">("wizard");
+  const [jobStatus, setJobStatus] = useState<("pending" | "running" | "ready")[]>(
+    [],
+  );
+  const [readyCount, setReadyCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const packs = purpose ? PACKAGES[purpose] : [];
@@ -228,7 +233,20 @@ export default function StudioPage() {
     setUploadFile(null);
     setUploadPreview(null);
     setProduceNote(null);
+    setPhase("wizard");
+    setJobStatus([]);
+    setReadyCount(0);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const startFresh = () => {
+    setStep(1);
+    setPurpose(null);
+    setChannel(null);
+    setPackId(null);
+    setAngles([]);
+    setConfirmed(false);
+    resetUpload();
   };
 
   const onPickFile = (file: File | null) => {
@@ -248,10 +266,14 @@ export default function StudioPage() {
 
   const handlePrimary = () => {
     if (!summary) return;
+    if (phase === "done") {
+      startFresh();
+      return;
+    }
+    if (phase === "producing") return;
     if (!confirmed) {
       setConfirmed(true);
       setProduceNote(null);
-      // next paint: focus upload
       requestAnimationFrame(() => {
         document.getElementById("studio-upload")?.scrollIntoView({
           behavior: "smooth",
@@ -264,11 +286,49 @@ export default function StudioPage() {
       fileInputRef.current?.click();
       return;
     }
-    // Generation engine not wired yet — clear actionable feedback
-    setProduceNote(
-      `${uploadFile.name} alındı. ${summary.total} kare için üretim motoru bir sonraki adımda bağlanacak.`,
-    );
+    // Start production run (placeholder thumbs until AI engine is wired)
+    const total = summary.outputList.length;
+    setJobStatus(Array.from({ length: total }, () => "pending"));
+    setReadyCount(0);
+    setProduceNote(null);
+    setPhase("producing");
   };
+
+  useEffect(() => {
+    if (phase !== "producing" || !summary) return;
+    const total = summary.outputList.length;
+    let i = 0;
+    let cancelled = false;
+    const tick = () => {
+      if (cancelled) return;
+      if (i >= total) {
+        setPhase("done");
+        return;
+      }
+      const idx = i;
+      setJobStatus((prev) => {
+        const next = [...prev];
+        next[idx] = "running";
+        return next;
+      });
+      window.setTimeout(() => {
+        if (cancelled) return;
+        setJobStatus((prev) => {
+          const next = [...prev];
+          next[idx] = "ready";
+          return next;
+        });
+        setReadyCount((c) => c + 1);
+        i += 1;
+        window.setTimeout(tick, 90);
+      }, 140);
+    };
+    const t = window.setTimeout(tick, 200);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+    };
+  }, [phase, summary]);
 
   return (
     <div className="relative mx-auto min-h-dvh w-full max-w-[100vw] overflow-x-clip text-white">
@@ -309,11 +369,102 @@ export default function StudioPage() {
             ← Dragon Stüdyo
           </Link>
           <span className="mono rounded-sm bg-black/30 px-2 py-1 text-[10px] tracking-[0.24em] text-[#8CFF4D]/90 backdrop-blur-md">
-            SENARYO / {step}/4
+            {phase === "wizard"
+              ? `SENARYO / ${step}/4`
+              : phase === "producing"
+                ? "ÜRETİM"
+                : "TAMAM"}
           </span>
         </header>
 
         <main className="mx-auto mt-10 w-full max-w-3xl">
+          {phase !== "wizard" && summary && (
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-[clamp(28px,6vw,44px)] font-semibold tracking-[-0.03em]">
+                  {phase === "producing" ? "Üretim sürüyor" : "Üretim tamamlandı"}
+                </h1>
+                <p className="mt-3 text-[15px] text-white/65">
+                  {readyCount} / {summary.total} kare hazır
+                  {phase === "done"
+                    ? " — önizleme (AI motoru sonraki adımda gerçek kareleri üretecek)."
+                    : "."}
+                </p>
+              </div>
+
+              {uploadPreview && (
+                <div
+                  className="flex items-center gap-3 rounded-md border border-white/15 p-3 backdrop-blur-md"
+                  style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={uploadPreview}
+                    alt="Kaynak"
+                    className="h-14 w-14 rounded-sm object-cover"
+                  />
+                  <div className="min-w-0 text-[13px]">
+                    <p className="truncate text-white/90">{uploadFile?.name}</p>
+                    <p className="text-white/50">
+                      {summary.purposeLabel} · {summary.channelLabel} ·{" "}
+                      {summary.pack.title}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {summary.outputList.map((label, idx) => {
+                  const st = jobStatus[idx] ?? "pending";
+                  return (
+                    <div
+                      key={`${label}-${idx}`}
+                      className="relative overflow-hidden rounded-md border border-white/15 aspect-square"
+                      style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+                    >
+                      {st === "ready" && uploadPreview ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={uploadPreview}
+                          alt=""
+                          className="absolute inset-0 h-full w-full object-cover opacity-80"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-[11px] text-white/35">
+                            {st === "running" ? "Üretiliyor…" : "Sırada"}
+                          </span>
+                        </div>
+                      )}
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-2 pt-6">
+                        <p className="text-[11px] leading-snug text-white/90">
+                          {label}
+                        </p>
+                        <p
+                          className={`mt-0.5 text-[10px] ${
+                            st === "ready"
+                              ? "text-[#8CFF4D]"
+                              : st === "running"
+                                ? "text-white/70"
+                                : "text-white/40"
+                          }`}
+                        >
+                          {st === "ready"
+                            ? "Hazır"
+                            : st === "running"
+                              ? "İşleniyor"
+                              : "Bekliyor"}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {phase === "wizard" && (
+            <>
           <h1 className="text-[clamp(28px,6vw,44px)] font-semibold tracking-[-0.03em] drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
             Ne için üretelim?
           </h1>
@@ -535,20 +686,33 @@ export default function StudioPage() {
             )}
           </section>
 
+            </>
+          )}
+
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-            <button
-              type="button"
-              disabled={step === 1}
-              onClick={() => {
-                setConfirmed(false);
-                resetUpload();
-                setStep((s) => Math.max(1, s - 1));
-              }}
-              className="rounded-sm border border-white/20 bg-black/35 px-4 py-2 text-[12px] text-white/75 backdrop-blur-md disabled:opacity-30"
-            >
-              Geri
-            </button>
-            {step < 4 ? (
+            {phase === "wizard" ? (
+              <button
+                type="button"
+                disabled={step === 1}
+                onClick={() => {
+                  setConfirmed(false);
+                  resetUpload();
+                  setStep((s) => Math.max(1, s - 1));
+                }}
+                className="rounded-sm border border-white/20 bg-black/35 px-4 py-2 text-[12px] text-white/75 backdrop-blur-md disabled:opacity-30"
+              >
+                Geri
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={startFresh}
+                className="rounded-sm border border-white/20 bg-black/35 px-4 py-2 text-[12px] text-white/75 backdrop-blur-md"
+              >
+                Yeni senaryo
+              </button>
+            )}
+            {phase === "wizard" && step < 4 ? (
               <button
                 type="button"
                 disabled={!canNext}
@@ -560,15 +724,19 @@ export default function StudioPage() {
             ) : (
               <button
                 type="button"
-                disabled={!summary}
+                disabled={!summary || phase === "producing"}
                 onClick={handlePrimary}
                 className="rounded-sm bg-[#8CFF4D] px-5 py-2 text-[12px] font-semibold tracking-[0.06em] text-black disabled:opacity-40"
               >
-                {!confirmed
-                  ? "Seçimi tamamla"
-                  : !uploadFile
-                    ? "Görsel yükle"
-                    : "Üretimi başlat"}
+                {phase === "producing"
+                  ? "Üretiliyor…"
+                  : phase === "done"
+                    ? "Baştan başla"
+                    : !confirmed
+                      ? "Seçimi tamamla"
+                      : !uploadFile
+                        ? "Görsel yükle"
+                        : "Üretimi başlat"}
               </button>
             )}
           </div>
