@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 type Purpose = "marketplace" | "live" | "creator" | "artistic";
 
@@ -179,6 +179,10 @@ export default function StudioPage() {
   const [packId, setPackId] = useState<string | null>(null);
   const [angles, setAngles] = useState<string[]>([]);
   const [confirmed, setConfirmed] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadPreview, setUploadPreview] = useState<string | null>(null);
+  const [produceNote, setProduceNote] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const packs = purpose ? PACKAGES[purpose] : [];
   const selectedPack = packs.find((p) => p.id === packId) ?? null;
@@ -217,6 +221,53 @@ export default function StudioPage() {
       prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id],
     );
     setConfirmed(false);
+    setProduceNote(null);
+  };
+
+  const resetUpload = () => {
+    setUploadFile(null);
+    setUploadPreview(null);
+    setProduceNote(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const onPickFile = (file: File | null) => {
+    if (!file) {
+      resetUpload();
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setProduceNote("Lütfen bir görsel dosyası seç (JPG, PNG, WebP).");
+      return;
+    }
+    setUploadFile(file);
+    setProduceNote(null);
+    const url = URL.createObjectURL(file);
+    setUploadPreview(url);
+  };
+
+  const handlePrimary = () => {
+    if (!summary) return;
+    if (!confirmed) {
+      setConfirmed(true);
+      setProduceNote(null);
+      // next paint: focus upload
+      requestAnimationFrame(() => {
+        document.getElementById("studio-upload")?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      });
+      return;
+    }
+    if (!uploadFile) {
+      fileInputRef.current?.click();
+      return;
+    }
+    // Generation engine not wired yet — clear actionable feedback
+    setProduceNote(
+      `${uploadFile.name} alındı. ${summary.total} kare için üretim motoru bir sonraki adımda bağlanacak.`,
+    );
   };
 
   return (
@@ -303,6 +354,7 @@ export default function StudioPage() {
                       setChannel(null);
                       setPackId(null);
                       setConfirmed(false);
+                      resetUpload();
                     }}
                   >
                     <div className="font-medium text-white">{p.title}</div>
@@ -347,6 +399,7 @@ export default function StudioPage() {
                     onClick={() => {
                       setPackId(pack.id);
                       setConfirmed(false);
+                      resetUpload();
                     }}
                     className={`rounded-sm border p-4 text-left backdrop-blur-md transition ${
                       packId === pack.id
@@ -411,11 +464,58 @@ export default function StudioPage() {
                         {summary.purposeLabel} · {summary.channelLabel} ·{" "}
                         {summary.pack.title}
                       </p>
-                      <p className="mt-2 text-[12px] text-white/50">
-                        Görsel yükleyip üretmek bir sonraki adım (AI üretim
-                        bağlantısı). Şimdilik üretilecek kare listesi aşağıda.
-                      </p>
                     </div>
+
+                    <div
+                      id="studio-upload"
+                      className="rounded-sm border border-dashed border-white/25 p-4 backdrop-blur-md"
+                      style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+                    >
+                      <p className="text-[13px] font-medium text-white">
+                        Kaynak görsel
+                      </p>
+                      <p className="mt-1 text-[12px] text-white/50">
+                        Tek görsel yükle; seçilen paket + açılar bu görselden
+                        üretilecek.
+                      </p>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        onChange={(e) =>
+                          onPickFile(e.target.files?.[0] ?? null)
+                        }
+                      />
+                      <div className="mt-3 flex flex-wrap items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="rounded-sm border border-white/25 px-3 py-2 text-[12px] text-white/85 hover:border-white/40"
+                        >
+                          {uploadFile ? "Görseli değiştir" : "Görsel seç"}
+                        </button>
+                        {uploadFile && (
+                          <span className="text-[12px] text-white/60">
+                            {uploadFile.name}
+                          </span>
+                        )}
+                      </div>
+                      {uploadPreview && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={uploadPreview}
+                          alt="Yüklenen görsel önizleme"
+                          className="mt-3 max-h-40 rounded-sm border border-white/15 object-contain"
+                        />
+                      )}
+                      {produceNote && (
+                        <p className="mt-3 text-[12px] text-[#8CFF4D]/90">
+                          {produceNote}
+                        </p>
+                      )}
+                    </div>
+
                     <ul
                       className="max-h-56 overflow-y-auto rounded-sm border border-white/15 p-3 text-[12px] text-white/75 backdrop-blur-md"
                       style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
@@ -441,6 +541,7 @@ export default function StudioPage() {
               disabled={step === 1}
               onClick={() => {
                 setConfirmed(false);
+                resetUpload();
                 setStep((s) => Math.max(1, s - 1));
               }}
               className="rounded-sm border border-white/20 bg-black/35 px-4 py-2 text-[12px] text-white/75 backdrop-blur-md disabled:opacity-30"
@@ -460,10 +561,14 @@ export default function StudioPage() {
               <button
                 type="button"
                 disabled={!summary}
-                onClick={() => setConfirmed(true)}
+                onClick={handlePrimary}
                 className="rounded-sm bg-[#8CFF4D] px-5 py-2 text-[12px] font-semibold tracking-[0.06em] text-black disabled:opacity-40"
               >
-                Seçimi tamamla
+                {!confirmed
+                  ? "Seçimi tamamla"
+                  : !uploadFile
+                    ? "Görsel yükle"
+                    : "Üretimi başlat"}
               </button>
             )}
           </div>
