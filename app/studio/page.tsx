@@ -160,9 +160,12 @@ function Chip({
       onClick={onClick}
       className={`rounded-sm border px-3 py-2 text-left text-[13px] backdrop-blur-md transition ${
         active
-          ? "border-[#8CFF4D]/70 bg-[#8CFF4D]/20 text-white"
-          : "border-white/20 bg-black/85 text-white/80 hover:border-white/35 hover:bg-black/90"
+          ? "border-[#8CFF4D]/70 text-white"
+          : "border-white/20 text-white/80 hover:border-white/35"
       }`}
+      style={{
+        backgroundColor: active ? "rgba(140,255,77,0.20)" : "rgba(0,0,0,0.85)",
+      }}
     >
       {children}
     </button>
@@ -221,16 +224,17 @@ export default function StudioPage() {
       {/* Same plan as homepage — visible through translucent UI */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 z-0 bg-[#070708]"
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{ backgroundColor: "#070708" }}
       >
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 80% 55% at 50% 40%, rgba(140,255,77,0.07), transparent 55%), radial-gradient(ellipse 70% 50% at 50% 100%, rgba(20,24,18,0.9), #070708)",
+              "radial-gradient(ellipse 80% 55% at 50% 38%, rgba(140,255,77,0.12), transparent 58%)",
           }}
         />
-        <div className="absolute inset-0 flex items-center justify-center pb-[min(6vh,3rem)] opacity-55">
+        <div className="absolute inset-0 flex items-center justify-center pb-[min(6vh,3rem)] opacity-80">
           <div className="atmosphere-drift w-[min(640px,88%)] max-w-full sm:w-[min(860px,70%)]">
             <Image
               src="/dragon-mark.png"
@@ -243,13 +247,6 @@ export default function StudioPage() {
             />
           </div>
         </div>
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(7,7,8,0.35) 0%, rgba(7,7,8,0.12) 40%, rgba(7,7,8,0.30) 100%)",
-          }}
-        />
       </div>
 
       <div className="relative z-10 px-[max(1.25rem,env(safe-area-inset-left))] pb-16 pt-[max(1.25rem,env(safe-area-inset-top))] pr-[max(1.25rem,env(safe-area-inset-right))]">
@@ -294,7 +291,10 @@ export default function StudioPage() {
             })}
           </ol>
 
-          <section className="mt-8 rounded-md border border-white/20 bg-black/85 p-5 shadow-[0_8px_40px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:p-6">
+          <section
+            className="mt-8 rounded-md border border-white/20 p-5 shadow-[0_8px_40px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:p-6"
+            style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+          >
             {step === 1 && (
               <div className="grid gap-3 sm:grid-cols-2">
                 {PURPOSES.map((p) => (
@@ -353,9 +353,15 @@ export default function StudioPage() {
                     }}
                     className={`rounded-sm border p-4 text-left backdrop-blur-md transition ${
                       packId === pack.id
-                        ? "border-[#8CFF4D]/70 bg-[#8CFF4D]/20"
-                        : "border-white/20 bg-black/85 hover:border-white/35 hover:bg-black/90"
+                        ? "border-[#8CFF4D]/70"
+                        : "border-white/20 hover:border-white/35"
                     }`}
+                    style={{
+                      backgroundColor:
+                        packId === pack.id
+                          ? "rgba(140,255,77,0.20)"
+                          : "rgba(0,0,0,0.85)",
+                    }}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span className="font-medium">{pack.title}</span>
@@ -397,7 +403,10 @@ export default function StudioPage() {
 
                 {confirmed && summary && (
                   <div className="mt-6 space-y-4">
-                    <div className="rounded-sm border border-[#8CFF4D]/35 bg-[#8CFF4D]/10 p-4 text-[13px]">
+                    <div
+                      className="rounded-sm border border-[#8CFF4D]/35 p-4 text-[13px] backdrop-blur-md"
+                      style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+                    >
                       <p className="font-medium text-[#8CFF4D]">
                         Seçim kilitlendi — {summary.total} çıktı hazırlanacak
                       </p>
@@ -410,7 +419,10 @@ export default function StudioPage() {
                         bağlantısı). Şimdilik üretilecek kare listesi aşağıda.
                       </p>
                     </div>
-                    <ul className="max-h-56 overflow-y-auto rounded-sm border border-white/15 bg-black/85 p-3 text-[12px] text-white/75 backdrop-blur-md">
+                    <ul
+                      className="max-h-56 overflow-y-auto rounded-sm border border-white/15 p-3 text-[12px] text-white/75 backdrop-blur-md"
+                      style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+                    >
                       {summary.outputList.map((item) => (
                         <li
                           key={item}
