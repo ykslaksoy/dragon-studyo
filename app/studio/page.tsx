@@ -291,10 +291,7 @@ export default function StudioPage() {
             })}
           </ol>
 
-          <section
-            className="mt-8 rounded-md border border-white/20 p-5 shadow-[0_8px_40px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:p-6"
-            style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
-          >
+          <section className="mt-8 rounded-md border border-white/15 bg-transparent p-5 sm:p-6">
             {step === 1 && (
               <div className="grid gap-3 sm:grid-cols-2">
                 {PURPOSES.map((p) => (
