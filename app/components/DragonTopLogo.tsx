@@ -147,6 +147,8 @@ export function DragonTopLogo() {
       data-logo-phase={phase}
       data-logo-locked={locked ? "1" : "0"}
       data-logo-blinking={blinking ? "1" : "0"}
+      onContextMenu={(e) => e.preventDefault()}
+      onDragStart={(e) => e.preventDefault()}
     >
       {/* Soft lime bloom — kept inside the stage so it never overflows the viewport */}
       <div
@@ -180,11 +182,11 @@ export function DragonTopLogo() {
       >
         <Image
           src="/dragon-eyes.png"
-          alt="Dragon"
+          alt=""
           width={912}
           height={440}
           priority
-          className={`dragon-eyes-alive h-auto w-full select-none ${
+          className={`dragon-eyes-alive pointer-events-none h-auto w-full select-none ${
             phase === "open" && !blinking ? "eyes-alive-pulse" : ""
           } ${blinking ? "dragon-blink-dim" : ""}`}
           draggable={false}
