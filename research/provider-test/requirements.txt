@@ -1,0 +1,7 @@
+rembg
+onnxruntime
+pillow
+numpy
+opencv-python-headless
+requests
+scipy

@@ -1,0 +1,190 @@
+# Dragon Studio — background removal & scene provider benchmark
+
+**Branch:** `cursor/provider-test-ab04`  
+**Date:** 2026-10-19  
+**Scope:** Research only (no app code changes). Eight commercially licensed product photos, four difficulty tiers. Compared **Dragon live (today)**, **self-hostable Dragon pipelines**, and **commercial APIs** (where keys were available).
+
+## Methodology
+
+| Item | Detail |
+|------|--------|
+| Inference | `rembg` ONNX on CPU in this cloud VM; long edge capped at **768px** then mask upscaled to full resolution (VRAM/RAM limit). Production should use GPU or a dedicated inference service. |
+| Models | `birefnet-general` (MIT, commercial-safe), `isnet-general-use`. **u2net not used.** BRIA RMBG-2.0 skipped (non-commercial training). |
+| Dragon post-process | Matting-lite (edge-band refine), BiRefNet∪ISNet hybrid mask, morphological hole-fill on BiRefNet mask. |
+| Dragon live (today) | Matches [studio](https://dragon-studyo.vercel.app/studio): **no background removal**; square tile with `object-cover` center crop (see `app/studio/page.tsx` — same upload preview on every frame label). |
+| Scenes | Best cutout = **Dragon BiRefNet default**; canvas compositions (marketplace / live / artistic) + placeholders for fal Flux, Replicate, Photoroom AI BG. |
+| Competitors | **No API keys** in this environment (`FAL_KEY`, Photoroom, remove.bg, Clipdrop, Claid, Pixelcut). Grids show explicit **untested** tiles — no invented scores. |
+
+Reproduce:
+
+```bash
+cd research/provider-test
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+for id in $(python3 -c "import json;print(' '.join(x['id'] for x in json.load(open('sources/manifest.json'))))"); do
+  .venv/bin/python scripts/run_benchmark.py "$id"
+done
+.venv/bin/python scripts/build_scene_grids.py
+```
+
+---
+
+## Test images (licenses)
+
+| ID | Difficulty | Subject | License |
+|----|------------|---------|---------|
+| `easy-01-red-sneaker` | easy | Red sneaker, plain red bg | [Unsplash License](https://unsplash.com/license) — Paul Cuoco |
+| `easy-02-watch-plain` | easy | Watch on gray studio | Unsplash — Luke Chesser |
+| `normal-01-skincare-tile` | normal | Bottle on tile | Unsplash — Mathilde Langevin |
+| `normal-02-shoes-fabric` | normal | Sneakers on fabric | Unsplash — Taylor Grote |
+| `hard-01-perfume-glass` | hard | Glass bottle + flowers | Unsplash — Charisse Kenion |
+| `hard-02-white-sneaker-white` | hard | White/orange sneaker on white | Unsplash — Taylor Smith |
+| `veryhard-01-lace-dress` | very hard | Backlit wedding lace / couple | Unsplash — (see `sources/manifest.json`) |
+| `veryhard-02-cat-fur` | very hard | Cat fur + whiskers on green | Unsplash — Feroz Khan |
+
+Full attribution URLs: `research/provider-test/sources/manifest.json`.
+
+---
+
+## Visual artifacts (delivered + committed)
+
+Each row has a **dekupe comparison grid** (all providers + Dragon columns) and a **scene comparison grid**.  
+**Delivery path:** `/opt/cursor/artifacts/provider-test/…`  
+**Repo path:** `research/provider-test/images/…` (same filenames).
+
+### Dekupe comparison grids (checkerboard for cutouts)
+
+| Image | Artifact path |
+|-------|----------------|
+| easy-01-red-sneaker | `/opt/cursor/artifacts/provider-test/grids/easy-01-red-sneaker__dekupe_comparison.png` |
+| easy-02-watch-plain | `/opt/cursor/artifacts/provider-test/grids/easy-02-watch-plain__dekupe_comparison.png` |
+| normal-01-skincare-tile | `/opt/cursor/artifacts/provider-test/grids/normal-01-skincare-tile__dekupe_comparison.png` |
+| normal-02-shoes-fabric | `/opt/cursor/artifacts/provider-test/grids/normal-02-shoes-fabric__dekupe_comparison.png` |
+| hard-01-perfume-glass | `/opt/cursor/artifacts/provider-test/grids/hard-01-perfume-glass__dekupe_comparison.png` |
+| hard-02-white-sneaker-white | `/opt/cursor/artifacts/provider-test/grids/hard-02-white-sneaker-white__dekupe_comparison.png` |
+| veryhard-01-lace-dress | `/opt/cursor/artifacts/provider-test/grids/veryhard-01-lace-dress__dekupe_comparison.png` |
+| veryhard-02-cat-fur | `/opt/cursor/artifacts/provider-test/grids/veryhard-02-cat-fur__dekupe_comparison.png` |
+
+### Scene comparison grids
+
+| Image | Artifact path |
+|-------|----------------|
+| easy-01-red-sneaker | `/opt/cursor/artifacts/provider-test/grids/easy-01-red-sneaker__scene_comparison.jpg` |
+| easy-02-watch-plain | `/opt/cursor/artifacts/provider-test/grids/easy-02-watch-plain__scene_comparison.jpg` |
+| normal-01-skincare-tile | `/opt/cursor/artifacts/provider-test/grids/normal-01-skincare-tile__scene_comparison.jpg` |
+| normal-02-shoes-fabric | `/opt/cursor/artifacts/provider-test/grids/normal-02-shoes-fabric__scene_comparison.jpg` |
+| hard-01-perfume-glass | `/opt/cursor/artifacts/provider-test/grids/hard-01-perfume-glass__scene_comparison.jpg` |
+| hard-02-white-sneaker-white | `/opt/cursor/artifacts/provider-test/grids/hard-02-white-sneaker-white__scene_comparison.jpg` |
+| veryhard-01-lace-dress | `/opt/cursor/artifacts/provider-test/grids/veryhard-01-lace-dress__scene_comparison.jpg` |
+| veryhard-02-cat-fur | `/opt/cursor/artifacts/provider-test/grids/veryhard-02-cat-fur__scene_comparison.jpg` |
+
+### Per-image scene outputs (Dragon canvas tested; AI scenes untested)
+
+For each `IMAGE_ID`, six files under `/opt/cursor/artifacts/provider-test/scenes/`:
+
+- `IMAGE_ID__dragon_canvas_marketplace.jpg` — **tested**
+- `IMAGE_ID__dragon_canvas_live.jpg` — **tested**
+- `IMAGE_ID__dragon_canvas_artistic.jpg` — **tested**
+- `IMAGE_ID__fal_flux_scene.jpg` — **untested** (placeholder)
+- `IMAGE_ID__replicate_flux_scene.jpg` — **untested**
+- `IMAGE_ID__photoroom_ai_bg.jpg` — **untested**
+
+Example (easy sneaker marketplace):  
+`/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__dragon_canvas_marketplace.jpg`
+
+Individual dekupe tiles: `/opt/cursor/artifacts/provider-test/dekupe/{IMAGE_ID}__{provider_key}.png`  
+Machine-readable index: `/opt/cursor/artifacts/provider-test/artifact_index.json` and `research/provider-test/artifact_index.json`.
+
+---
+
+## Quality summary (tested columns only)
+
+Legend: **Edges** (halos/fringe), **Holes** (background inside product), **Over-cut** (missing product pixels).
+
+| Difficulty | Dragon live (today) | BiRefNet / Dragon default | + matting | ISNet | Hybrid | Hole-fill | vs. paid APIs (this run) |
+|------------|---------------------|---------------------------|-----------|-------|--------|-----------|---------------------------|
+| **Easy** | No dekupe; bg remains | Clean edges, full sole | Slightly softer fringe | Similar; tiny lace noise on mesh | Same as BiRefNet | Fills micro-holes in mesh | **Untested** — expect parity with fal BiRefNet v2 (same family) |
+| **Normal** | No dekupe | Good product mask; tile pattern mostly gone | Cleaner shoe/tile boundary | Good on fabric; can erode thin parts | Slight over-union on fuzzy edges | Helps speckle on patterned bg | **Untested** |
+| **Hard (glass)** | No dekupe | **Strong** — glass + stems kept, transparency reasonable | Softer petal edges | Comparable glass; busier rose edges | Minor halo on glass | Little change | Photoroom/remove.bg often stronger on glass — **not verified here** |
+| **Hard (white-on-white)** | No dekupe | **Over-cut** — white sole/upper merged into bg | Same core failure | **Worse** — large missing regions on white rubber | Mixed | Does not fix low-contrast segmentation | Commercial “product” APIs usually win here — **untested** |
+| **Very hard (lace)** | No dekupe | Decent dress; **flare/backlight** causes thick edge | Best **Dragon** variant on lace/feathers | **Failed** (missed subjects) | **Bad holes** in groom suit | Hybrid damage reduced; edges still hard | Specialist matting APIs likely ahead — **untested** |
+| **Very hard (fur)** | No dekupe | Body OK; **green spill** in whiskers | Slight fringe reduction | Jagged fur, green in whiskers | More whisker retained, still green | Minimal | remove.bg / Clipdrop often better on hair — **untested** |
+
+### Where we **match** (on tested stack)
+
+- Easy / normal **catalog products** with clear subject: self-hosted **BiRefNet** is production-viable; **ISNet** is a faster fallback when edges are simple.
+- **Hard glass** (perfume): BiRefNet + matting-lite is surprisingly good for a free MIT stack.
+- **Scenes**: Canvas marketplace/live/artistic compositions are **free, instant, commercial-safe** — good baseline for marketplace/live packs before generative backgrounds.
+
+### Where we **lose**
+
+| Gap | Evidence | What it takes to close |
+|-----|----------|-------------------------|
+| No dekupe in live app | Studio reuses upload with `object-cover` | Wire cutout step before frame templates; keep canvas composer for packs |
+| White-on-white / low contrast | `hard-02-white-sneaker-white` over-cut | Trimap matting, “product mode” API (Photoroom/remove.bg), or user-assisted bg color + chroma key |
+| Hair / lace / backlight | `veryhard-*` fringing, ISNet failure on lace | Hybrid **only when ISNet is confident**; spill suppression; optional paid matting API for “hero” tier |
+| Generative lifestyle scenes | fal/Replicate/Photoroom tiles untested | `FAL_KEY` + Flux product scene prompts, or Photoroom Plus AI backgrounds; keep Dragon canvas as cheap tier |
+| Speed on CPU | BiRefNet ~**20s**/image @768px (this VM) | GPU inference, smaller variant, or fal/Replicate hosted BiRefNet (~compute-second billing) |
+| Competitor benchmarks | No keys | Add secrets to CI research job; re-run same `scripts/run_benchmark.py` |
+
+---
+
+## Speed (this environment, 768px long edge, CPU)
+
+| Pipeline | Mean time (8 images) | Notes |
+|----------|----------------------|-------|
+| Dragon live (today) | ~0.02 s | Crop only |
+| ISNet (local) | ~1.2 s | Fastest ML option tested |
+| BiRefNet (local) | ~**20.4 s** | Dominated by ONNX on CPU |
+| Dragon post-steps | &lt;0.05 s | Matting / hybrid / hole-fill on existing mask |
+
+---
+
+## Cost & license (official pages — per-image where stated)
+
+| Service | Tested? | Cost (as published) | Commercial use | Pricing link |
+|---------|---------|---------------------|----------------|--------------|
+| **Dragon BiRefNet (self-host)** | Yes | **$0** marginal (+ your compute) | **MIT** (BiRefNet weights via rembg) | [rembg](https://github.com/danielgatis/rembg) |
+| **Dragon ISNet (self-host)** | Yes | **$0** marginal (+ compute) | Check rembg model card | rembg |
+| **Dragon canvas scenes** | Yes | **$0** | Your composition | — |
+| **fal.ai BiRefNet v2** | No | **Not flat per image** — billed per **compute second** (fal pricing table listed **$0** on model page at fetch time; fal learn article cites **$0.0008/s** — verify live) | Model-dependent | [fal BiRefNet v2](https://fal.ai/models/fal-ai/birefnet/v2), [fal pricing](https://fal.ai/pricing) |
+| **fal.ai Flux / image gen** | No | e.g. FLUX.1 [schnell] **$0.003/MP** on [fal pricing](https://fal.ai/pricing) | Per model ToS | fal pricing |
+| **Replicate** | No | Model-specific — **untested** | Per model | [replicate.com/pricing](https://replicate.com/pricing) |
+| **Photoroom API** | No | Remove BG **$0.02/image** (Basic); Image Editing (AI BG, etc.) **$0.10/image** (Plus) per [API pricing FAQ](https://www.photoroom.com/api/pricing); **10 free** production remove-BG calls + **1000/mo** sandbox (watermarked) | API ToS | [photoroom.com/api/pricing](https://www.photoroom.com/api/pricing) |
+| **remove.bg** | No | **50 free API calls/month**; paid tiers on pricing page — **per-credit $ not extracted in this run** | [remove.bg terms](https://www.remove.bg/terms) | [remove.bg/pricing](https://www.remove.bg/pricing), [API](https://www.remove.bg/api) |
+| **Clipdrop** | No | API key required — **untested** | [Clipdrop ToS](https://clipdrop.co/terms) | [clipdrop.co/apis](https://clipdrop.co/apis) |
+| **Claid.ai** | No | API key required — **untested** | Claid ToS | [claid.ai/pricing](https://claid.ai/pricing) |
+| **Pixelcut** | No | fal lists Pixelcut BG **~$0.016/image** (third-party listing) — **not run here** | Per provider | [Pixelcut](https://www.pixelcut.ai/), [fal explore](https://fal.ai/explore/background-remover-apis) |
+
+---
+
+## Recommended stack (for Dragon Studio)
+
+### Tier 0 — Ship now (free / commercial-safe)
+
+1. **Dekupe:** `birefnet-general` on GPU (or fal BiRefNet v2 if you prefer managed compute).
+2. **Post:** matting-lite on edges + hole-fill; **disable ISNet hybrid** unless ISNet mask area is within ~90–110% of BiRefNet (lace image showed catastrophic hybrid).
+3. **Fast path:** `isnet-general-use` for easy/normal previews; BiRefNet for final export.
+4. **Scenes:** Dragon **canvas** composer (marketplace gray + shadow, live gradient + CTA, artistic gradient) — already competitive for **listing** and **live** packs at $0.
+
+### Tier 1 — Paid APIs (validate with keys)
+
+- **remove.bg** or **Photoroom Basic** for batch dekupe when self-host ops cost &gt; ~$0.02/image or for **white-on-white** SKUs.
+- **Photoroom Plus** or **fal Flux** for **generative lifestyle** when canvas templates are not enough.
+
+### Tier 2 — Not recommended
+
+- **BRIA RMBG-2.0** for this product (non-commercial training).
+- **u2net** (explicitly excluded by product requirements).
+
+### Live app gap
+
+Studio today is **wizard + placeholder grid** without dekupe or per-frame geometry. Minimum product step: **BiRefNet cutout → existing pack/frame names → canvas scene templates**; keep generative scenes as an upgrade path.
+
+---
+
+## Files in this PR
+
+- `research/provider-test/REPORT.md` (this file)
+- `research/provider-test/images/**` — all PNG/JPG outputs (mirrors artifacts)
+- `research/provider-test/scripts/run_benchmark.py`, `build_scene_grids.py`
+- `research/provider-test/results.json`, `artifact_index.json`, `sources/manifest.json`

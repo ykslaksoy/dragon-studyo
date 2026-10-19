@@ -1,0 +1,1074 @@
+[
+  {
+    "id": "easy-01-red-sneaker",
+    "difficulty": "easy",
+    "providers": {
+      "Source": {
+        "tested": true,
+        "seconds": 0.004403613000022233,
+        "note": "Original upload",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__source.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__source.png"
+      },
+      "Dragon live (today)": {
+        "tested": true,
+        "seconds": 0.014206231000002845,
+        "note": "Square object-cover crop; no background removal (matches studio placeholder)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__dragon_live_(today).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__dragon_live_(today).png"
+      },
+      "BiRefNet (local MIT)": {
+        "tested": true,
+        "seconds": 22.388854204999973,
+        "note": "rembg birefnet-general",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__birefnet_(local_mit).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__birefnet_(local_mit).png"
+      },
+      "Dragon BiRefNet default": {
+        "tested": true,
+        "seconds": 22.388854204999973,
+        "note": "Same model \u2014 self-hostable stack baseline",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__dragon_birefnet_default.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__dragon_birefnet_default.png"
+      },
+      "Dragon BiRefNet + matting": {
+        "tested": true,
+        "seconds": 0.03165097200002265,
+        "note": "Edge-band refinement on BiRefNet mask (self-host matting-lite)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__dragon_birefnet_+_matting.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__dragon_birefnet_+_matting.png"
+      },
+      "ISNet (local)": {
+        "tested": true,
+        "seconds": 1.1401480459999789,
+        "note": "rembg isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__isnet_(local).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__isnet_(local).png"
+      },
+      "Dragon BiRefNet+ISNet hybrid": {
+        "tested": true,
+        "seconds": 1.156975669000019,
+        "note": "max-blend masks from birefnet-general + isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__dragon_birefnet+isnet_hybrid.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__dragon_birefnet+isnet_hybrid.png"
+      },
+      "Dragon hole-fill": {
+        "tested": true,
+        "seconds": 0.019699494000008144,
+        "note": "Morph close/open on BiRefNet mask",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__dragon_hole-fill.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__dragon_hole-fill.png"
+      },
+      "fal.ai BiRefNet": {
+        "tested": false,
+        "seconds": null,
+        "note": "FAL_KEY not set \u2014 paid API",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__fal.ai_birefnet.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__fal.ai_birefnet.png"
+      },
+      "Photoroom": {
+        "tested": false,
+        "seconds": null,
+        "note": "No API key / no public batch API on free tier",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__photoroom.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__photoroom.png"
+      },
+      "remove.bg": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required (50 free preview credits with signup)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__remove.bg.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__remove.bg.png"
+      },
+      "Clipdrop": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__clipdrop.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__clipdrop.png"
+      },
+      "Claid.ai": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__claid.ai.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__claid.ai.png"
+      },
+      "Pixelcut": {
+        "tested": false,
+        "seconds": null,
+        "note": "No documented free API; web app only",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-01-red-sneaker__pixelcut.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-01-red-sneaker__pixelcut.png"
+      }
+    },
+    "grid": {
+      "commit_path": "/workspace/research/provider-test/images/grids/easy-01-red-sneaker__dekupe_comparison.png",
+      "artifact_path": "/opt/cursor/artifacts/provider-test/grids/easy-01-red-sneaker__dekupe_comparison.png"
+    },
+    "scenes": {
+      "dragon_canvas_marketplace": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-01-red-sneaker__dragon_canvas_marketplace.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__dragon_canvas_marketplace.jpg"
+      },
+      "dragon_canvas_live": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-01-red-sneaker__dragon_canvas_live.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__dragon_canvas_live.jpg"
+      },
+      "dragon_canvas_artistic": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-01-red-sneaker__dragon_canvas_artistic.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__dragon_canvas_artistic.jpg"
+      },
+      "fal_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-01-red-sneaker__fal_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__fal_flux_scene.jpg"
+      },
+      "replicate_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-01-red-sneaker__replicate_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__replicate_flux_scene.jpg"
+      },
+      "photoroom_ai_bg": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-01-red-sneaker__photoroom_ai_bg.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__photoroom_ai_bg.jpg"
+      }
+    }
+  },
+  {
+    "id": "easy-02-watch-plain",
+    "difficulty": "easy",
+    "providers": {
+      "Source": {
+        "tested": true,
+        "seconds": 0.002436607000049662,
+        "note": "Original upload",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__source.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__source.png"
+      },
+      "Dragon live (today)": {
+        "tested": true,
+        "seconds": 0.013655610999990131,
+        "note": "Square object-cover crop; no background removal (matches studio placeholder)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__dragon_live_(today).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__dragon_live_(today).png"
+      },
+      "BiRefNet (local MIT)": {
+        "tested": true,
+        "seconds": 19.065023694000047,
+        "note": "rembg birefnet-general",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__birefnet_(local_mit).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__birefnet_(local_mit).png"
+      },
+      "Dragon BiRefNet default": {
+        "tested": true,
+        "seconds": 19.065023694000047,
+        "note": "Same model \u2014 self-hostable stack baseline",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__dragon_birefnet_default.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__dragon_birefnet_default.png"
+      },
+      "Dragon BiRefNet + matting": {
+        "tested": true,
+        "seconds": 0.01903009799997335,
+        "note": "Edge-band refinement on BiRefNet mask (self-host matting-lite)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__dragon_birefnet_+_matting.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__dragon_birefnet_+_matting.png"
+      },
+      "ISNet (local)": {
+        "tested": true,
+        "seconds": 1.9037700750000113,
+        "note": "rembg isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__isnet_(local).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__isnet_(local).png"
+      },
+      "Dragon BiRefNet+ISNet hybrid": {
+        "tested": true,
+        "seconds": 1.9414507359999789,
+        "note": "max-blend masks from birefnet-general + isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__dragon_birefnet+isnet_hybrid.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__dragon_birefnet+isnet_hybrid.png"
+      },
+      "Dragon hole-fill": {
+        "tested": true,
+        "seconds": 0.032558956999992006,
+        "note": "Morph close/open on BiRefNet mask",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__dragon_hole-fill.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__dragon_hole-fill.png"
+      },
+      "fal.ai BiRefNet": {
+        "tested": false,
+        "seconds": null,
+        "note": "FAL_KEY not set \u2014 paid API",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__fal.ai_birefnet.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__fal.ai_birefnet.png"
+      },
+      "Photoroom": {
+        "tested": false,
+        "seconds": null,
+        "note": "No API key / no public batch API on free tier",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__photoroom.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__photoroom.png"
+      },
+      "remove.bg": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required (50 free preview credits with signup)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__remove.bg.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__remove.bg.png"
+      },
+      "Clipdrop": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__clipdrop.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__clipdrop.png"
+      },
+      "Claid.ai": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__claid.ai.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__claid.ai.png"
+      },
+      "Pixelcut": {
+        "tested": false,
+        "seconds": null,
+        "note": "No documented free API; web app only",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/easy-02-watch-plain__pixelcut.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/easy-02-watch-plain__pixelcut.png"
+      }
+    },
+    "grid": {
+      "commit_path": "/workspace/research/provider-test/images/grids/easy-02-watch-plain__dekupe_comparison.png",
+      "artifact_path": "/opt/cursor/artifacts/provider-test/grids/easy-02-watch-plain__dekupe_comparison.png"
+    },
+    "scenes": {
+      "dragon_canvas_marketplace": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-02-watch-plain__dragon_canvas_marketplace.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__dragon_canvas_marketplace.jpg"
+      },
+      "dragon_canvas_live": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-02-watch-plain__dragon_canvas_live.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__dragon_canvas_live.jpg"
+      },
+      "dragon_canvas_artistic": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-02-watch-plain__dragon_canvas_artistic.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__dragon_canvas_artistic.jpg"
+      },
+      "fal_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-02-watch-plain__fal_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__fal_flux_scene.jpg"
+      },
+      "replicate_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-02-watch-plain__replicate_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__replicate_flux_scene.jpg"
+      },
+      "photoroom_ai_bg": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/easy-02-watch-plain__photoroom_ai_bg.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__photoroom_ai_bg.jpg"
+      }
+    }
+  },
+  {
+    "id": "normal-01-skincare-tile",
+    "difficulty": "normal",
+    "providers": {
+      "Source": {
+        "tested": true,
+        "seconds": 0.004708241999992424,
+        "note": "Original upload",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__source.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__source.png"
+      },
+      "Dragon live (today)": {
+        "tested": true,
+        "seconds": 0.021888448999959564,
+        "note": "Square object-cover crop; no background removal (matches studio placeholder)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__dragon_live_(today).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__dragon_live_(today).png"
+      },
+      "BiRefNet (local MIT)": {
+        "tested": true,
+        "seconds": 18.62225969299999,
+        "note": "rembg birefnet-general",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__birefnet_(local_mit).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__birefnet_(local_mit).png"
+      },
+      "Dragon BiRefNet default": {
+        "tested": true,
+        "seconds": 18.62225969299999,
+        "note": "Same model \u2014 self-hostable stack baseline",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__dragon_birefnet_default.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__dragon_birefnet_default.png"
+      },
+      "Dragon BiRefNet + matting": {
+        "tested": true,
+        "seconds": 0.04286570900001152,
+        "note": "Edge-band refinement on BiRefNet mask (self-host matting-lite)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__dragon_birefnet_+_matting.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__dragon_birefnet_+_matting.png"
+      },
+      "ISNet (local)": {
+        "tested": true,
+        "seconds": 0.9841210139999816,
+        "note": "rembg isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__isnet_(local).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__isnet_(local).png"
+      },
+      "Dragon BiRefNet+ISNet hybrid": {
+        "tested": true,
+        "seconds": 1.014950601999999,
+        "note": "max-blend masks from birefnet-general + isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__dragon_birefnet+isnet_hybrid.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__dragon_birefnet+isnet_hybrid.png"
+      },
+      "Dragon hole-fill": {
+        "tested": true,
+        "seconds": 0.02915119700003288,
+        "note": "Morph close/open on BiRefNet mask",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__dragon_hole-fill.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__dragon_hole-fill.png"
+      },
+      "fal.ai BiRefNet": {
+        "tested": false,
+        "seconds": null,
+        "note": "FAL_KEY not set \u2014 paid API",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__fal.ai_birefnet.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__fal.ai_birefnet.png"
+      },
+      "Photoroom": {
+        "tested": false,
+        "seconds": null,
+        "note": "No API key / no public batch API on free tier",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__photoroom.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__photoroom.png"
+      },
+      "remove.bg": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required (50 free preview credits with signup)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__remove.bg.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__remove.bg.png"
+      },
+      "Clipdrop": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__clipdrop.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__clipdrop.png"
+      },
+      "Claid.ai": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__claid.ai.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__claid.ai.png"
+      },
+      "Pixelcut": {
+        "tested": false,
+        "seconds": null,
+        "note": "No documented free API; web app only",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-01-skincare-tile__pixelcut.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-01-skincare-tile__pixelcut.png"
+      }
+    },
+    "grid": {
+      "commit_path": "/workspace/research/provider-test/images/grids/normal-01-skincare-tile__dekupe_comparison.png",
+      "artifact_path": "/opt/cursor/artifacts/provider-test/grids/normal-01-skincare-tile__dekupe_comparison.png"
+    },
+    "scenes": {
+      "dragon_canvas_marketplace": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-01-skincare-tile__dragon_canvas_marketplace.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__dragon_canvas_marketplace.jpg"
+      },
+      "dragon_canvas_live": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-01-skincare-tile__dragon_canvas_live.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__dragon_canvas_live.jpg"
+      },
+      "dragon_canvas_artistic": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-01-skincare-tile__dragon_canvas_artistic.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__dragon_canvas_artistic.jpg"
+      },
+      "fal_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-01-skincare-tile__fal_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__fal_flux_scene.jpg"
+      },
+      "replicate_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-01-skincare-tile__replicate_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__replicate_flux_scene.jpg"
+      },
+      "photoroom_ai_bg": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-01-skincare-tile__photoroom_ai_bg.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__photoroom_ai_bg.jpg"
+      }
+    }
+  },
+  {
+    "id": "normal-02-shoes-fabric",
+    "difficulty": "normal",
+    "providers": {
+      "Source": {
+        "tested": true,
+        "seconds": 0.0034506400000395843,
+        "note": "Original upload",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__source.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__source.png"
+      },
+      "Dragon live (today)": {
+        "tested": true,
+        "seconds": 0.014252922000025592,
+        "note": "Square object-cover crop; no background removal (matches studio placeholder)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__dragon_live_(today).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__dragon_live_(today).png"
+      },
+      "BiRefNet (local MIT)": {
+        "tested": true,
+        "seconds": 19.60694301700005,
+        "note": "rembg birefnet-general",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__birefnet_(local_mit).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__birefnet_(local_mit).png"
+      },
+      "Dragon BiRefNet default": {
+        "tested": true,
+        "seconds": 19.60694301700005,
+        "note": "Same model \u2014 self-hostable stack baseline",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__dragon_birefnet_default.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__dragon_birefnet_default.png"
+      },
+      "Dragon BiRefNet + matting": {
+        "tested": true,
+        "seconds": 0.02268914900002983,
+        "note": "Edge-band refinement on BiRefNet mask (self-host matting-lite)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__dragon_birefnet_+_matting.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__dragon_birefnet_+_matting.png"
+      },
+      "ISNet (local)": {
+        "tested": true,
+        "seconds": 1.040560032999963,
+        "note": "rembg isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__isnet_(local).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__isnet_(local).png"
+      },
+      "Dragon BiRefNet+ISNet hybrid": {
+        "tested": true,
+        "seconds": 1.0556340629999568,
+        "note": "max-blend masks from birefnet-general + isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__dragon_birefnet+isnet_hybrid.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__dragon_birefnet+isnet_hybrid.png"
+      },
+      "Dragon hole-fill": {
+        "tested": true,
+        "seconds": 0.01291774499998155,
+        "note": "Morph close/open on BiRefNet mask",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__dragon_hole-fill.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__dragon_hole-fill.png"
+      },
+      "fal.ai BiRefNet": {
+        "tested": false,
+        "seconds": null,
+        "note": "FAL_KEY not set \u2014 paid API",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__fal.ai_birefnet.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__fal.ai_birefnet.png"
+      },
+      "Photoroom": {
+        "tested": false,
+        "seconds": null,
+        "note": "No API key / no public batch API on free tier",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__photoroom.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__photoroom.png"
+      },
+      "remove.bg": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required (50 free preview credits with signup)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__remove.bg.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__remove.bg.png"
+      },
+      "Clipdrop": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__clipdrop.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__clipdrop.png"
+      },
+      "Claid.ai": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__claid.ai.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__claid.ai.png"
+      },
+      "Pixelcut": {
+        "tested": false,
+        "seconds": null,
+        "note": "No documented free API; web app only",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/normal-02-shoes-fabric__pixelcut.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/normal-02-shoes-fabric__pixelcut.png"
+      }
+    },
+    "grid": {
+      "commit_path": "/workspace/research/provider-test/images/grids/normal-02-shoes-fabric__dekupe_comparison.png",
+      "artifact_path": "/opt/cursor/artifacts/provider-test/grids/normal-02-shoes-fabric__dekupe_comparison.png"
+    },
+    "scenes": {
+      "dragon_canvas_marketplace": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-02-shoes-fabric__dragon_canvas_marketplace.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__dragon_canvas_marketplace.jpg"
+      },
+      "dragon_canvas_live": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-02-shoes-fabric__dragon_canvas_live.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__dragon_canvas_live.jpg"
+      },
+      "dragon_canvas_artistic": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-02-shoes-fabric__dragon_canvas_artistic.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__dragon_canvas_artistic.jpg"
+      },
+      "fal_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-02-shoes-fabric__fal_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__fal_flux_scene.jpg"
+      },
+      "replicate_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-02-shoes-fabric__replicate_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__replicate_flux_scene.jpg"
+      },
+      "photoroom_ai_bg": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/normal-02-shoes-fabric__photoroom_ai_bg.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__photoroom_ai_bg.jpg"
+      }
+    }
+  },
+  {
+    "id": "hard-01-perfume-glass",
+    "difficulty": "hard",
+    "providers": {
+      "Source": {
+        "tested": true,
+        "seconds": 0.0040443510000045535,
+        "note": "Original upload",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__source.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__source.png"
+      },
+      "Dragon live (today)": {
+        "tested": true,
+        "seconds": 0.02229703799997651,
+        "note": "Square object-cover crop; no background removal (matches studio placeholder)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__dragon_live_(today).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__dragon_live_(today).png"
+      },
+      "BiRefNet (local MIT)": {
+        "tested": true,
+        "seconds": 20.365891024999996,
+        "note": "rembg birefnet-general",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__birefnet_(local_mit).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__birefnet_(local_mit).png"
+      },
+      "Dragon BiRefNet default": {
+        "tested": true,
+        "seconds": 20.365891024999996,
+        "note": "Same model \u2014 self-hostable stack baseline",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__dragon_birefnet_default.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__dragon_birefnet_default.png"
+      },
+      "Dragon BiRefNet + matting": {
+        "tested": true,
+        "seconds": 0.03508978299998944,
+        "note": "Edge-band refinement on BiRefNet mask (self-host matting-lite)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__dragon_birefnet_+_matting.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__dragon_birefnet_+_matting.png"
+      },
+      "ISNet (local)": {
+        "tested": true,
+        "seconds": 1.2173292169999854,
+        "note": "rembg isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__isnet_(local).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__isnet_(local).png"
+      },
+      "Dragon BiRefNet+ISNet hybrid": {
+        "tested": true,
+        "seconds": 1.2423605019999968,
+        "note": "max-blend masks from birefnet-general + isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__dragon_birefnet+isnet_hybrid.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__dragon_birefnet+isnet_hybrid.png"
+      },
+      "Dragon hole-fill": {
+        "tested": true,
+        "seconds": 0.018556788000012148,
+        "note": "Morph close/open on BiRefNet mask",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__dragon_hole-fill.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__dragon_hole-fill.png"
+      },
+      "fal.ai BiRefNet": {
+        "tested": false,
+        "seconds": null,
+        "note": "FAL_KEY not set \u2014 paid API",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__fal.ai_birefnet.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__fal.ai_birefnet.png"
+      },
+      "Photoroom": {
+        "tested": false,
+        "seconds": null,
+        "note": "No API key / no public batch API on free tier",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__photoroom.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__photoroom.png"
+      },
+      "remove.bg": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required (50 free preview credits with signup)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__remove.bg.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__remove.bg.png"
+      },
+      "Clipdrop": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__clipdrop.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__clipdrop.png"
+      },
+      "Claid.ai": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__claid.ai.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__claid.ai.png"
+      },
+      "Pixelcut": {
+        "tested": false,
+        "seconds": null,
+        "note": "No documented free API; web app only",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-01-perfume-glass__pixelcut.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-01-perfume-glass__pixelcut.png"
+      }
+    },
+    "grid": {
+      "commit_path": "/workspace/research/provider-test/images/grids/hard-01-perfume-glass__dekupe_comparison.png",
+      "artifact_path": "/opt/cursor/artifacts/provider-test/grids/hard-01-perfume-glass__dekupe_comparison.png"
+    },
+    "scenes": {
+      "dragon_canvas_marketplace": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-01-perfume-glass__dragon_canvas_marketplace.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__dragon_canvas_marketplace.jpg"
+      },
+      "dragon_canvas_live": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-01-perfume-glass__dragon_canvas_live.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__dragon_canvas_live.jpg"
+      },
+      "dragon_canvas_artistic": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-01-perfume-glass__dragon_canvas_artistic.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__dragon_canvas_artistic.jpg"
+      },
+      "fal_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-01-perfume-glass__fal_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__fal_flux_scene.jpg"
+      },
+      "replicate_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-01-perfume-glass__replicate_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__replicate_flux_scene.jpg"
+      },
+      "photoroom_ai_bg": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-01-perfume-glass__photoroom_ai_bg.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__photoroom_ai_bg.jpg"
+      }
+    }
+  },
+  {
+    "id": "hard-02-white-sneaker-white",
+    "difficulty": "hard",
+    "providers": {
+      "Source": {
+        "tested": true,
+        "seconds": 0.002567638000016359,
+        "note": "Original upload",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__source.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__source.png"
+      },
+      "Dragon live (today)": {
+        "tested": true,
+        "seconds": 0.015701696000007814,
+        "note": "Square object-cover crop; no background removal (matches studio placeholder)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__dragon_live_(today).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__dragon_live_(today).png"
+      },
+      "BiRefNet (local MIT)": {
+        "tested": true,
+        "seconds": 21.521708316,
+        "note": "rembg birefnet-general",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__birefnet_(local_mit).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__birefnet_(local_mit).png"
+      },
+      "Dragon BiRefNet default": {
+        "tested": true,
+        "seconds": 21.521708316,
+        "note": "Same model \u2014 self-hostable stack baseline",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__dragon_birefnet_default.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__dragon_birefnet_default.png"
+      },
+      "Dragon BiRefNet + matting": {
+        "tested": true,
+        "seconds": 0.024755674000005,
+        "note": "Edge-band refinement on BiRefNet mask (self-host matting-lite)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__dragon_birefnet_+_matting.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__dragon_birefnet_+_matting.png"
+      },
+      "ISNet (local)": {
+        "tested": true,
+        "seconds": 1.1289419070000122,
+        "note": "rembg isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__isnet_(local).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__isnet_(local).png"
+      },
+      "Dragon BiRefNet+ISNet hybrid": {
+        "tested": true,
+        "seconds": 1.146327045000021,
+        "note": "max-blend masks from birefnet-general + isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__dragon_birefnet+isnet_hybrid.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__dragon_birefnet+isnet_hybrid.png"
+      },
+      "Dragon hole-fill": {
+        "tested": true,
+        "seconds": 0.01498639699997284,
+        "note": "Morph close/open on BiRefNet mask",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__dragon_hole-fill.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__dragon_hole-fill.png"
+      },
+      "fal.ai BiRefNet": {
+        "tested": false,
+        "seconds": null,
+        "note": "FAL_KEY not set \u2014 paid API",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__fal.ai_birefnet.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__fal.ai_birefnet.png"
+      },
+      "Photoroom": {
+        "tested": false,
+        "seconds": null,
+        "note": "No API key / no public batch API on free tier",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__photoroom.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__photoroom.png"
+      },
+      "remove.bg": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required (50 free preview credits with signup)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__remove.bg.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__remove.bg.png"
+      },
+      "Clipdrop": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__clipdrop.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__clipdrop.png"
+      },
+      "Claid.ai": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__claid.ai.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__claid.ai.png"
+      },
+      "Pixelcut": {
+        "tested": false,
+        "seconds": null,
+        "note": "No documented free API; web app only",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/hard-02-white-sneaker-white__pixelcut.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/hard-02-white-sneaker-white__pixelcut.png"
+      }
+    },
+    "grid": {
+      "commit_path": "/workspace/research/provider-test/images/grids/hard-02-white-sneaker-white__dekupe_comparison.png",
+      "artifact_path": "/opt/cursor/artifacts/provider-test/grids/hard-02-white-sneaker-white__dekupe_comparison.png"
+    },
+    "scenes": {
+      "dragon_canvas_marketplace": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-02-white-sneaker-white__dragon_canvas_marketplace.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__dragon_canvas_marketplace.jpg"
+      },
+      "dragon_canvas_live": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-02-white-sneaker-white__dragon_canvas_live.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__dragon_canvas_live.jpg"
+      },
+      "dragon_canvas_artistic": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-02-white-sneaker-white__dragon_canvas_artistic.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__dragon_canvas_artistic.jpg"
+      },
+      "fal_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-02-white-sneaker-white__fal_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__fal_flux_scene.jpg"
+      },
+      "replicate_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-02-white-sneaker-white__replicate_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__replicate_flux_scene.jpg"
+      },
+      "photoroom_ai_bg": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/hard-02-white-sneaker-white__photoroom_ai_bg.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__photoroom_ai_bg.jpg"
+      }
+    }
+  },
+  {
+    "id": "veryhard-01-lace-dress",
+    "difficulty": "very_hard",
+    "providers": {
+      "Source": {
+        "tested": true,
+        "seconds": 0.0026503710000724823,
+        "note": "Original upload",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__source.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__source.png"
+      },
+      "Dragon live (today)": {
+        "tested": true,
+        "seconds": 0.011752013999966948,
+        "note": "Square object-cover crop; no background removal (matches studio placeholder)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__dragon_live_(today).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__dragon_live_(today).png"
+      },
+      "BiRefNet (local MIT)": {
+        "tested": true,
+        "seconds": 20.733600831000103,
+        "note": "rembg birefnet-general",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__birefnet_(local_mit).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__birefnet_(local_mit).png"
+      },
+      "Dragon BiRefNet default": {
+        "tested": true,
+        "seconds": 20.733600831000103,
+        "note": "Same model \u2014 self-hostable stack baseline",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__dragon_birefnet_default.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__dragon_birefnet_default.png"
+      },
+      "Dragon BiRefNet + matting": {
+        "tested": true,
+        "seconds": 0.020112037999979293,
+        "note": "Edge-band refinement on BiRefNet mask (self-host matting-lite)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__dragon_birefnet_+_matting.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__dragon_birefnet_+_matting.png"
+      },
+      "ISNet (local)": {
+        "tested": true,
+        "seconds": 1.0088207679999641,
+        "note": "rembg isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__isnet_(local).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__isnet_(local).png"
+      },
+      "Dragon BiRefNet+ISNet hybrid": {
+        "tested": true,
+        "seconds": 1.0223936849999973,
+        "note": "max-blend masks from birefnet-general + isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__dragon_birefnet+isnet_hybrid.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__dragon_birefnet+isnet_hybrid.png"
+      },
+      "Dragon hole-fill": {
+        "tested": true,
+        "seconds": 0.012319413999989592,
+        "note": "Morph close/open on BiRefNet mask",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__dragon_hole-fill.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__dragon_hole-fill.png"
+      },
+      "fal.ai BiRefNet": {
+        "tested": false,
+        "seconds": null,
+        "note": "FAL_KEY not set \u2014 paid API",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__fal.ai_birefnet.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__fal.ai_birefnet.png"
+      },
+      "Photoroom": {
+        "tested": false,
+        "seconds": null,
+        "note": "No API key / no public batch API on free tier",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__photoroom.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__photoroom.png"
+      },
+      "remove.bg": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required (50 free preview credits with signup)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__remove.bg.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__remove.bg.png"
+      },
+      "Clipdrop": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__clipdrop.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__clipdrop.png"
+      },
+      "Claid.ai": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__claid.ai.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__claid.ai.png"
+      },
+      "Pixelcut": {
+        "tested": false,
+        "seconds": null,
+        "note": "No documented free API; web app only",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-01-lace-dress__pixelcut.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-01-lace-dress__pixelcut.png"
+      }
+    },
+    "grid": {
+      "commit_path": "/workspace/research/provider-test/images/grids/veryhard-01-lace-dress__dekupe_comparison.png",
+      "artifact_path": "/opt/cursor/artifacts/provider-test/grids/veryhard-01-lace-dress__dekupe_comparison.png"
+    },
+    "scenes": {
+      "dragon_canvas_marketplace": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-01-lace-dress__dragon_canvas_marketplace.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__dragon_canvas_marketplace.jpg"
+      },
+      "dragon_canvas_live": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-01-lace-dress__dragon_canvas_live.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__dragon_canvas_live.jpg"
+      },
+      "dragon_canvas_artistic": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-01-lace-dress__dragon_canvas_artistic.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__dragon_canvas_artistic.jpg"
+      },
+      "fal_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-01-lace-dress__fal_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__fal_flux_scene.jpg"
+      },
+      "replicate_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-01-lace-dress__replicate_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__replicate_flux_scene.jpg"
+      },
+      "photoroom_ai_bg": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-01-lace-dress__photoroom_ai_bg.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__photoroom_ai_bg.jpg"
+      }
+    }
+  },
+  {
+    "id": "veryhard-02-cat-fur",
+    "difficulty": "very_hard",
+    "providers": {
+      "Source": {
+        "tested": true,
+        "seconds": 0.002567052000017611,
+        "note": "Original upload",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__source.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__source.png"
+      },
+      "Dragon live (today)": {
+        "tested": true,
+        "seconds": 0.012081886000032682,
+        "note": "Square object-cover crop; no background removal (matches studio placeholder)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__dragon_live_(today).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__dragon_live_(today).png"
+      },
+      "BiRefNet (local MIT)": {
+        "tested": true,
+        "seconds": 20.63660297499996,
+        "note": "rembg birefnet-general",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__birefnet_(local_mit).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__birefnet_(local_mit).png"
+      },
+      "Dragon BiRefNet default": {
+        "tested": true,
+        "seconds": 20.63660297499996,
+        "note": "Same model \u2014 self-hostable stack baseline",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__dragon_birefnet_default.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__dragon_birefnet_default.png"
+      },
+      "Dragon BiRefNet + matting": {
+        "tested": true,
+        "seconds": 0.025927128999910565,
+        "note": "Edge-band refinement on BiRefNet mask (self-host matting-lite)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__dragon_birefnet_+_matting.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__dragon_birefnet_+_matting.png"
+      },
+      "ISNet (local)": {
+        "tested": true,
+        "seconds": 1.222694046000015,
+        "note": "rembg isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__isnet_(local).png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__isnet_(local).png"
+      },
+      "Dragon BiRefNet+ISNet hybrid": {
+        "tested": true,
+        "seconds": 1.237978787999964,
+        "note": "max-blend masks from birefnet-general + isnet-general-use",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__dragon_birefnet+isnet_hybrid.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__dragon_birefnet+isnet_hybrid.png"
+      },
+      "Dragon hole-fill": {
+        "tested": true,
+        "seconds": 0.013553824000041459,
+        "note": "Morph close/open on BiRefNet mask",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__dragon_hole-fill.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__dragon_hole-fill.png"
+      },
+      "fal.ai BiRefNet": {
+        "tested": false,
+        "seconds": null,
+        "note": "FAL_KEY not set \u2014 paid API",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__fal.ai_birefnet.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__fal.ai_birefnet.png"
+      },
+      "Photoroom": {
+        "tested": false,
+        "seconds": null,
+        "note": "No API key / no public batch API on free tier",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__photoroom.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__photoroom.png"
+      },
+      "remove.bg": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required (50 free preview credits with signup)",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__remove.bg.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__remove.bg.png"
+      },
+      "Clipdrop": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__clipdrop.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__clipdrop.png"
+      },
+      "Claid.ai": {
+        "tested": false,
+        "seconds": null,
+        "note": "API key required",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__claid.ai.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__claid.ai.png"
+      },
+      "Pixelcut": {
+        "tested": false,
+        "seconds": null,
+        "note": "No documented free API; web app only",
+        "commit_path": "/workspace/research/provider-test/images/dekupe/veryhard-02-cat-fur__pixelcut.png",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/dekupe/veryhard-02-cat-fur__pixelcut.png"
+      }
+    },
+    "grid": {
+      "commit_path": "/workspace/research/provider-test/images/grids/veryhard-02-cat-fur__dekupe_comparison.png",
+      "artifact_path": "/opt/cursor/artifacts/provider-test/grids/veryhard-02-cat-fur__dekupe_comparison.png"
+    },
+    "scenes": {
+      "dragon_canvas_marketplace": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-02-cat-fur__dragon_canvas_marketplace.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__dragon_canvas_marketplace.jpg"
+      },
+      "dragon_canvas_live": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-02-cat-fur__dragon_canvas_live.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__dragon_canvas_live.jpg"
+      },
+      "dragon_canvas_artistic": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-02-cat-fur__dragon_canvas_artistic.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__dragon_canvas_artistic.jpg"
+      },
+      "fal_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-02-cat-fur__fal_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__fal_flux_scene.jpg"
+      },
+      "replicate_flux_scene": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-02-cat-fur__replicate_flux_scene.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__replicate_flux_scene.jpg"
+      },
+      "photoroom_ai_bg": {
+        "commit_path": "/workspace/research/provider-test/images/scenes/veryhard-02-cat-fur__photoroom_ai_bg.jpg",
+        "artifact_path": "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__photoroom_ai_bg.jpg"
+      }
+    }
+  }
+]

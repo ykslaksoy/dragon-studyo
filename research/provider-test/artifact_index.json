@@ -1,0 +1,106 @@
+[
+  {
+    "image_id": "easy-01-red-sneaker",
+    "comparison_grid_artifact": "/opt/cursor/artifacts/provider-test/grids/easy-01-red-sneaker__dekupe_comparison.png",
+    "comparison_grid_commit": "/workspace/research/provider-test/images/grids/easy-01-red-sneaker__dekupe_comparison.png",
+    "scenes": [
+      "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__dragon_canvas_marketplace.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__dragon_canvas_live.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__dragon_canvas_artistic.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__fal_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__replicate_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__photoroom_ai_bg.jpg"
+    ]
+  },
+  {
+    "image_id": "easy-02-watch-plain",
+    "comparison_grid_artifact": "/opt/cursor/artifacts/provider-test/grids/easy-02-watch-plain__dekupe_comparison.png",
+    "comparison_grid_commit": "/workspace/research/provider-test/images/grids/easy-02-watch-plain__dekupe_comparison.png",
+    "scenes": [
+      "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__dragon_canvas_marketplace.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__dragon_canvas_live.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__dragon_canvas_artistic.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__fal_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__replicate_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__photoroom_ai_bg.jpg"
+    ]
+  },
+  {
+    "image_id": "normal-01-skincare-tile",
+    "comparison_grid_artifact": "/opt/cursor/artifacts/provider-test/grids/normal-01-skincare-tile__dekupe_comparison.png",
+    "comparison_grid_commit": "/workspace/research/provider-test/images/grids/normal-01-skincare-tile__dekupe_comparison.png",
+    "scenes": [
+      "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__dragon_canvas_marketplace.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__dragon_canvas_live.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__dragon_canvas_artistic.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__fal_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__replicate_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__photoroom_ai_bg.jpg"
+    ]
+  },
+  {
+    "image_id": "normal-02-shoes-fabric",
+    "comparison_grid_artifact": "/opt/cursor/artifacts/provider-test/grids/normal-02-shoes-fabric__dekupe_comparison.png",
+    "comparison_grid_commit": "/workspace/research/provider-test/images/grids/normal-02-shoes-fabric__dekupe_comparison.png",
+    "scenes": [
+      "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__dragon_canvas_marketplace.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__dragon_canvas_live.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__dragon_canvas_artistic.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__fal_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__replicate_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__photoroom_ai_bg.jpg"
+    ]
+  },
+  {
+    "image_id": "hard-01-perfume-glass",
+    "comparison_grid_artifact": "/opt/cursor/artifacts/provider-test/grids/hard-01-perfume-glass__dekupe_comparison.png",
+    "comparison_grid_commit": "/workspace/research/provider-test/images/grids/hard-01-perfume-glass__dekupe_comparison.png",
+    "scenes": [
+      "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__dragon_canvas_marketplace.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__dragon_canvas_live.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__dragon_canvas_artistic.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__fal_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__replicate_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__photoroom_ai_bg.jpg"
+    ]
+  },
+  {
+    "image_id": "hard-02-white-sneaker-white",
+    "comparison_grid_artifact": "/opt/cursor/artifacts/provider-test/grids/hard-02-white-sneaker-white__dekupe_comparison.png",
+    "comparison_grid_commit": "/workspace/research/provider-test/images/grids/hard-02-white-sneaker-white__dekupe_comparison.png",
+    "scenes": [
+      "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__dragon_canvas_marketplace.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__dragon_canvas_live.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__dragon_canvas_artistic.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__fal_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__replicate_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__photoroom_ai_bg.jpg"
+    ]
+  },
+  {
+    "image_id": "veryhard-01-lace-dress",
+    "comparison_grid_artifact": "/opt/cursor/artifacts/provider-test/grids/veryhard-01-lace-dress__dekupe_comparison.png",
+    "comparison_grid_commit": "/workspace/research/provider-test/images/grids/veryhard-01-lace-dress__dekupe_comparison.png",
+    "scenes": [
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__dragon_canvas_marketplace.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__dragon_canvas_live.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__dragon_canvas_artistic.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__fal_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__replicate_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__photoroom_ai_bg.jpg"
+    ]
+  },
+  {
+    "image_id": "veryhard-02-cat-fur",
+    "comparison_grid_artifact": "/opt/cursor/artifacts/provider-test/grids/veryhard-02-cat-fur__dekupe_comparison.png",
+    "comparison_grid_commit": "/workspace/research/provider-test/images/grids/veryhard-02-cat-fur__dekupe_comparison.png",
+    "scenes": [
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__dragon_canvas_marketplace.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__dragon_canvas_live.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__dragon_canvas_artistic.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__fal_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__replicate_flux_scene.jpg",
+      "/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__photoroom_ai_bg.jpg"
+    ]
+  }
+]
