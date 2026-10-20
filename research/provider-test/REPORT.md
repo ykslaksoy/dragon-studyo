@@ -4,6 +4,67 @@
 **Date:** 2026-10-19  
 **Scope:** Research only (no app code changes). Eight commercially licensed product photos, four difficulty tiers. Compared **Dragon live (today)**, **self-hostable Dragon pipelines**, and **commercial APIs** (where keys were available).
 
+## Delivery artifact paths (explicit)
+
+All paths below are under **`/opt/cursor/artifacts/provider-test/`** (mirrored in the repo at `research/provider-test/images/`). Every file listed is **JPG**, verified **under 15 MB** in this delivery (largest package grid ≈ 1.2 MB).
+
+### Mannequin summary grids (8)
+
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/easy-01-red-sneaker__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/easy-02-watch-plain__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/normal-01-skincare-tile__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/normal-02-shoes-fabric__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/hard-01-perfume-glass__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/hard-02-white-sneaker-white__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/veryhard-01-lace-dress__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/veryhard-02-cat-fur__mannequin_grid.jpg`
+
+### Dragon canvas artistic tiles (8)
+
+- `/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__dragon_canvas_artistic.jpg`
+- `/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__dragon_canvas_artistic.jpg`
+- `/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__dragon_canvas_artistic.jpg`
+- `/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__dragon_canvas_artistic.jpg`
+- `/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__dragon_canvas_artistic.jpg`
+- `/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__dragon_canvas_artistic.jpg`
+- `/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__dragon_canvas_artistic.jpg`
+- `/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__dragon_canvas_artistic.jpg`
+
+### Studio package grids — `__marketplace__full-listing` (8)
+
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/easy-01-red-sneaker__marketplace__full-listing.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/easy-02-watch-plain__marketplace__full-listing.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/normal-01-skincare-tile__marketplace__full-listing.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/normal-02-shoes-fabric__marketplace__full-listing.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/hard-01-perfume-glass__marketplace__full-listing.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/hard-02-white-sneaker-white__marketplace__full-listing.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/veryhard-01-lace-dress__marketplace__full-listing.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/veryhard-02-cat-fur__marketplace__full-listing.jpg`
+
+### Studio package grids — `__live__live-full` (8)
+
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/easy-01-red-sneaker__live__live-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/easy-02-watch-plain__live__live-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/normal-01-skincare-tile__live__live-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/normal-02-shoes-fabric__live__live-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/hard-01-perfume-glass__live__live-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/hard-02-white-sneaker-white__live__live-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/veryhard-01-lace-dress__live__live-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/veryhard-02-cat-fur__live__live-full.jpg`
+
+### Studio package grids — `__artistic__art-full` (8)
+
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/easy-01-red-sneaker__artistic__art-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/easy-02-watch-plain__artistic__art-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/normal-01-skincare-tile__artistic__art-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/normal-02-shoes-fabric__artistic__art-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/hard-01-perfume-glass__artistic__art-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/hard-02-white-sneaker-white__artistic__art-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/veryhard-01-lace-dress__artistic__art-full.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/grids/veryhard-02-cat-fur__artistic__art-full.jpg`
+
+**Delivery total for this section:** 40 JPG artifact paths (8 + 8 + 8 + 8 + 8).
+
 ## Methodology
 
 | Item | Detail |
