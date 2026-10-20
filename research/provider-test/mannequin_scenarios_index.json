@@ -1,0 +1,170 @@
+[
+  {
+    "image_id": "easy-01-red-sneaker",
+    "scenario_id": "shoe_on_feet",
+    "realism": "needs_gen_ai",
+    "stock_id": "feet_pavement",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/easy-01-red-sneaker__shoe_on_feet.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/easy-01-red-sneaker__shoe_on_feet.jpg"
+  },
+  {
+    "image_id": "easy-01-red-sneaker",
+    "scenario_id": "ghost_mannequin",
+    "realism": "canvas_sim",
+    "stock_id": "dress_mannequin",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/easy-01-red-sneaker__ghost_mannequin.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/easy-01-red-sneaker__ghost_mannequin.jpg"
+  },
+  {
+    "image_id": "easy-01-red-sneaker",
+    "scenario_id": "model_holding",
+    "realism": "needs_gen_ai",
+    "stock_id": "shopping_model",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/easy-01-red-sneaker__model_holding.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/easy-01-red-sneaker__model_holding.jpg"
+  },
+  {
+    "image_id": "easy-01-red-sneaker",
+    "scenario_id": "_grid",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/grids/easy-01-red-sneaker__mannequin_grid.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/easy-01-red-sneaker__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "easy-02-watch-plain",
+    "scenario_id": "watch_on_wrist",
+    "realism": "needs_gen_ai",
+    "stock_id": "wrist_watch_stock",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/easy-02-watch-plain__watch_on_wrist.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/easy-02-watch-plain__watch_on_wrist.jpg"
+  },
+  {
+    "image_id": "easy-02-watch-plain",
+    "scenario_id": "ghost_mannequin",
+    "realism": "canvas_sim",
+    "stock_id": "dress_mannequin",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/easy-02-watch-plain__ghost_mannequin.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/easy-02-watch-plain__ghost_mannequin.jpg"
+  },
+  {
+    "image_id": "easy-02-watch-plain",
+    "scenario_id": "_grid",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/grids/easy-02-watch-plain__mannequin_grid.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/easy-02-watch-plain__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "normal-01-skincare-tile",
+    "scenario_id": "product_in_hand",
+    "realism": "needs_gen_ai",
+    "stock_id": "hand_beauty",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/normal-01-skincare-tile__product_in_hand.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/normal-01-skincare-tile__product_in_hand.jpg"
+  },
+  {
+    "image_id": "normal-01-skincare-tile",
+    "scenario_id": "on_model_torso",
+    "realism": "canvas_sim",
+    "stock_id": "fashion_model_studio",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/normal-01-skincare-tile__on_model_torso.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/normal-01-skincare-tile__on_model_torso.jpg"
+  },
+  {
+    "image_id": "normal-01-skincare-tile",
+    "scenario_id": "_grid",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/grids/normal-01-skincare-tile__mannequin_grid.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/normal-01-skincare-tile__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "normal-02-shoes-fabric",
+    "scenario_id": "shoe_on_feet",
+    "realism": "needs_gen_ai",
+    "stock_id": "feet_pavement",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/normal-02-shoes-fabric__shoe_on_feet.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/normal-02-shoes-fabric__shoe_on_feet.jpg"
+  },
+  {
+    "image_id": "normal-02-shoes-fabric",
+    "scenario_id": "ghost_mannequin",
+    "realism": "canvas_sim",
+    "stock_id": "dress_mannequin",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/normal-02-shoes-fabric__ghost_mannequin.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/normal-02-shoes-fabric__ghost_mannequin.jpg"
+  },
+  {
+    "image_id": "normal-02-shoes-fabric",
+    "scenario_id": "_grid",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/grids/normal-02-shoes-fabric__mannequin_grid.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/normal-02-shoes-fabric__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "hard-01-perfume-glass",
+    "scenario_id": "perfume_in_hand",
+    "realism": "needs_gen_ai",
+    "stock_id": "hand_beauty",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/hard-01-perfume-glass__perfume_in_hand.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/hard-01-perfume-glass__perfume_in_hand.jpg"
+  },
+  {
+    "image_id": "hard-01-perfume-glass",
+    "scenario_id": "on_model_torso",
+    "realism": "canvas_sim",
+    "stock_id": "shopping_model",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/hard-01-perfume-glass__on_model_torso.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/hard-01-perfume-glass__on_model_torso.jpg"
+  },
+  {
+    "image_id": "hard-01-perfume-glass",
+    "scenario_id": "_grid",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/grids/hard-01-perfume-glass__mannequin_grid.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/hard-01-perfume-glass__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "hard-02-white-sneaker-white",
+    "scenario_id": "shoe_on_feet",
+    "realism": "needs_gen_ai",
+    "stock_id": "feet_pavement",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/hard-02-white-sneaker-white__shoe_on_feet.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/hard-02-white-sneaker-white__shoe_on_feet.jpg"
+  },
+  {
+    "image_id": "hard-02-white-sneaker-white",
+    "scenario_id": "_grid",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/grids/hard-02-white-sneaker-white__mannequin_grid.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/hard-02-white-sneaker-white__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "veryhard-01-lace-dress",
+    "scenario_id": "dress_on_model",
+    "realism": "needs_gen_ai",
+    "stock_id": "fashion_model_studio",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/veryhard-01-lace-dress__dress_on_model.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/veryhard-01-lace-dress__dress_on_model.jpg"
+  },
+  {
+    "image_id": "veryhard-01-lace-dress",
+    "scenario_id": "ghost_mannequin_dress",
+    "realism": "needs_gen_ai",
+    "stock_id": "dress_mannequin",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/veryhard-01-lace-dress__ghost_mannequin_dress.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/veryhard-01-lace-dress__ghost_mannequin_dress.jpg"
+  },
+  {
+    "image_id": "veryhard-01-lace-dress",
+    "scenario_id": "_grid",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/grids/veryhard-01-lace-dress__mannequin_grid.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/veryhard-01-lace-dress__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "veryhard-02-cat-fur",
+    "scenario_id": "not_wearable",
+    "realism": "canvas_sim",
+    "stock_id": "fashion_model_studio",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/veryhard-02-cat-fur__not_wearable.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/veryhard-02-cat-fur__not_wearable.jpg"
+  },
+  {
+    "image_id": "veryhard-02-cat-fur",
+    "scenario_id": "_grid",
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/grids/veryhard-02-cat-fur__mannequin_grid.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/veryhard-02-cat-fur__mannequin_grid.jpg"
+  }
+]

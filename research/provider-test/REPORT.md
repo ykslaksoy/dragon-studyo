@@ -77,19 +77,89 @@ Each row has a **dekupe comparison grid** (all providers + Dragon columns) and a
 | veryhard-01-lace-dress | `/opt/cursor/artifacts/provider-test/grids/veryhard-01-lace-dress__scene_comparison.jpg` |
 | veryhard-02-cat-fur | `/opt/cursor/artifacts/provider-test/grids/veryhard-02-cat-fur__scene_comparison.jpg` |
 
-### Per-image scene outputs (Dragon canvas tested; AI scenes untested)
+### Dragon canvas — **live** (8 images)
 
-For each `IMAGE_ID`, six files under `/opt/cursor/artifacts/provider-test/scenes/`:
+| Image | Artifact path |
+|-------|----------------|
+| easy-01-red-sneaker | `/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__dragon_canvas_live.jpg` |
+| easy-02-watch-plain | `/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__dragon_canvas_live.jpg` |
+| normal-01-skincare-tile | `/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__dragon_canvas_live.jpg` |
+| normal-02-shoes-fabric | `/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__dragon_canvas_live.jpg` |
+| hard-01-perfume-glass | `/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__dragon_canvas_live.jpg` |
+| hard-02-white-sneaker-white | `/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__dragon_canvas_live.jpg` |
+| veryhard-01-lace-dress | `/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__dragon_canvas_live.jpg` |
+| veryhard-02-cat-fur | `/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__dragon_canvas_live.jpg` |
 
-- `IMAGE_ID__dragon_canvas_marketplace.jpg` — **tested**
-- `IMAGE_ID__dragon_canvas_live.jpg` — **tested**
-- `IMAGE_ID__dragon_canvas_artistic.jpg` — **tested**
-- `IMAGE_ID__fal_flux_scene.jpg` — **untested** (placeholder)
-- `IMAGE_ID__replicate_flux_scene.jpg` — **untested**
-- `IMAGE_ID__photoroom_ai_bg.jpg` — **untested**
+### Dragon canvas — **artistic** (8 images)
 
-Example (easy sneaker marketplace):  
-`/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__dragon_canvas_marketplace.jpg`
+| Image | Artifact path |
+|-------|----------------|
+| easy-01-red-sneaker | `/opt/cursor/artifacts/provider-test/scenes/easy-01-red-sneaker__dragon_canvas_artistic.jpg` |
+| easy-02-watch-plain | `/opt/cursor/artifacts/provider-test/scenes/easy-02-watch-plain__dragon_canvas_artistic.jpg` |
+| normal-01-skincare-tile | `/opt/cursor/artifacts/provider-test/scenes/normal-01-skincare-tile__dragon_canvas_artistic.jpg` |
+| normal-02-shoes-fabric | `/opt/cursor/artifacts/provider-test/scenes/normal-02-shoes-fabric__dragon_canvas_artistic.jpg` |
+| hard-01-perfume-glass | `/opt/cursor/artifacts/provider-test/scenes/hard-01-perfume-glass__dragon_canvas_artistic.jpg` |
+| hard-02-white-sneaker-white | `/opt/cursor/artifacts/provider-test/scenes/hard-02-white-sneaker-white__dragon_canvas_artistic.jpg` |
+| veryhard-01-lace-dress | `/opt/cursor/artifacts/provider-test/scenes/veryhard-01-lace-dress__dragon_canvas_artistic.jpg` |
+| veryhard-02-cat-fur | `/opt/cursor/artifacts/provider-test/scenes/veryhard-02-cat-fur__dragon_canvas_artistic.jpg` |
+
+### Full studio package grids (BiRefNet + canvas per frame)
+
+Mirrors `app/studio/page.tsx`: every **package** × **base frame** × **all five optional angles** (`Ön`, `3/4`, `Üst`, `Makro`, `Düşük açı`).  
+Example: marketplace `full-listing` = **72** tiles (12 frames × 6 variants).
+
+**Run:** `python scripts/run_app_scenarios.py`  
+**Index:** `research/provider-test/app_scenarios_index.json`
+
+| Image | Package grid artifact paths |
+|-------|----------------------------|
+| each of 8 IDs | `/opt/cursor/artifacts/provider-test/app-scenarios/grids/{ID}__marketplace__full-listing.jpg` |
+| | `/opt/cursor/artifacts/provider-test/app-scenarios/grids/{ID}__marketplace__minimal-5.jpg` |
+| | `/opt/cursor/artifacts/provider-test/app-scenarios/grids/{ID}__live__live-full.jpg` |
+| | `/opt/cursor/artifacts/provider-test/app-scenarios/grids/{ID}__creator__creator-full.jpg` |
+| | `/opt/cursor/artifacts/provider-test/app-scenarios/grids/{ID}__artistic__art-full.jpg` |
+
+Tile badges: **`[OK]`** canvas-realistic, **`[SIM]`** simulated angle/layout, **`[GEN]`** needs generative AI (see `scripts/studio_catalog.py`).
+
+### Mannequin / on-model composites (stock + cutout + shadow)
+
+**Run:** `python scripts/run_mannequin_scenarios.py`  
+Stock licenses: `sources/mannequin_stock.json`  
+**Index:** `research/provider-test/mannequin_scenarios_index.json`
+
+| Image | Summary grid |
+|-------|----------------|
+| easy-01-red-sneaker | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/easy-01-red-sneaker__mannequin_grid.jpg` |
+| easy-02-watch-plain | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/easy-02-watch-plain__mannequin_grid.jpg` |
+| normal-01-skincare-tile | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/normal-01-skincare-tile__mannequin_grid.jpg` |
+| normal-02-shoes-fabric | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/normal-02-shoes-fabric__mannequin_grid.jpg` |
+| hard-01-perfume-glass | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/hard-01-perfume-glass__mannequin_grid.jpg` |
+| hard-02-white-sneaker-white | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/hard-02-white-sneaker-white__mannequin_grid.jpg` |
+| veryhard-01-lace-dress | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/veryhard-01-lace-dress__mannequin_grid.jpg` |
+| veryhard-02-cat-fur | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/veryhard-02-cat-fur__mannequin_grid.jpg` |
+
+Individual composites: `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/{IMAGE_ID}__{scenario_id}.jpg` (listed in `mannequin_scenarios_index.json`).
+
+**Free pipeline limit:** flat compositing cannot warp garments to body, wrap straps, or hollow-neck ghost mannequin — those tiles are labeled **NEEDS GENERATIVE AI / VTON**.
+
+### Virtual try-on landscape (licenses — not executed here)
+
+| Option | Commercial use | Notes |
+|--------|----------------|-------|
+| **OOTDiffusion** ([GitHub](https://github.com/levihsu/OOTDiffusion)) | **Apache-2.0** | Open weights; self-host GPU; garment+model image required |
+| **IDM-VTON** (academic) | Typically **non-commercial** / research-only — verify paper + weights card before prod | Strong quality in papers |
+| **Kolors / other HF try-on** | Per-model license — check each repo | Quality varies |
+| **fal.ai** try-on / Photoroom **Ghost mannequin** / **Virtual try-on** APIs | Paid per call | [Photoroom API](https://www.photoroom.com/api/pricing) documents ghost mannequin on Plus; fal hosts multiple try-on endpoints |
+| **Dragon flat composite** (this PR) | Unsplash + MIT BiRefNet | Marketing placeholders only |
+
+### fal.ai studio runner (secondary)
+
+`scripts/run_fal_all_scenarios.py` — **WAITING ON `FAL_KEY`** in this environment (exit code 2). When set, intended to run fal BiRefNet + Flux per studio frame; not wired to API yet.
+
+### Complete path list
+
+**Every delivery path** (scene grids, live, artistic, 40 package grids, mannequin tiles):  
+[`ARTIFACT_PATHS.md`](ARTIFACT_PATHS.md) and `/opt/cursor/artifacts/provider-test/ARTIFACT_PATHS.md`
 
 Individual dekupe tiles: `/opt/cursor/artifacts/provider-test/dekupe/{IMAGE_ID}__{provider_key}.png`  
 Machine-readable index: `/opt/cursor/artifacts/provider-test/artifact_index.json` and `research/provider-test/artifact_index.json`.
@@ -185,6 +255,7 @@ Studio today is **wizard + placeholder grid** without dekupe or per-frame geomet
 ## Files in this PR
 
 - `research/provider-test/REPORT.md` (this file)
+- `research/provider-test/ARTIFACT_PATHS.md` — exhaustive artifact path list
 - `research/provider-test/images/**` — all PNG/JPG outputs (mirrors artifacts)
-- `research/provider-test/scripts/run_benchmark.py`, `build_scene_grids.py`
-- `research/provider-test/results.json`, `artifact_index.json`, `sources/manifest.json`
+- `research/provider-test/scripts/run_benchmark.py`, `build_scene_grids.py`, `run_app_scenarios.py`, `run_mannequin_scenarios.py`, `run_fal_all_scenarios.py`, `studio_catalog.py`, `generate_artifact_paths.py`
+- `research/provider-test/results.json`, `artifact_index.json`, `app_scenarios_index.json`, `mannequin_scenarios_index.json`, `sources/manifest.json`, `sources/mannequin_stock.json`

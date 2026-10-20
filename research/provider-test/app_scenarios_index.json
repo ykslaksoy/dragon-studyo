@@ -1,0 +1,47 @@
+[
+  {
+    "image_id": "veryhard-02-cat-fur",
+    "purpose": "marketplace",
+    "pack_id": "full-listing",
+    "pack_title": "Tam listing seti (rakip \u00fcst\u00fc)",
+    "frame_count": 72,
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/grids/veryhard-02-cat-fur__marketplace__full-listing.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/grids/veryhard-02-cat-fur__marketplace__full-listing.jpg"
+  },
+  {
+    "image_id": "veryhard-02-cat-fur",
+    "purpose": "marketplace",
+    "pack_id": "minimal-5",
+    "pack_title": "H\u0131zl\u0131 5\u2019li vitrin",
+    "frame_count": 30,
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/grids/veryhard-02-cat-fur__marketplace__minimal-5.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/grids/veryhard-02-cat-fur__marketplace__minimal-5.jpg"
+  },
+  {
+    "image_id": "veryhard-02-cat-fur",
+    "purpose": "live",
+    "pack_id": "live-full",
+    "pack_title": "Live sat\u0131\u015f seti",
+    "frame_count": 54,
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/grids/veryhard-02-cat-fur__live__live-full.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/grids/veryhard-02-cat-fur__live__live-full.jpg"
+  },
+  {
+    "image_id": "veryhard-02-cat-fur",
+    "purpose": "creator",
+    "pack_id": "creator-full",
+    "pack_title": "\u0130\u00e7erik seti",
+    "frame_count": 48,
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/grids/veryhard-02-cat-fur__creator__creator-full.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/grids/veryhard-02-cat-fur__creator__creator-full.jpg"
+  },
+  {
+    "image_id": "veryhard-02-cat-fur",
+    "purpose": "artistic",
+    "pack_id": "art-full",
+    "pack_title": "Sanatsal set",
+    "frame_count": 48,
+    "commit_path": "/workspace/research/provider-test/images/app-scenarios/grids/veryhard-02-cat-fur__artistic__art-full.jpg",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/grids/veryhard-02-cat-fur__artistic__art-full.jpg"
+  }
+]
