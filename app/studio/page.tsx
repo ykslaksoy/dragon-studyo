@@ -412,7 +412,7 @@ export default function StudioPage() {
         </div>
       </div>
 
-      <div className="relative z-10 px-[max(1.25rem,env(safe-area-inset-left))] pb-16 pt-[max(1.25rem,env(safe-area-inset-top))] pr-[max(1.25rem,env(safe-area-inset-right))]">
+      <div className="relative z-10 px-[max(1.25rem,env(safe-area-inset-left))] pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] pt-[max(1.25rem,env(safe-area-inset-top))] pr-[max(1.25rem,env(safe-area-inset-right))]">
         <header className="mx-auto flex w-full max-w-3xl items-center justify-between gap-4">
           <Link
             href="/"

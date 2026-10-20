@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
 import { ForceScrollTop } from "./components/ForceScrollTop";
+import { SiteFooter } from "./components/SiteFooter";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -64,6 +65,7 @@ export default function RootLayout({
       <body className="m-0 flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-[#070708] p-0 font-sans text-white">
         <ForceScrollTop />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );
