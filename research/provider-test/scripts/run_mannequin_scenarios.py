@@ -10,7 +10,9 @@ import json
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFont
+
+from composite_utils import composite_overlay, composite_pedestal, load_font as cu_font
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ROOT / "sources"
@@ -69,47 +71,38 @@ def get_cutout(image_id: str, src: Image.Image) -> Image.Image:
     return rgba
 
 
-def composite(
-    bg: Image.Image,
-    cutout: Image.Image,
-    *,
-    scale: float,
-    cx: float,
-    cy: float,
-    realism: str,
-    title: str,
-) -> Image.Image:
-    """Place cutout on background with shadow. cx/cy are 0..1 anchor on canvas."""
-    W, H = bg.size
-    layer = bg.convert("RGBA")
-    prod = cutout.convert("RGBA")
-    th = int(H * scale)
-    th = max(40, min(th, int(H * 0.85)))
-    r = th / prod.size[1]
-    nw = max(1, int(prod.size[0] * r))
-    prod = prod.resize((nw, th), Image.Resampling.LANCZOS)
-
-    px = int(W * cx - nw / 2)
-    py = int(H * cy - th / 2)
-    px = max(0, min(px, W - nw))
-    py = max(0, min(py, H - th))
-
-    shadow = Image.new("RGBA", prod.size, (0, 0, 0, 0))
-    shadow.putalpha(prod.split()[-1].point(lambda a: int(a * 0.35)))
-    shadow = shadow.filter(ImageFilter.GaussianBlur(12))
-
-    out = layer.copy()
-    out.paste(shadow, (px + 12, py + 16), shadow)
-    out.paste(prod, (px, py), prod)
+def annotate(out: Image.Image, realism: str, title: str) -> Image.Image:
+    W, H = out.size
     d = ImageDraw.Draw(out)
     if realism == "needs_gen_ai":
-        d.rectangle((0, 0, W, 46), fill=(110, 28, 28, 220))
-        d.text((12, 12), "NEEDS GENERATIVE AI / VTON — flat composite only", fill=(255, 220, 220), font=FONT_SM)
+        d.rectangle((0, 0, W, 50), fill=(110, 28, 28))
+        d.text(
+            (12, 10),
+            "Gerçek try-on / el / ayak için üretken AI (VTON) gerekir — bu önizleme vitrin",
+            fill=(255, 220, 220),
+            font=FONT_SM,
+        )
     else:
-        d.rectangle((0, H - 38, W, H), fill=(0, 0, 0, 170))
-        d.text((12, H - 28), "Canvas composite (stock bg + cutout + shadow)", fill=(230, 230, 230), font=FONT_XS)
-    d.text((12, 52 if realism == "needs_gen_ai" else 12), title[:70], fill=(255, 255, 255), font=FONT_XS)
-    return out.convert("RGB")
+        d.rectangle((0, H - 40, W, H), fill=(20, 20, 22))
+        d.text((12, H - 28), "Stüdyo vitrin (ücretsiz pipeline)", fill=(210, 210, 210), font=FONT_XS)
+    d.text((12, 54 if realism == "needs_gen_ai" else 10), title[:72], fill=(255, 255, 255), font=FONT_XS)
+    return out
+
+
+def render_scenario(bg: Image.Image, cutout: Image.Image, sc: dict) -> Image.Image:
+    mode = sc.get("mode", "overlay")
+    if mode == "pedestal":
+        out = composite_pedestal(bg, cutout, scale=sc.get("scale", 0.4))
+    else:
+        out = composite_overlay(
+            bg,
+            cutout,
+            scale=sc["scale"],
+            cx=sc["cx"],
+            cy=sc["cy"],
+            rotate=sc.get("rotate", 0.0),
+        )
+    return annotate(out.convert("RGB"), sc["realism"], sc["title"])
 
 
 # scenario_id -> stock_id, placement, realism, title template
@@ -127,60 +120,57 @@ SCENARIOS_BY_PRODUCT: dict[str, list[dict]] = {
         {
             "id": "ghost_mannequin",
             "stock": "dress_mannequin",
-            "scale": 0.28,
-            "cx": 0.5,
-            "cy": 0.55,
+            "mode": "pedestal",
+            "scale": 0.38,
             "realism": "canvas_sim",
-            "title": "Ghost mannequin stand-in — product on form (not hollow-neck CGI)",
+            "title": "Vitrin — ghost mannequin CGI yerine stüdyo pedestal",
         },
         {
             "id": "model_holding",
             "stock": "shopping_model",
-            "scale": 0.2,
-            "cx": 0.62,
-            "cy": 0.48,
+            "mode": "pedestal",
+            "scale": 0.36,
             "realism": "needs_gen_ai",
-            "title": "On-model holding — needs pose-aware gen AI",
+            "title": "Elde tutma sahnesi — VTON/inpaint gerekir (arka plan bulanık vitrin)",
         },
     ],
     "easy-02-watch-plain": [
         {
             "id": "watch_on_wrist",
             "stock": "wrist_watch_stock",
-            "scale": 0.18,
-            "cx": 0.48,
-            "cy": 0.55,
+            "scale": 0.12,
+            "cx": 0.42,
+            "cy": 0.58,
+            "rotate": -8,
             "realism": "needs_gen_ai",
-            "title": "Watch on wrist — needs VTON / inpaint strap",
+            "title": "Bilekte saat — bileğe oturtma VTON ister (yaklaşık yerleşim)",
         },
         {
             "id": "ghost_mannequin",
             "stock": "dress_mannequin",
-            "scale": 0.15,
-            "cx": 0.5,
-            "cy": 0.42,
+            "mode": "pedestal",
+            "scale": 0.22,
             "realism": "canvas_sim",
-            "title": "Display on mannequin bust (flat composite)",
+            "title": "Saat vitrin — manken üstüne yapıştırma yok",
         },
     ],
     "normal-01-skincare-tile": [
         {
             "id": "product_in_hand",
             "stock": "hand_beauty",
-            "scale": 0.25,
-            "cx": 0.55,
-            "cy": 0.62,
+            "scale": 0.14,
+            "cx": 0.62,
+            "cy": 0.68,
             "realism": "needs_gen_ai",
-            "title": "Bottle in hand — needs grasp inpainting",
+            "title": "Şişe elde — parmak kavrama üretken AI",
         },
         {
             "id": "on_model_torso",
             "stock": "fashion_model_studio",
-            "scale": 0.18,
-            "cx": 0.5,
-            "cy": 0.45,
+            "mode": "pedestal",
+            "scale": 0.34,
             "realism": "canvas_sim",
-            "title": "Product near model torso (marketing composite)",
+            "title": "Model arka planda blur — ürün ön vitrin",
         },
     ],
     "normal-02-shoes-fabric": [
@@ -196,31 +186,29 @@ SCENARIOS_BY_PRODUCT: dict[str, list[dict]] = {
         {
             "id": "ghost_mannequin",
             "stock": "dress_mannequin",
-            "scale": 0.3,
-            "cx": 0.48,
-            "cy": 0.58,
+            "mode": "pedestal",
+            "scale": 0.4,
             "realism": "canvas_sim",
-            "title": "Pair display on boutique form",
+            "title": "Çift ayakkabı vitrin pedestal",
         },
     ],
     "hard-01-perfume-glass": [
         {
             "id": "perfume_in_hand",
             "stock": "hand_beauty",
-            "scale": 0.22,
+            "scale": 0.13,
             "cx": 0.58,
-            "cy": 0.58,
+            "cy": 0.72,
             "realism": "needs_gen_ai",
-            "title": "Perfume in hand — needs finger wrap / gen AI",
+            "title": "Parfüm elde — gerçekçi kavrama VTON",
         },
         {
             "id": "on_model_torso",
             "stock": "shopping_model",
-            "scale": 0.16,
-            "cx": 0.45,
-            "cy": 0.5,
+            "mode": "pedestal",
+            "scale": 0.32,
             "realism": "canvas_sim",
-            "title": "Hero bottle near model (flat composite)",
+            "title": "Live alışveriş mood — ürün önde, model blur",
         },
     ],
     "hard-02-white-sneaker-white": [
@@ -238,31 +226,28 @@ SCENARIOS_BY_PRODUCT: dict[str, list[dict]] = {
         {
             "id": "dress_on_model",
             "stock": "fashion_model_studio",
-            "scale": 0.55,
-            "cx": 0.5,
-            "cy": 0.52,
+            "mode": "pedestal",
+            "scale": 0.48,
             "realism": "needs_gen_ai",
-            "title": "Dress on model — needs garment VTON (warp/drape)",
+            "title": "Elbise modelde — kıyafet VTON şart; vitrin önizleme",
         },
         {
             "id": "ghost_mannequin_dress",
             "stock": "dress_mannequin",
-            "scale": 0.5,
-            "cx": 0.5,
-            "cy": 0.5,
+            "mode": "pedestal",
+            "scale": 0.45,
             "realism": "needs_gen_ai",
-            "title": "Ghost mannequin dress — needs hollow-neck inpainting",
+            "title": "Ghost mannequin — hollow-neck inpaint / Photoroom API",
         },
     ],
     "veryhard-02-cat-fur": [
         {
             "id": "not_wearable",
             "stock": "fashion_model_studio",
-            "scale": 0.35,
-            "cx": 0.7,
-            "cy": 0.55,
+            "mode": "pedestal",
+            "scale": 0.38,
             "realism": "canvas_sim",
-            "title": "Pet subject — no wear scenario; cutout beside model (demo only)",
+            "title": "Pet ürün değil — stüdyo vitrin only",
         },
     ],
 }
@@ -312,15 +297,7 @@ def main() -> None:
 
         for sc in scenarios:
             bg = load_stock(sc["stock"], stocks)
-            img = composite(
-                bg,
-                cutout,
-                scale=sc["scale"],
-                cx=sc["cx"],
-                cy=sc["cy"],
-                realism=sc["realism"],
-                title=sc["title"],
-            )
+            img = render_scenario(bg, cutout, sc)
             rel = f"{OUT}/{image_id}__{sc['id']}.jpg"
             c_p, a_p = save_dual(rel, img)
             cells.append((sc["id"], img))

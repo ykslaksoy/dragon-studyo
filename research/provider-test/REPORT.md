@@ -65,6 +65,16 @@ All paths below are under **`/opt/cursor/artifacts/provider-test/`** (mirrored i
 
 **Delivery total for this section:** 40 JPG artifact paths (8 + 8 + 8 + 8 + 8).
 
+## Görsel kalite notu (TR)
+
+İlk manken denemeleri **stok foto üzerine düz PNG yapıştırma** gibi görünüyordu; bu, ücretsiz pipeline’ın fiziksel try-on/ghost mannequin yapamamasından kaynaklanıyor. Güncelleme:
+
+- **Manken/on-model:** `composite_utils.py` — kenar yumuşatma, renk uyumu, çift gölge, vignette; **model üstüne yapıştırma** yerine çoğu sahnede **bulanık arka plan + stüdyo pedestal vitrin** (`mode: pedestal`).
+- **El / ayak / bilek / elbise:** hâlâ **üretken AI (VTON)** gerektirir; kırmızı şerit bunu açıkça söylüyor.
+- **Paket sahneleri:** zemin düzlemi + hafif vignette (hâlâ gerçek lifestyle değil; `[GEN]` kareler AI ister).
+
+Yeniden üretim: `python scripts/run_mannequin_scenarios.py`
+
 ## Methodology
 
 | Item | Detail |

@@ -18,6 +18,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+from composite_utils import draw_floor_plane, feather_alpha, vignette
 from studio_catalog import (
     all_angle_labels,
     build_output_list,
@@ -163,7 +164,8 @@ def render_frame(
     top, bottom = purpose_palette(purpose)
     if spec.realism == "needs_gen_ai" and purpose == "artistic":
         top, bottom = (35, 32, 48), (10, 8, 18)
-    base = gradient_bg((W, H), top, bottom).convert("RGBA")
+    base = vignette(gradient_bg((W, H), top, bottom)).convert("RGBA")
+    base = draw_floor_plane(base, y_frac=0.82 if purpose != "artistic" else 0.88)
 
     at = angle_transform(spec.angle_label)
     ft = frame_transform(spec.base_frame)
@@ -173,7 +175,7 @@ def render_frame(
     ox_frac = at["ox"] + ft["ox"]
     oy_frac = at["oy"] + ft["oy"]
 
-    prod = cutout.convert("RGBA")
+    prod = feather_alpha(cutout.convert("RGBA"), 1)
     if crop < 0.99:
         w, h = prod.size
         cw, ch = int(w * crop), int(h * crop)
