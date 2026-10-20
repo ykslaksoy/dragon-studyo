@@ -34,9 +34,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
     awaken: "Dragon Uyanıyor",
     heroMeta: "CREATIVE STUDIO",
     title: "Dragon Stüdyo",
-    subtitle: "Site yayında. İçerikler yakında burada olacak.",
-    cta: "Keşfet",
-    soon: "YAKINDA • STUDIO",
+    subtitle:
+      "Ürün görseli sihirbazı canlı: amaç, kanal, paket ve açı seç; görsel yükle, üretim grid’ini izle.",
+    cta: "Stüdyoya gir",
+    soon: "PAZARYERI • LIVE • CREATOR",
     langAria: "Dil seçimi",
   },
   en: {
@@ -45,9 +46,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
     awaken: "Dragon Awakens",
     heroMeta: "CREATIVE STUDIO",
     title: "Dragon Studio",
-    subtitle: "The site is live. Content is coming soon.",
-    cta: "Explore",
-    soon: "COMING SOON • STUDIO",
+    subtitle:
+      "Product-image wizard is live: pick purpose, channel, pack, and angles; upload a source image and watch the production grid.",
+    cta: "Open studio",
+    soon: "MARKETPLACE • LIVE • CREATOR",
     langAria: "Language selection",
   },
   de: {
@@ -56,9 +58,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
     awaken: "Dragon erwacht",
     heroMeta: "CREATIVE STUDIO",
     title: "Dragon Studio",
-    subtitle: "Die Seite ist live. Inhalte folgen in Kürze.",
-    cta: "Entdecken",
-    soon: "DEMNÄCHST • STUDIO",
+    subtitle:
+      "Produktbild-Assistent ist live: Zweck, Kanal, Paket und Perspektiven wählen, Bild hochladen, Raster verfolgen.",
+    cta: "Studio öffnen",
+    soon: "MARKETPLACE • LIVE • CREATOR",
     langAria: "Sprachauswahl",
   },
   fr: {
@@ -67,9 +70,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
     awaken: "Dragon s’éveille",
     heroMeta: "CREATIVE STUDIO",
     title: "Dragon Studio",
-    subtitle: "Le site est en ligne. Le contenu arrive bientôt.",
-    cta: "Explorer",
-    soon: "BIENTÔT • STUDIO",
+    subtitle:
+      "Assistant visuel produit en ligne : objectif, canal, pack et angles ; importez une image et suivez la grille.",
+    cta: "Ouvrir le studio",
+    soon: "MARKETPLACE • LIVE • CREATOR",
     langAria: "Choix de la langue",
   },
   zh: {
@@ -78,9 +82,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
     awaken: "龙已苏醒",
     heroMeta: "CREATIVE STUDIO",
     title: "Dragon Studio",
-    subtitle: "网站已上线。内容即将呈现。",
-    cta: "探索",
-    soon: "即将推出 • STUDIO",
+    subtitle: "产品图像向导已上线：选择用途、渠道、套装与角度，上传源图并查看生成网格。",
+    cta: "进入工作室",
+    soon: "MARKETPLACE • LIVE • CREATOR",
     langAria: "语言选择",
   },
   ru: {
@@ -89,9 +93,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
     awaken: "Дракон пробуждается",
     heroMeta: "CREATIVE STUDIO",
     title: "Dragon Studio",
-    subtitle: "Сайт уже в эфире. Контент скоро появится здесь.",
-    cta: "Открыть",
-    soon: "СКОРО • STUDIO",
+    subtitle:
+      "Мастер визуалов для товаров в эфире: цель, канал, пакет и ракурсы; загрузите фото и следите за сеткой.",
+    cta: "В студию",
+    soon: "MARKETPLACE • LIVE • CREATOR",
     langAria: "Выбор языка",
   },
 };
