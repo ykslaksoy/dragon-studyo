@@ -70,7 +70,8 @@ All paths below are under **`/opt/cursor/artifacts/provider-test/`** (mirrored i
 İlk manken denemeleri **stok foto üzerine düz PNG yapıştırma** gibi görünüyordu; bu, ücretsiz pipeline’ın fiziksel try-on/ghost mannequin yapamamasından kaynaklanıyor. Güncelleme:
 
 - **Manken/on-model:** `composite_utils.py` — kenar yumuşatma, renk uyumu, çift gölge, vignette; **model üstüne yapıştırma** yerine çoğu sahnede **bulanık arka plan + stüdyo pedestal vitrin** (`mode: pedestal`).
-- **El / ayak / bilek / elbise:** hâlâ **üretken AI (VTON)** gerektirir; kırmızı şerit bunu açıkça söylüyor.
+- **Ayakkabı / saat:** `fitness_worn_gear` stokunda **ayak ve bilek wear-zone** ile hizalanır (`mode: wear`) — tam VTON değil, ama ürün artık ayağa/kola konumlandırılır.
+- **El / elbise / gerçek ghost mannequin:** hâlâ **üretken AI (VTON)** gerektirir.
 - **Paket sahneleri:** zemin düzlemi + hafif vignette (hâlâ gerçek lifestyle değil; `[GEN]` kareler AI ister).
 
 Yeniden üretim: `python scripts/run_mannequin_scenarios.py`

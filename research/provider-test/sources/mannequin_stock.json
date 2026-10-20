@@ -1,5 +1,17 @@
 [
   {
+    "id": "fitness_worn_gear",
+    "description": "Model in workout pose — visible left sneaker on mat and sports watch on raised left wrist",
+    "license": "Unsplash License (commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photo-1571019613454-1cb2f99b2d8b",
+    "download_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1400&q=85&auto=format",
+    "wear_zones": {
+      "left_foot": { "cx": 0.19, "cy": 0.89, "scale": 0.095, "rotate": -14, "patch_w": 0.24, "patch_h": 0.13 },
+      "left_wrist": { "cx": 0.50, "cy": 0.36, "scale": 0.042, "rotate": -48, "patch_w": 0.14, "patch_h": 0.1 }
+    }
+  },
+  {
     "id": "feet_pavement",
     "description": "Legs and sneakers on pavement (stock feet scene)",
     "license": "Unsplash License (commercial use permitted)",

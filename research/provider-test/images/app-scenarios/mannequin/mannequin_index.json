@@ -2,8 +2,8 @@
   {
     "image_id": "easy-01-red-sneaker",
     "scenario_id": "shoe_on_feet",
-    "realism": "needs_gen_ai",
-    "stock_id": "feet_pavement",
+    "realism": "canvas_sim",
+    "stock_id": "fitness_worn_gear",
     "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/easy-01-red-sneaker__shoe_on_feet.jpg",
     "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/easy-01-red-sneaker__shoe_on_feet.jpg"
   },
@@ -32,8 +32,8 @@
   {
     "image_id": "easy-02-watch-plain",
     "scenario_id": "watch_on_wrist",
-    "realism": "needs_gen_ai",
-    "stock_id": "wrist_watch_stock",
+    "realism": "canvas_sim",
+    "stock_id": "fitness_worn_gear",
     "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/easy-02-watch-plain__watch_on_wrist.jpg",
     "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/easy-02-watch-plain__watch_on_wrist.jpg"
   },
@@ -76,8 +76,8 @@
   {
     "image_id": "normal-02-shoes-fabric",
     "scenario_id": "shoe_on_feet",
-    "realism": "needs_gen_ai",
-    "stock_id": "feet_pavement",
+    "realism": "canvas_sim",
+    "stock_id": "fitness_worn_gear",
     "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/normal-02-shoes-fabric__shoe_on_feet.jpg",
     "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/normal-02-shoes-fabric__shoe_on_feet.jpg"
   },
@@ -120,8 +120,8 @@
   {
     "image_id": "hard-02-white-sneaker-white",
     "scenario_id": "shoe_on_feet",
-    "realism": "needs_gen_ai",
-    "stock_id": "feet_pavement",
+    "realism": "canvas_sim",
+    "stock_id": "fitness_worn_gear",
     "commit_path": "/workspace/research/provider-test/images/app-scenarios/mannequin/hard-02-white-sneaker-white__shoe_on_feet.jpg",
     "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/hard-02-white-sneaker-white__shoe_on_feet.jpg"
   },

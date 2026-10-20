@@ -12,7 +12,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-from composite_utils import composite_overlay, composite_pedestal, load_font as cu_font
+from composite_utils import composite_overlay, composite_pedestal, composite_wear_zone, load_font as cu_font
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ROOT / "sources"
@@ -89,10 +89,14 @@ def annotate(out: Image.Image, realism: str, title: str) -> Image.Image:
     return out
 
 
-def render_scenario(bg: Image.Image, cutout: Image.Image, sc: dict) -> Image.Image:
+def render_scenario(bg: Image.Image, cutout: Image.Image, sc: dict, stocks: dict) -> Image.Image:
     mode = sc.get("mode", "overlay")
     if mode == "pedestal":
         out = composite_pedestal(bg, cutout, scale=sc.get("scale", 0.4))
+    elif mode == "wear":
+        stock = stocks[sc["stock"]]
+        zone = stock["wear_zones"][sc["wear_zone"]]
+        out = composite_wear_zone(bg, cutout, zone)
     else:
         out = composite_overlay(
             bg,
@@ -110,12 +114,11 @@ SCENARIOS_BY_PRODUCT: dict[str, list[dict]] = {
     "easy-01-red-sneaker": [
         {
             "id": "shoe_on_feet",
-            "stock": "feet_pavement",
-            "scale": 0.22,
-            "cx": 0.52,
-            "cy": 0.78,
-            "realism": "needs_gen_ai",
-            "title": "Worn shot — shoe on feet (needs VTON/warp)",
+            "stock": "fitness_worn_gear",
+            "mode": "wear",
+            "wear_zone": "left_foot",
+            "realism": "canvas_sim",
+            "title": "Ayakkabı ayağa hizalandı (stok ayak bölgesi)",
         },
         {
             "id": "ghost_mannequin",
@@ -137,13 +140,11 @@ SCENARIOS_BY_PRODUCT: dict[str, list[dict]] = {
     "easy-02-watch-plain": [
         {
             "id": "watch_on_wrist",
-            "stock": "wrist_watch_stock",
-            "scale": 0.12,
-            "cx": 0.42,
-            "cy": 0.58,
-            "rotate": -8,
-            "realism": "needs_gen_ai",
-            "title": "Bilekte saat — bileğe oturtma VTON ister (yaklaşık yerleşim)",
+            "stock": "fitness_worn_gear",
+            "mode": "wear",
+            "wear_zone": "left_wrist",
+            "realism": "canvas_sim",
+            "title": "Saat bileğe/kola hizalandı (stok bilek bölgesi)",
         },
         {
             "id": "ghost_mannequin",
@@ -176,12 +177,11 @@ SCENARIOS_BY_PRODUCT: dict[str, list[dict]] = {
     "normal-02-shoes-fabric": [
         {
             "id": "shoe_on_feet",
-            "stock": "feet_pavement",
-            "scale": 0.24,
-            "cx": 0.5,
-            "cy": 0.8,
-            "realism": "needs_gen_ai",
-            "title": "Worn sneakers — needs VTON",
+            "stock": "fitness_worn_gear",
+            "mode": "wear",
+            "wear_zone": "left_foot",
+            "realism": "canvas_sim",
+            "title": "Ayakkabı ayağa hizalandı",
         },
         {
             "id": "ghost_mannequin",
@@ -214,12 +214,11 @@ SCENARIOS_BY_PRODUCT: dict[str, list[dict]] = {
     "hard-02-white-sneaker-white": [
         {
             "id": "shoe_on_feet",
-            "stock": "feet_pavement",
-            "scale": 0.23,
-            "cx": 0.54,
-            "cy": 0.77,
-            "realism": "needs_gen_ai",
-            "title": "White sneaker on feet — needs VTON",
+            "stock": "fitness_worn_gear",
+            "mode": "wear",
+            "wear_zone": "left_foot",
+            "realism": "canvas_sim",
+            "title": "Beyaz ayakkabı — ayak bölgesine yerleşim",
         },
     ],
     "veryhard-01-lace-dress": [
@@ -297,7 +296,7 @@ def main() -> None:
 
         for sc in scenarios:
             bg = load_stock(sc["stock"], stocks)
-            img = render_scenario(bg, cutout, sc)
+            img = render_scenario(bg, cutout, sc, stocks)
             rel = f"{OUT}/{image_id}__{sc['id']}.jpg"
             c_p, a_p = save_dual(rel, img)
             cells.append((sc["id"], img))

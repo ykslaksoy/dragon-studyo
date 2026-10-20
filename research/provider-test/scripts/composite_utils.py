@@ -58,6 +58,43 @@ def contact_shadow(prod: Image.Image, blur: int = 10, opacity: float = 0.4) -> I
     return sh.filter(ImageFilter.GaussianBlur(blur))
 
 
+def soften_wear_patch(bg: Image.Image, cx: float, cy: float, pw: float, ph: float) -> Image.Image:
+    """Blur stock shoe/watch under placement so cutout does not stack obviously."""
+    W, H = bg.size
+    rw, rh = int(W * pw), int(H * ph)
+    px = int(W * cx - rw / 2)
+    py = int(H * cy - rh / 2)
+    px = max(0, min(px, W - rw))
+    py = max(0, min(py, H - rh))
+    patch = bg.crop((px, py, px + rw, py + rh)).filter(ImageFilter.GaussianBlur(22))
+    mask = Image.new("L", (rw, rh), 0)
+    md = ImageDraw.Draw(mask)
+    md.ellipse((4, 4, rw - 4, rh - 4), fill=255)
+    mask = mask.filter(ImageFilter.GaussianBlur(8))
+    out = bg.convert("RGBA")
+    out.paste(patch.convert("RGBA"), (px, py), mask)
+    return out.convert("RGB")
+
+
+def composite_wear_zone(
+    bg: Image.Image,
+    cutout: Image.Image,
+    zone: dict,
+) -> Image.Image:
+    bg2 = soften_wear_patch(bg, zone["cx"], zone["cy"], zone.get("patch_w", 0.18), zone.get("patch_h", 0.1))
+    return composite_overlay(
+        bg2,
+        cutout,
+        scale=zone["scale"],
+        cx=zone["cx"],
+        cy=zone["cy"],
+        rotate=zone.get("rotate", 0.0),
+        shadow_dx=6,
+        shadow_dy=8,
+        minimal_bg=True,
+    )
+
+
 def composite_overlay(
     bg: Image.Image,
     cutout: Image.Image,
@@ -68,17 +105,22 @@ def composite_overlay(
     rotate: float = 0.0,
     shadow_dx: int = 10,
     shadow_dy: int = 14,
+    minimal_bg: bool = False,
 ) -> Image.Image:
     W, H = bg.size
-    bg_v = vignette(bg, 0.25)
-    layer = draw_floor_plane(bg_v.convert("RGBA"))
+    if minimal_bg:
+        layer = bg.convert("RGBA")
+    else:
+        bg_v = vignette(bg, 0.25)
+        layer = draw_floor_plane(bg_v.convert("RGBA"))
+        bg = bg_v
     prod = feather_alpha(cutout, radius=1)
 
     # Sample local bg color for harmony
     sx, sy = int(W * cx), int(H * cy)
     sx = max(0, min(W - 1, sx))
     sy = max(0, min(H - 1, sy))
-    local = bg_v.getpixel((sx, sy))
+    local = bg.getpixel((sx, sy))
     prod = tint_to_background(prod, local, 0.1)
 
     th = int(H * scale)
