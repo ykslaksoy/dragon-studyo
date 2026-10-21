@@ -34,9 +34,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
     awaken: "Dragon Uyanıyor",
     heroMeta: "CREATIVE STUDIO",
     title: "Dragon Stüdyo",
-    subtitle: "Site yayında. İçerikler yakında burada olacak.",
-    cta: "Keşfet",
-    soon: "YAKINDA • STUDIO",
+    subtitle:
+      "Ürün fotoğrafı ve listing stüdyosu — pazaryeri, live ve içerik kareleri.",
+    cta: "Stüdyoya gir",
+    soon: "DEKUPE • SENARYO",
     langAria: "Dil seçimi",
   },
   en: {
