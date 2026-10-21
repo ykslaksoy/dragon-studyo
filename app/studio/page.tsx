@@ -66,7 +66,8 @@ export default function StudioPage() {
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
   const [cutoutUrl, setCutoutUrl] = useState<string | null>(null);
   const [previewCutoutUrl, setPreviewCutoutUrl] = useState<string | null>(null);
-  const [dekupeBusy, setDekupeBusy] = useState(false);
+  const [previewBusy, setPreviewBusy] = useState(false);
+  const [finalBusy, setFinalBusy] = useState(false);
   const [dekupeMsg, setDekupeMsg] = useState<string | null>(null);
   const [dekupeNotes, setDekupeNotes] = useState<string[]>([]);
   const [showRefineStub, setShowRefineStub] = useState(false);
@@ -190,29 +191,48 @@ export default function StudioPage() {
   };
 
   const runPreviewDekupe = async (dataUrl: string) => {
-    setDekupeBusy(true);
+    setPreviewBusy(true);
     setDekupeMsg("Hızlı önizleme (ISNet)…");
     try {
-      const res = await runDekupe(dataUrl, "preview", (p: DekupeProgress) => {
-        setDekupeMsg(p.message);
-      });
+      const res = await Promise.race([
+        runDekupe(dataUrl, "preview", (p: DekupeProgress) => {
+          setDekupeMsg(p.message);
+        }),
+        new Promise<never>((_, reject) =>
+          setTimeout(
+            () => reject(new Error("ISNet önizleme zaman aşımı")),
+            60_000,
+          ),
+        ),
+      ]);
       setPreviewCutoutUrl(res.cutoutDataUrl);
       setDekupeNotes(res.modelNotes);
       setDekupeMsg("Önizleme kesim hazır — final BiRefNet üretimde çalışır.");
     } catch {
       setDekupeMsg("Önizleme modeli yüklenemedi; finalde BiRefNet denenecek.");
     } finally {
-      setDekupeBusy(false);
+      setPreviewBusy(false);
     }
   };
 
   const ensureFinalCutout = async (dataUrl: string): Promise<string> => {
-    setDekupeBusy(true);
+    setFinalBusy(true);
     setDekupeMsg("Final dekupe: BiRefNet + kalite düzeltmeleri…");
+    const withTimeout = <T,>(p: Promise<T>, ms: number, label: string) =>
+      Promise.race([
+        p,
+        new Promise<T>((_, reject) =>
+          setTimeout(() => reject(new Error(`${label} zaman aşımı (${ms}ms)`)), ms),
+        ),
+      ]);
     try {
-      const res = await runDekupe(dataUrl, "final", (p: DekupeProgress) => {
-        setDekupeMsg(p.message);
-      });
+      const res = await withTimeout(
+        runDekupe(dataUrl, "final", (p: DekupeProgress) => {
+          setDekupeMsg(p.message);
+        }),
+        90_000,
+        "BiRefNet",
+      );
       setCutoutUrl(res.cutoutDataUrl);
       if (res.previewDataUrl) setPreviewCutoutUrl(res.previewDataUrl);
       setDekupeNotes(res.modelNotes);
@@ -227,6 +247,22 @@ export default function StudioPage() {
       setDekupeMsg("Dekupe tamam — senaryo motoruna aktarıldı.");
       return res.cutoutDataUrl;
     } catch (err) {
+      // Prefer existing ISNet preview over chroma if available
+      if (previewCutoutUrl) {
+        setDekupeMsg(
+          `Final model yavaş/başarısız (${err instanceof Error ? err.message : "hata"}); ISNet önizleme ile devam.`,
+        );
+        setCutoutUrl(previewCutoutUrl);
+        persistCutout({
+          cutoutDataUrl: previewCutoutUrl,
+          previewDataUrl: previewCutoutUrl,
+          usedHybrid: false,
+          modelNotes: ["ISNet önizleme (final zaman aşımı/hata)"],
+          quality: "preview",
+          sourceHash: sourceHash(dataUrl),
+        });
+        return previewCutoutUrl;
+      }
       setDekupeMsg(
         `ML dekupe başarısız (${err instanceof Error ? err.message : "hata"}); basit anahtarlama yedekleniyor.`,
       );
@@ -234,7 +270,7 @@ export default function StudioPage() {
       setCutoutUrl(fallback);
       persistCutout({
         cutoutDataUrl: fallback,
-        previewDataUrl: previewCutoutUrl,
+        previewDataUrl: null,
         usedHybrid: false,
         modelNotes: ["chroma-key yedek"],
         quality: "final",
@@ -242,7 +278,7 @@ export default function StudioPage() {
       });
       return fallback;
     } finally {
-      setDekupeBusy(false);
+      setFinalBusy(false);
     }
   };
 
@@ -252,7 +288,7 @@ export default function StudioPage() {
       startFresh();
       return;
     }
-    if (phase === "producing" || dekupeBusy) return;
+    if (phase === "producing" || finalBusy) return;
     if (!confirmed) {
       setConfirmed(true);
       setProduceNote(null);
@@ -351,7 +387,7 @@ export default function StudioPage() {
                   {summary.truncated
                     ? ` (kuyruk limiti ${FRAME_QUEUE_LIMIT}; toplam ${summary.fullTotal})`
                     : ""}
-                  {phase === "producing" && dekupeBusy
+                  {phase === "producing" && finalBusy
                     ? ` — ${dekupeMsg ?? "dekupe…"}`
                     : phase === "done"
                       ? " — her kare ayrı hazırlandı (crop / zoom / açı / zemin / gölge)."
@@ -699,7 +735,7 @@ export default function StudioPage() {
 
                           {dekupeMsg && (
                             <p className="mt-3 text-[12px] text-[#8CFF4D]/90">
-                              {dekupeBusy ? "… " : ""}
+                              {previewBusy || finalBusy ? "… " : ""}
                               {dekupeMsg}
                             </p>
                           )}
@@ -795,11 +831,11 @@ export default function StudioPage() {
             ) : (
               <button
                 type="button"
-                disabled={!summary || phase === "producing" || dekupeBusy}
+                disabled={!summary || phase === "producing" || finalBusy}
                 onClick={() => void handlePrimary()}
                 className="rounded-sm bg-[#8CFF4D] px-5 py-2 text-[12px] font-semibold tracking-[0.06em] text-black disabled:opacity-40"
               >
-                {phase === "producing" || dekupeBusy
+                {phase === "producing" || finalBusy
                   ? "Üretiliyor…"
                   : phase === "done"
                     ? "Baştan başla"
