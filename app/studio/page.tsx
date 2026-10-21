@@ -3,147 +3,30 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-
-type Purpose = "marketplace" | "live" | "creator" | "artistic";
-
-const PURPOSES: { id: Purpose; title: string; desc: string }[] = [
-  {
-    id: "marketplace",
-    title: "Pazaryeri satışı",
-    desc: "Amazon, Shopify, Hepsiburada, Trendyol, Etsy vitrin kareleri",
-  },
-  {
-    id: "live",
-    title: "Live ürün satışı",
-    desc: "Canlı yayın vitrini, elde gösterim, CTA boşluklu kareler",
-  },
-  {
-    id: "creator",
-    title: "İçerik üretici",
-    desc: "Reels, YouTube, feed — satış paketi değil, içerik odaklı",
-  },
-  {
-    id: "artistic",
-    title: "Sanatsal",
-    desc: "Editorial, mood, fine-art ve sinematik kareler",
-  },
-];
-
-const CHANNELS: Record<Purpose, { id: string; label: string }[]> = {
-  marketplace: [
-    { id: "amazon", label: "Amazon" },
-    { id: "shopify", label: "Shopify" },
-    { id: "hepsiburada", label: "Hepsiburada" },
-    { id: "trendyol", label: "Trendyol" },
-    { id: "etsy", label: "Etsy" },
-  ],
-  live: [
-    { id: "tiktok", label: "TikTok Live" },
-    { id: "ig-live", label: "Instagram Live" },
-    { id: "trendyol-live", label: "Trendyol Canlı" },
-    { id: "live-general", label: "Genel Live" },
-  ],
-  creator: [
-    { id: "reels", label: "Reels / Shorts" },
-    { id: "youtube", label: "YouTube" },
-    { id: "feed", label: "Feed" },
-    { id: "blog", label: "Blog / web" },
-  ],
-  artistic: [
-    { id: "editorial", label: "Editorial" },
-    { id: "print", label: "Print" },
-    { id: "mood", label: "Mood board" },
-    { id: "cinematic", label: "Cinematic" },
-  ],
-};
-
-const PACKAGES: Record<
-  Purpose,
-  { id: string; title: string; frames: string[] }[]
-> = {
-  marketplace: [
-    {
-      id: "full-listing",
-      title: "Tam listing seti (rakip üstü)",
-      frames: [
-        "Hero",
-        "45°",
-        "Detay / makro",
-        "Ölçek",
-        "Lifestyle",
-        "Elde",
-        "Flat lay",
-        "Paket / unboxing",
-        "Özellik / içerik",
-        "Mobil crop",
-        "A+ strip",
-        "Varyant yan yana",
-      ],
-    },
-    {
-      id: "minimal-5",
-      title: "Hızlı 5’li vitrin",
-      frames: ["Hero", "45°", "Detay", "Lifestyle", "Elde"],
-    },
-  ],
-  live: [
-    {
-      id: "live-full",
-      title: "Live satış seti",
-      frames: [
-        "Thumbnail",
-        "Vitrin hero",
-        "Elde gösterim",
-        "Yakın detay",
-        "CTA boşluklu",
-        "Sepete ekle anı",
-        "Varyant karşılaştırma",
-        "Stok hissi",
-        "Multi-angle quick",
-      ],
-    },
-  ],
-  creator: [
-    {
-      id: "creator-full",
-      title: "İçerik seti",
-      frames: [
-        "Hook kare",
-        "Ürün reveal",
-        "UGC hisli",
-        "B-roll still",
-        "Before / after",
-        "Talking-head backdrop",
-        "Caption-safe",
-        "End card",
-      ],
-    },
-  ],
-  artistic: [
-    {
-      id: "art-full",
-      title: "Sanatsal set",
-      frames: [
-        "Mood",
-        "Cinematic wide",
-        "Fine-art still",
-        "Abstract crop",
-        "Dramatic light",
-        "Editorial portrait",
-        "Negative space",
-        "Texture makro",
-      ],
-    },
-  ],
-};
-
-const ANGLES = [
-  { id: "front", label: "Ön" },
-  { id: "three-quarter", label: "3/4" },
-  { id: "top", label: "Üst" },
-  { id: "macro", label: "Makro" },
-  { id: "low", label: "Düşük açı" },
-];
+import {
+  ANGLES,
+  CHANNELS,
+  FRAME_QUEUE_LIMIT,
+  PACKAGES,
+  PURPOSES,
+  buildOutputList,
+  type Purpose,
+} from "./lib/catalog";
+import {
+  PAID_FALLBACK_DESIGN,
+  chromaKeyFallback,
+  runDekupe,
+  type DekupeProgress,
+} from "./lib/dekupe";
+import { runProduceQueue, type FrameJob } from "./lib/produceQueue";
+import {
+  clearAllStudioSession,
+  loadCutout,
+  loadUpload,
+  persistCutout,
+  persistUpload,
+  sourceHash,
+} from "./lib/session";
 
 function Chip({
   active,
@@ -181,13 +64,19 @@ export default function StudioPage() {
   const [confirmed, setConfirmed] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
+  const [cutoutUrl, setCutoutUrl] = useState<string | null>(null);
+  const [previewCutoutUrl, setPreviewCutoutUrl] = useState<string | null>(null);
+  const [dekupeBusy, setDekupeBusy] = useState(false);
+  const [dekupeMsg, setDekupeMsg] = useState<string | null>(null);
+  const [dekupeNotes, setDekupeNotes] = useState<string[]>([]);
+  const [showRefineStub, setShowRefineStub] = useState(false);
+  const [showPaidStub, setShowPaidStub] = useState(false);
   const [produceNote, setProduceNote] = useState<string | null>(null);
   const [phase, setPhase] = useState<"wizard" | "producing" | "done">("wizard");
-  const [jobStatus, setJobStatus] = useState<("pending" | "running" | "ready")[]>(
-    [],
-  );
+  const [jobs, setJobs] = useState<FrameJob[]>([]);
   const [readyCount, setReadyCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cancelRef = useRef({ cancelled: false });
 
   const packs = purpose ? PACKAGES[purpose] : [];
   const selectedPack = packs.find((p) => p.id === packId) ?? null;
@@ -203,21 +92,18 @@ export default function StudioPage() {
     const angleLabels = angles.map(
       (id) => ANGLES.find((a) => a.id === id)?.label ?? id,
     );
-    const outputList: string[] = [];
-    for (const frame of selectedPack.frames) {
-      outputList.push(frame);
-      for (const a of angleLabels) {
-        outputList.push(`${frame} · ${a}`);
-      }
-    }
+    const fullList = buildOutputList(selectedPack.frames, angleLabels);
+    const queued = fullList.slice(0, FRAME_QUEUE_LIMIT);
     return {
       purposeLabel: PURPOSES.find((p) => p.id === purpose)?.title ?? "",
       channelLabel:
         CHANNELS[purpose].find((p) => p.id === channel)?.label ?? "",
       pack: selectedPack,
       angleLabels,
-      outputList,
-      total: outputList.length,
+      outputList: queued,
+      fullTotal: fullList.length,
+      total: queued.length,
+      truncated: fullList.length > FRAME_QUEUE_LIMIT,
     };
   }, [purpose, channel, selectedPack, angles]);
 
@@ -229,69 +115,51 @@ export default function StudioPage() {
     setProduceNote(null);
   };
 
-  const clearUploadStorage = () => {
-    try {
-      sessionStorage.removeItem("dragon-studio-upload-v1");
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const persistUpload = (name: string, type: string, dataUrl: string) => {
-    try {
-      sessionStorage.setItem(
-        "dragon-studio-upload-v1",
-        JSON.stringify({ name, type, dataUrl, savedAt: Date.now() }),
-      );
-    } catch {
-      /* quota / private mode — preview still works in-memory */
-    }
-  };
-
   const resetUpload = () => {
     setUploadFile(null);
     setUploadPreview(null);
+    setCutoutUrl(null);
+    setPreviewCutoutUrl(null);
+    setDekupeNotes([]);
+    setDekupeMsg(null);
     setProduceNote(null);
     setPhase("wizard");
-    setJobStatus([]);
+    setJobs([]);
     setReadyCount(0);
-    clearUploadStorage();
+    clearAllStudioSession();
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const startFresh = () => {
+    cancelRef.current.cancelled = true;
     setStep(1);
     setPurpose(null);
     setChannel(null);
     setPackId(null);
     setAngles([]);
     setConfirmed(false);
+    setShowRefineStub(false);
+    setShowPaidStub(false);
     resetUpload();
   };
 
-  // Restore uploaded image after refresh / remount
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("dragon-studio-upload-v1");
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as {
-        name?: string;
-        type?: string;
-        dataUrl?: string;
-      };
-      if (!parsed?.dataUrl || !parsed.name) return;
-      setUploadPreview(parsed.dataUrl);
-      // Reconstruct a File so uploadFile checks keep working
-      void fetch(parsed.dataUrl)
-        .then((r) => r.blob())
-        .then((blob) => {
-          const file = new File([blob], parsed.name!, {
-            type: parsed.type || blob.type || "image/png",
-          });
-          setUploadFile(file);
+    const saved = loadUpload();
+    if (!saved) return;
+    setUploadPreview(saved.dataUrl);
+    void fetch(saved.dataUrl)
+      .then((r) => r.blob())
+      .then((blob) => {
+        const file = new File([blob], saved.name, {
+          type: saved.type || blob.type || "image/png",
         });
-    } catch {
-      /* ignore corrupt cache */
+        setUploadFile(file);
+      });
+    const cut = loadCutout();
+    if (cut && cut.sourceHash === sourceHash(saved.dataUrl)) {
+      setCutoutUrl(cut.cutoutDataUrl);
+      setPreviewCutoutUrl(cut.previewDataUrl);
+      setDekupeNotes(cut.modelNotes);
     }
   }, []);
 
@@ -305,6 +173,9 @@ export default function StudioPage() {
       return;
     }
     setUploadFile(file);
+    setCutoutUrl(null);
+    setPreviewCutoutUrl(null);
+    setDekupeNotes([]);
     setProduceNote(null);
     const reader = new FileReader();
     reader.onload = () => {
@@ -312,17 +183,76 @@ export default function StudioPage() {
       if (!dataUrl) return;
       setUploadPreview(dataUrl);
       persistUpload(file.name, file.type, dataUrl);
+      // Fast ISNet preview in background
+      void runPreviewDekupe(dataUrl);
     };
     reader.readAsDataURL(file);
   };
 
-  const handlePrimary = () => {
+  const runPreviewDekupe = async (dataUrl: string) => {
+    setDekupeBusy(true);
+    setDekupeMsg("Hızlı önizleme (ISNet)…");
+    try {
+      const res = await runDekupe(dataUrl, "preview", (p: DekupeProgress) => {
+        setDekupeMsg(p.message);
+      });
+      setPreviewCutoutUrl(res.cutoutDataUrl);
+      setDekupeNotes(res.modelNotes);
+      setDekupeMsg("Önizleme kesim hazır — final BiRefNet üretimde çalışır.");
+    } catch {
+      setDekupeMsg("Önizleme modeli yüklenemedi; finalde BiRefNet denenecek.");
+    } finally {
+      setDekupeBusy(false);
+    }
+  };
+
+  const ensureFinalCutout = async (dataUrl: string): Promise<string> => {
+    setDekupeBusy(true);
+    setDekupeMsg("Final dekupe: BiRefNet + kalite düzeltmeleri…");
+    try {
+      const res = await runDekupe(dataUrl, "final", (p: DekupeProgress) => {
+        setDekupeMsg(p.message);
+      });
+      setCutoutUrl(res.cutoutDataUrl);
+      if (res.previewDataUrl) setPreviewCutoutUrl(res.previewDataUrl);
+      setDekupeNotes(res.modelNotes);
+      persistCutout({
+        cutoutDataUrl: res.cutoutDataUrl,
+        previewDataUrl: res.previewDataUrl,
+        usedHybrid: res.usedHybrid,
+        modelNotes: res.modelNotes,
+        quality: "final",
+        sourceHash: sourceHash(dataUrl),
+      });
+      setDekupeMsg("Dekupe tamam — senaryo motoruna aktarıldı.");
+      return res.cutoutDataUrl;
+    } catch (err) {
+      setDekupeMsg(
+        `ML dekupe başarısız (${err instanceof Error ? err.message : "hata"}); basit anahtarlama yedekleniyor.`,
+      );
+      const fallback = await chromaKeyFallback(dataUrl);
+      setCutoutUrl(fallback);
+      persistCutout({
+        cutoutDataUrl: fallback,
+        previewDataUrl: previewCutoutUrl,
+        usedHybrid: false,
+        modelNotes: ["chroma-key yedek"],
+        quality: "final",
+        sourceHash: sourceHash(dataUrl),
+      });
+      return fallback;
+    } finally {
+      setDekupeBusy(false);
+    }
+  };
+
+  const handlePrimary = async () => {
     if (!summary) return;
     if (phase === "done") {
       startFresh();
       return;
     }
-    if (phase === "producing") return;
+    if (phase === "producing" || dekupeBusy) return;
     if (!confirmed) {
       setConfirmed(true);
       setProduceNote(null);
@@ -334,57 +264,37 @@ export default function StudioPage() {
       });
       return;
     }
-    if (!uploadFile) {
+    if (!uploadFile || !uploadPreview) {
       fileInputRef.current?.click();
       return;
     }
-    // Start production run (placeholder thumbs until AI engine is wired)
-    const total = summary.outputList.length;
-    setJobStatus(Array.from({ length: total }, () => "pending"));
-    setReadyCount(0);
-    setProduceNote(null);
+
+    cancelRef.current = { cancelled: false };
     setPhase("producing");
+    setProduceNote(null);
+    setJobs([]);
+    setReadyCount(0);
+
+    const cutout = cutoutUrl ?? (await ensureFinalCutout(uploadPreview));
+    if (cancelRef.current.cancelled) return;
+
+    await runProduceQueue(
+      cutout,
+      purpose!,
+      summary.outputList,
+      (nextJobs, ready) => {
+        setJobs(nextJobs);
+        setReadyCount(ready);
+      },
+      cancelRef.current,
+    );
+    if (!cancelRef.current.cancelled) setPhase("done");
   };
 
-  useEffect(() => {
-    if (phase !== "producing" || !summary) return;
-    const total = summary.outputList.length;
-    let i = 0;
-    let cancelled = false;
-    const tick = () => {
-      if (cancelled) return;
-      if (i >= total) {
-        setPhase("done");
-        return;
-      }
-      const idx = i;
-      setJobStatus((prev) => {
-        const next = [...prev];
-        next[idx] = "running";
-        return next;
-      });
-      window.setTimeout(() => {
-        if (cancelled) return;
-        setJobStatus((prev) => {
-          const next = [...prev];
-          next[idx] = "ready";
-          return next;
-        });
-        setReadyCount((c) => c + 1);
-        i += 1;
-        window.setTimeout(tick, 90);
-      }, 140);
-    };
-    const t = window.setTimeout(tick, 200);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(t);
-    };
-  }, [phase, summary]);
+  const activeCutout = cutoutUrl ?? previewCutoutUrl;
 
   return (
     <div className="relative mx-auto min-h-dvh w-full max-w-[100vw] overflow-x-clip text-white">
-      {/* Same plan as homepage — visible through translucent UI */}
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 z-0"
@@ -438,22 +348,31 @@ export default function StudioPage() {
                 </h1>
                 <p className="mt-3 text-[15px] text-white/65">
                   {readyCount} / {summary.total} kare hazır
-                  {phase === "done"
-                    ? " — önizleme (AI motoru sonraki adımda gerçek kareleri üretecek)."
-                    : "."}
+                  {summary.truncated
+                    ? ` (kuyruk limiti ${FRAME_QUEUE_LIMIT}; toplam ${summary.fullTotal})`
+                    : ""}
+                  {phase === "producing" && dekupeBusy
+                    ? ` — ${dekupeMsg ?? "dekupe…"}`
+                    : phase === "done"
+                      ? " — her kare ayrı hazırlandı (crop / zoom / açı / zemin / gölge)."
+                      : "."}
                 </p>
               </div>
 
-              {uploadPreview && (
+              {activeCutout && (
                 <div
                   className="flex items-center gap-3 rounded-md border border-white/15 p-3 backdrop-blur-md"
                   style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={uploadPreview}
-                    alt="Kaynak"
-                    className="h-14 w-14 rounded-sm object-cover"
+                    src={activeCutout}
+                    alt="Dekupe"
+                    className="h-14 w-14 rounded-sm object-contain"
+                    style={{
+                      background:
+                        "repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 12px 12px",
+                    }}
                   />
                   <div className="min-w-0 text-[13px]">
                     <p className="truncate text-white/90">{uploadFile?.name}</p>
@@ -466,31 +385,48 @@ export default function StudioPage() {
               )}
 
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {summary.outputList.map((label, idx) => {
-                  const st = jobStatus[idx] ?? "pending";
+                {(jobs.length
+                  ? jobs
+                  : summary.outputList.map((label) => ({
+                      spec: {
+                        label,
+                        displayLabel: label,
+                        baseFrame: label,
+                        angleLabel: null as string | null,
+                        realism: "canvas_ok" as const,
+                      },
+                      status: "pending" as const,
+                      thumbUrl: null as string | null,
+                    }))
+                ).map((job, idx) => {
+                  const st = job.status;
                   return (
                     <div
-                      key={`${label}-${idx}`}
+                      key={`${job.spec.label}-${idx}`}
                       className="relative overflow-hidden rounded-md border border-white/15 aspect-square"
                       style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
                     >
-                      {st === "ready" && uploadPreview ? (
+                      {st === "ready" && job.thumbUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={uploadPreview}
+                          src={job.thumbUrl}
                           alt=""
-                          className="absolute inset-0 h-full w-full object-cover opacity-80"
+                          className="absolute inset-0 h-full w-full object-cover"
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
                           <span className="text-[11px] text-white/35">
-                            {st === "running" ? "Üretiliyor…" : "Sırada"}
+                            {st === "running"
+                              ? "Üretiliyor…"
+                              : st === "error"
+                                ? "Hata"
+                                : "Sırada"}
                           </span>
                         </div>
                       )}
                       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-2 pt-6">
                         <p className="text-[11px] leading-snug text-white/90">
-                          {label}
+                          {job.spec.displayLabel}
                         </p>
                         <p
                           className={`mt-0.5 text-[10px] ${
@@ -498,14 +434,18 @@ export default function StudioPage() {
                               ? "text-[#8CFF4D]"
                               : st === "running"
                                 ? "text-white/70"
-                                : "text-white/40"
+                                : st === "error"
+                                  ? "text-red-300"
+                                  : "text-white/40"
                           }`}
                         >
                           {st === "ready"
                             ? "Hazır"
                             : st === "running"
                               ? "İşleniyor"
-                              : "Bekliyor"}
+                              : st === "error"
+                                ? "Hata"
+                                : "Bekliyor"}
                         </p>
                       </div>
                     </div>
@@ -517,233 +457,303 @@ export default function StudioPage() {
 
           {phase === "wizard" && (
             <>
-          <h1 className="text-[clamp(28px,6vw,44px)] font-semibold tracking-[-0.03em] drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
-            Ne için üretelim?
-          </h1>
-          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/65 drop-shadow-[0_1px_8px_rgba(0,0,0,0.7)]">
-            Amaç → platform/format → paket → isteğe bağlı açılar. Seçimi
-            tamamlayınca üretilecek kare listesi çıkar.
-          </p>
+              <h1 className="text-[clamp(28px,6vw,44px)] font-semibold tracking-[-0.03em] drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]">
+                Ne için üretelim?
+              </h1>
+              <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/65 drop-shadow-[0_1px_8px_rgba(0,0,0,0.7)]">
+                Amaç → platform/format → paket → isteğe bağlı açılar. Her kare
+                ayrı hazırlanır; dekupe tarayıcıda (ISNet önizleme, BiRefNet
+                final).
+              </p>
 
-          <ol className="mt-8 flex flex-wrap gap-2">
-            {["Amaç", "Platform", "Paket", "Açılar"].map((label, i) => {
-              const n = i + 1;
-              return (
-                <li
-                  key={label}
-                  className={`rounded-full px-3 py-1 text-[11px] tracking-[0.12em] backdrop-blur-md ${
-                    step === n
-                      ? "bg-[#8CFF4D] text-black"
-                      : step > n
-                        ? "bg-white/15 text-white/85"
-                        : "bg-black/35 text-white/40"
-                  }`}
-                >
-                  {n}. {label}
-                </li>
-              );
-            })}
-          </ol>
-
-          <section className="mt-8 rounded-md border border-white/15 bg-transparent p-5 sm:p-6">
-            {step === 1 && (
-              <div className="grid gap-3 sm:grid-cols-2">
-                {PURPOSES.map((p) => (
-                  <Chip
-                    key={p.id}
-                    active={purpose === p.id}
-                    onClick={() => {
-                      setPurpose(p.id);
-                      setChannel(null);
-                      setPackId(null);
-                      setConfirmed(false);
-                      setPhase("wizard");
-                      setJobStatus([]);
-                      setReadyCount(0);
-                      setProduceNote(null);
-                    }}
-                  >
-                    <div className="font-medium text-white">{p.title}</div>
-                    <div className="mt-1 text-[12px] text-white/45">
-                      {p.desc}
-                    </div>
-                  </Chip>
-                ))}
-              </div>
-            )}
-
-            {step === 2 && purpose && (
-              <div>
-                <p className="mb-3 text-[12px] tracking-[0.14em] text-white/40">
-                  {purpose === "marketplace" || purpose === "live"
-                    ? "PLATFORM"
-                    : "FORMAT"}
-                </p>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {CHANNELS[purpose].map((p) => (
-                    <Chip
-                      key={p.id}
-                      active={channel === p.id}
-                      onClick={() => {
-                        setChannel(p.id);
-                        setConfirmed(false);
-                      }}
+              <ol className="mt-8 flex flex-wrap gap-2">
+                {["Amaç", "Platform", "Paket", "Açılar"].map((label, i) => {
+                  const n = i + 1;
+                  return (
+                    <li
+                      key={label}
+                      className={`rounded-full px-3 py-1 text-[11px] tracking-[0.12em] backdrop-blur-md ${
+                        step === n
+                          ? "bg-[#8CFF4D] text-black"
+                          : step > n
+                            ? "bg-white/15 text-white/85"
+                            : "bg-black/35 text-white/40"
+                      }`}
                     >
-                      {p.label}
-                    </Chip>
-                  ))}
-                </div>
-              </div>
-            )}
+                      {n}. {label}
+                    </li>
+                  );
+                })}
+              </ol>
 
-            {step === 3 && purpose && (
-              <div className="grid gap-4">
-                {packs.map((pack) => (
-                  <button
-                    key={pack.id}
-                    type="button"
-                    onClick={() => {
-                      setPackId(pack.id);
-                      setConfirmed(false);
-                      setPhase("wizard");
-                      setJobStatus([]);
-                      setReadyCount(0);
-                      setProduceNote(null);
-                    }}
-                    className={`rounded-sm border p-4 text-left backdrop-blur-md transition ${
-                      packId === pack.id
-                        ? "border-[#8CFF4D]/70"
-                        : "border-white/20 hover:border-white/35"
-                    }`}
-                    style={{
-                      backgroundColor:
-                        packId === pack.id
-                          ? "rgba(140,255,77,0.20)"
-                          : "rgba(0,0,0,0.85)",
-                    }}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="font-medium">{pack.title}</span>
-                      <span className="mono text-[11px] text-[#8CFF4D]/90">
-                        {pack.frames.length} kare
-                      </span>
-                    </div>
-                    <ul className="mt-3 flex flex-wrap gap-1.5">
-                      {pack.frames.map((f) => (
-                        <li
-                          key={f}
-                          className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/65"
-                        >
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {step === 4 && (
-              <div>
-                <p className="mb-2 text-[14px] text-white/65">
-                  Her kareye eklenecek ekstra açılar (opsiyonel)
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {ANGLES.map((a) => (
-                    <Chip
-                      key={a.id}
-                      active={angles.includes(a.id)}
-                      onClick={() => toggleAngle(a.id)}
-                    >
-                      {a.label}
-                    </Chip>
-                  ))}
-                </div>
-
-                {confirmed && summary && (
-                  <div className="mt-6 space-y-4">
-                    <div
-                      className="rounded-sm border border-[#8CFF4D]/35 p-4 text-[13px] backdrop-blur-md"
-                      style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
-                    >
-                      <p className="font-medium text-[#8CFF4D]">
-                        Seçim kilitlendi — {summary.total} çıktı hazırlanacak
-                      </p>
-                      <p className="mt-2 text-white/70">
-                        {summary.purposeLabel} · {summary.channelLabel} ·{" "}
-                        {summary.pack.title}
-                      </p>
-                    </div>
-
-                    <div
-                      id="studio-upload"
-                      className="rounded-sm border border-dashed border-white/25 p-4 backdrop-blur-md"
-                      style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
-                    >
-                      <p className="text-[13px] font-medium text-white">
-                        Kaynak görsel
-                      </p>
-                      <p className="mt-1 text-[12px] text-white/50">
-                        Tek görsel yükle; seçilen paket + açılar bu görselden
-                        üretilecek.
-                      </p>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="sr-only"
-                        onChange={(e) =>
-                          onPickFile(e.target.files?.[0] ?? null)
-                        }
-                      />
-                      <div className="mt-3 flex flex-wrap items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="rounded-sm border border-white/25 px-3 py-2 text-[12px] text-white/85 hover:border-white/40"
-                        >
-                          {uploadFile ? "Görseli değiştir" : "Görsel seç"}
-                        </button>
-                        {uploadFile && (
-                          <span className="text-[12px] text-white/60">
-                            {uploadFile.name}
-                          </span>
-                        )}
-                      </div>
-                      {uploadPreview && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={uploadPreview}
-                          alt="Yüklenen görsel önizleme"
-                          className="mt-3 max-h-40 rounded-sm border border-white/15 object-contain"
-                        />
-                      )}
-                      {produceNote && (
-                        <p className="mt-3 text-[12px] text-[#8CFF4D]/90">
-                          {produceNote}
-                        </p>
-                      )}
-                    </div>
-
-                    <ul
-                      className="max-h-56 overflow-y-auto rounded-sm border border-white/15 p-3 text-[12px] text-white/75 backdrop-blur-md"
-                      style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
-                    >
-                      {summary.outputList.map((item) => (
-                        <li
-                          key={item}
-                          className="border-b border-white/5 py-1.5 last:border-0"
-                        >
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
+              <section className="mt-8 rounded-md border border-white/15 bg-transparent p-5 sm:p-6">
+                {step === 1 && (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {PURPOSES.map((p) => (
+                      <Chip
+                        key={p.id}
+                        active={purpose === p.id}
+                        onClick={() => {
+                          setPurpose(p.id);
+                          setChannel(null);
+                          setPackId(null);
+                          setConfirmed(false);
+                          setPhase("wizard");
+                          setJobs([]);
+                          setReadyCount(0);
+                          setProduceNote(null);
+                        }}
+                      >
+                        <div className="font-medium text-white">{p.title}</div>
+                        <div className="mt-1 text-[12px] text-white/45">
+                          {p.desc}
+                        </div>
+                      </Chip>
+                    ))}
                   </div>
                 )}
-              </div>
-            )}
-          </section>
 
+                {step === 2 && purpose && (
+                  <div>
+                    <p className="mb-3 text-[12px] tracking-[0.14em] text-white/40">
+                      {purpose === "marketplace" ||
+                      purpose === "live" ||
+                      purpose === "multi-angle"
+                        ? "PLATFORM"
+                        : "FORMAT"}
+                    </p>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {CHANNELS[purpose].map((p) => (
+                        <Chip
+                          key={p.id}
+                          active={channel === p.id}
+                          onClick={() => {
+                            setChannel(p.id);
+                            setConfirmed(false);
+                          }}
+                        >
+                          {p.label}
+                        </Chip>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {step === 3 && purpose && (
+                  <div className="grid gap-4">
+                    {packs.map((pack) => (
+                      <button
+                        key={pack.id}
+                        type="button"
+                        onClick={() => {
+                          setPackId(pack.id);
+                          setConfirmed(false);
+                          setPhase("wizard");
+                          setJobs([]);
+                          setReadyCount(0);
+                          setProduceNote(null);
+                        }}
+                        className={`rounded-sm border p-4 text-left backdrop-blur-md transition ${
+                          packId === pack.id
+                            ? "border-[#8CFF4D]/70"
+                            : "border-white/20 hover:border-white/35"
+                        }`}
+                        style={{
+                          backgroundColor:
+                            packId === pack.id
+                              ? "rgba(140,255,77,0.20)"
+                              : "rgba(0,0,0,0.85)",
+                        }}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="font-medium">{pack.title}</span>
+                          <span className="mono text-[11px] text-[#8CFF4D]/90">
+                            {pack.frames.length} kare
+                          </span>
+                        </div>
+                        <ul className="mt-3 flex flex-wrap gap-1.5">
+                          {pack.frames.map((f) => (
+                            <li
+                              key={f}
+                              className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/65"
+                            >
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {step === 4 && (
+                  <div>
+                    <p className="mb-2 text-[14px] text-white/65">
+                      Her kareye eklenecek ekstra açılar (opsiyonel). Üretim
+                      kuyruğu en fazla {FRAME_QUEUE_LIMIT} kare.
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {ANGLES.map((a) => (
+                        <Chip
+                          key={a.id}
+                          active={angles.includes(a.id)}
+                          onClick={() => toggleAngle(a.id)}
+                        >
+                          {a.label}
+                        </Chip>
+                      ))}
+                    </div>
+
+                    {confirmed && summary && (
+                      <div className="mt-6 space-y-4">
+                        <div
+                          className="rounded-sm border border-[#8CFF4D]/35 p-4 text-[13px] backdrop-blur-md"
+                          style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+                        >
+                          <p className="font-medium text-[#8CFF4D]">
+                            Seçim kilitlendi — {summary.total} çıktı
+                            hazırlanacak
+                            {summary.truncated
+                              ? ` / ${summary.fullTotal}`
+                              : ""}
+                          </p>
+                          <p className="mt-2 text-white/70">
+                            {summary.purposeLabel} · {summary.channelLabel} ·{" "}
+                            {summary.pack.title}
+                          </p>
+                        </div>
+
+                        <div
+                          id="studio-upload"
+                          className="rounded-sm border border-dashed border-white/25 p-4 backdrop-blur-md"
+                          style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+                        >
+                          <p className="text-[13px] font-medium text-white">
+                            Kaynak görsel + dekupe
+                          </p>
+                          <p className="mt-1 text-[12px] text-white/50">
+                            Tek görsel yükle. ISNet hızlı önizleme; üretimde
+                            BiRefNet (MIT) + hole-fill + matting. Cutout oturumda
+                            tutulur ve senaryo motoruna verilir.
+                          </p>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="sr-only"
+                            onChange={(e) =>
+                              onPickFile(e.target.files?.[0] ?? null)
+                            }
+                          />
+                          <div className="mt-3 flex flex-wrap items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="rounded-sm border border-white/25 px-3 py-2 text-[12px] text-white/85 hover:border-white/40"
+                            >
+                              {uploadFile ? "Görseli değiştir" : "Görsel seç"}
+                            </button>
+                            {uploadFile && (
+                              <span className="text-[12px] text-white/60">
+                                {uploadFile.name}
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => setShowRefineStub((v) => !v)}
+                              className="rounded-sm border border-white/15 px-3 py-2 text-[12px] text-white/55"
+                            >
+                              Fırça / rötuş (yakında)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setShowPaidStub((v) => !v)}
+                              className="rounded-sm border border-white/15 px-3 py-2 text-[12px] text-white/55"
+                            >
+                              Zor SKU API (opsiyonel)
+                            </button>
+                          </div>
+
+                          <div className="mt-3 flex flex-wrap gap-3">
+                            {uploadPreview && (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={uploadPreview}
+                                alt="Yüklenen görsel"
+                                className="max-h-36 rounded-sm border border-white/15 object-contain"
+                              />
+                            )}
+                            {activeCutout && (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={activeCutout}
+                                alt="Dekupe önizleme"
+                                className="max-h-36 rounded-sm border border-[#8CFF4D]/30 object-contain"
+                                style={{
+                                  background:
+                                    "repeating-conic-gradient(#444 0% 25%, #2a2a2a 0% 50%) 50% / 10px 10px",
+                                }}
+                              />
+                            )}
+                          </div>
+
+                          {dekupeMsg && (
+                            <p className="mt-3 text-[12px] text-[#8CFF4D]/90">
+                              {dekupeBusy ? "… " : ""}
+                              {dekupeMsg}
+                            </p>
+                          )}
+                          {dekupeNotes.length > 0 && (
+                            <p className="mt-1 text-[11px] text-white/40">
+                              {dekupeNotes.join(" · ")}
+                            </p>
+                          )}
+                          {produceNote && (
+                            <p className="mt-3 text-[12px] text-[#8CFF4D]/90">
+                              {produceNote}
+                            </p>
+                          )}
+
+                          {showRefineStub && (
+                            <div className="mt-3 rounded-sm border border-white/10 bg-black/40 p-3 text-[12px] text-white/55">
+                              Fırça / kenar rötuş arayüzü — iskelet. Çekirdek
+                              kesim BiRefNet; kullanıcı düzeltmesi sonraki
+                              sprint.
+                            </div>
+                          )}
+                          {showPaidStub && (
+                            <div className="mt-3 rounded-sm border border-white/10 bg-black/40 p-3 text-[12px] text-white/55">
+                              {PAID_FALLBACK_DESIGN.note} Sağlayıcılar:{" "}
+                              {PAID_FALLBACK_DESIGN.providers.join(", ")}. Şu an
+                              kapalı ({PAID_FALLBACK_DESIGN.enabled ? "açık" : "enabled: false"}).
+                            </div>
+                          )}
+                        </div>
+
+                        <ul
+                          className="max-h-56 overflow-y-auto rounded-sm border border-white/15 p-3 text-[12px] text-white/75 backdrop-blur-md"
+                          style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+                        >
+                          {summary.outputList.map((item) => {
+                            const needsGen =
+                              /elde|ugc|lifestyle|talking-head|sepete|paket \/|stok hissi|before \/ after/i.test(
+                                item,
+                              );
+                            return (
+                              <li
+                                key={item}
+                                className="border-b border-white/5 py-1.5 last:border-0"
+                              >
+                                {needsGen ? `[GEN]: ${item}` : item}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </section>
             </>
           )}
 
@@ -755,7 +765,7 @@ export default function StudioPage() {
                 onClick={() => {
                   setConfirmed(false);
                   setPhase("wizard");
-                  setJobStatus([]);
+                  setJobs([]);
                   setReadyCount(0);
                   setProduceNote(null);
                   setStep((s) => Math.max(1, s - 1));
@@ -785,11 +795,11 @@ export default function StudioPage() {
             ) : (
               <button
                 type="button"
-                disabled={!summary || phase === "producing"}
-                onClick={handlePrimary}
+                disabled={!summary || phase === "producing" || dekupeBusy}
+                onClick={() => void handlePrimary()}
                 className="rounded-sm bg-[#8CFF4D] px-5 py-2 text-[12px] font-semibold tracking-[0.06em] text-black disabled:opacity-40"
               >
-                {phase === "producing"
+                {phase === "producing" || dekupeBusy
                   ? "Üretiliyor…"
                   : phase === "done"
                     ? "Baştan başla"

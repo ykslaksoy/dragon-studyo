@@ -23,7 +23,8 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: "Dragon Stüdyo",
-  description: "Dragon Stüdyo — site yayında.",
+  description:
+    "Dragon Stüdyo — e-ticaret ve içerik için ürün fotoğrafı / listing stüdyosu.",
 };
 
 export const viewport: Viewport = {
