@@ -1,0 +1,90 @@
+[
+  {
+    "id": "easy-01-red-sneaker",
+    "difficulty": "easy",
+    "description": "High-contrast red sneaker on plain light background",
+    "source": "Unsplash",
+    "page": "https://unsplash.com/photos/red-nike-sneaker-on-white-surface-7eec264c27ff",
+    "photographer": "Paul Cuoco",
+    "license": "Unsplash License (free; commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "download_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "easy-02-watch-plain",
+    "difficulty": "easy",
+    "description": "Product watch on neutral gray studio surface",
+    "source": "Unsplash",
+    "page": "https://unsplash.com/photos/white-watch-with-black-strap-37898b6baf30",
+    "photographer": "Luke Chesser",
+    "license": "Unsplash License (free; commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "download_url": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "normal-01-skincare-tile",
+    "difficulty": "normal",
+    "description": "Bottle on patterned bathroom tile",
+    "source": "Unsplash",
+    "page": "https://unsplash.com/photos/person-holding-amber-glass-bottle-0d85b1a4d571",
+    "photographer": "Mathilde Langevin",
+    "license": "Unsplash License (free; commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "download_url": "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "normal-02-shoes-fabric",
+    "difficulty": "normal",
+    "description": "Sneakers on textured fabric / patterned surface",
+    "source": "Unsplash",
+    "page": "https://unsplash.com/photos/brown-and-white-nike-sneakers-41d501d3772",
+    "photographer": "Taylor Grote",
+    "license": "Unsplash License (free; commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "download_url": "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "hard-01-perfume-glass",
+    "difficulty": "hard",
+    "description": "Glass perfume bottle (transparency / reflections)",
+    "source": "Unsplash",
+    "page": "https://unsplash.com/photos/clear-glass-perfume-bottle-b3fbafd7f539",
+    "photographer": "Charisse Kenion",
+    "license": "Unsplash License (free; commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "download_url": "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "hard-02-white-sneaker-white",
+    "difficulty": "hard",
+    "description": "White sneaker on white background (low edge contrast)",
+    "source": "Unsplash",
+    "page": "https://unsplash.com/photos/unpaired-white-nike-sneaker-3a2ce3cdb9eb",
+    "photographer": "Taylor Smith",
+    "license": "Unsplash License (free; commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "download_url": "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "veryhard-01-lace-dress",
+    "difficulty": "very_hard",
+    "description": "Wedding dress lace / tulle fine detail",
+    "source": "Unsplash",
+    "page": "https://unsplash.com/photos/woman-wearing-white-wedding-dress-b8f02a4ae446",
+    "photographer": "Gift Habeshaw",
+    "license": "Unsplash License (free; commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "download_url": "https://images.unsplash.com/photo-1519741497674-611481863552?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "veryhard-02-cat-fur",
+    "difficulty": "very_hard",
+    "description": "Cat portrait — fine fur strands and whiskers",
+    "source": "Unsplash",
+    "page": "https://unsplash.com/photos/black-and-white-cat-6c03e2ca1dba",
+    "photographer": "Feroz Khan",
+    "license": "Unsplash License (free; commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "download_url": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1400&q=85&auto=format"
+  }
+]
