@@ -20,6 +20,22 @@
     "download_url": "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=1400&q=85&auto=format"
   },
   {
+    "id": "sneakers_feet",
+    "description": "Close-up legs with sneakers on pavement — primary shoe wear stock",
+    "license": "Unsplash License (commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photos/person-wearing-black-and-white-sneakers-85924c800a22",
+    "download_url": "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=1400&q=85&auto=format&fit=crop"
+  },
+  {
+    "id": "lace_dress_model",
+    "description": "Full-length model in white lace long-sleeve dress",
+    "license": "Unsplash License (commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photos/woman-in-white-lace-long-sleeve-dress-j7SW1zuHnWg",
+    "download_url": "https://images.unsplash.com/photo-1612336307429-faa36aea2f52?w=1400&q=85&auto=format"
+  },
+  {
     "id": "wrist_watch_stock",
     "description": "Wrist with watch (reference anatomy for watch composite)",
     "license": "Unsplash License",
@@ -32,8 +48,8 @@
     "description": "Hand / beauty product context",
     "license": "Unsplash License",
     "license_url": "https://unsplash.com/license",
-    "page": "https://unsplash.com/photos/woman-holding-cosmetic-product-4c088753af8f",
-    "download_url": "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=1400&q=85&auto=format"
+    "page": "https://unsplash.com/photos/person-holding-bottle-4c088753af8f",
+    "download_url": "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=1400&q=85&auto=format"
   },
   {
     "id": "fashion_model_studio",

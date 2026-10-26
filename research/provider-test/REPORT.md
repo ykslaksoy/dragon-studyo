@@ -65,6 +65,37 @@ All paths below are under **`/opt/cursor/artifacts/provider-test/`** (mirrored i
 
 **Delivery total for this section:** 40 JPG artifact paths (8 + 8 + 8 + 8 + 8).
 
+## Worn / in-use mannequin shots (v3 — occlusion warp)
+
+**VTON denemesi:** Bu ortamda GPU / `HF_TOKEN` / `FAL_KEY` yok. **OOTDiffusion** (HF Space) lisansı **CC BY-NC-SA** → ticari çıktı için kullanılmadı. `scripts/try_commercial_vton.py` → `vton_availability.json` özetler (fal try-on ticari olabilir; anahtar yok).
+
+**Üretim:** `python scripts/run_worn_products.py` — `wear_engine.py` v3: ayakkabı için stok üzerinde **beyaz ayakkabı bölgesi tespiti** (önceki otomatik quad zemine kayıyordu), perspektif warp, LAB renk eşleme, bacak/manşet **occlusion** maskeleri, çoklu ürünlü cutout’larda tek bileşen kırpımı. Stoklar: ayakkabı/saat `fitness_worn_gear`, el ürünleri `hand_beauty`, elbise `fashion_model_studio`.
+
+**Kalite sınırı:** Bu hâlâ **gerçek VTON/inpaint değil**; ayakkabı ayağa oturur ama doku/aydınlatma fotoğrafik değildir. Elbise ve karmaşık cutout’lar üretken model veya Photoroom/fal try-on ister.
+
+| Test ürün | Dosya (artifact) |
+|-----------|------------------|
+| easy-01 ayakkabı | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/easy-01-red-sneaker__shoe_on_feet.jpg` |
+| normal-02 ayakkabı | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/normal-02-shoes-fabric__shoe_on_feet.jpg` |
+| hard-02 ayakkabı | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/hard-02-white-sneaker-white__shoe_on_feet.jpg` |
+| easy-02 saat | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/easy-02-watch-plain__watch_on_wrist.jpg` |
+| normal-01 cilt bakım | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/normal-01-skincare-tile__product_in_hand.jpg` |
+| hard-01 parfüm | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/hard-01-perfume-glass__perfume_in_hand.jpg` |
+| veryhard-01 elbise | `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/veryhard-01-lace-dress__dress_on_model.jpg` |
+
+**Güncellenmiş manken grid’leri (aynı yollar):**
+
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/easy-01-red-sneaker__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/easy-02-watch-plain__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/normal-01-skincare-tile__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/normal-02-shoes-fabric__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/hard-01-perfume-glass__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/hard-02-white-sneaker-white__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/veryhard-01-lace-dress__mannequin_grid.jpg`
+- `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/veryhard-02-cat-fur__mannequin_grid.jpg`
+
+Index: `/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/worn_products_index.json`
+
 ## Görsel kalite notu (TR)
 
 İlk manken denemeleri **stok foto üzerine düz PNG yapıştırma** gibi görünüyordu; bu, ücretsiz pipeline’ın fiziksel try-on/ghost mannequin yapamamasından kaynaklanıyor. Güncelleme:
