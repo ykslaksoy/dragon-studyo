@@ -1,0 +1,86 @@
+[
+  {
+    "image_id": "easy-01-red-sneaker",
+    "scenario": "shoe_on_feet",
+    "stock_id": "fitness_worn_gear",
+    "method": "occlusion_warp_v3",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/easy-01-red-sneaker__shoe_on_feet.jpg"
+  },
+  {
+    "image_id": "normal-02-shoes-fabric",
+    "scenario": "shoe_on_feet",
+    "stock_id": "fitness_worn_gear",
+    "method": "occlusion_warp_v3",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/normal-02-shoes-fabric__shoe_on_feet.jpg"
+  },
+  {
+    "image_id": "hard-02-white-sneaker-white",
+    "scenario": "shoe_on_feet",
+    "stock_id": "fitness_worn_gear",
+    "method": "occlusion_warp_v3",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/hard-02-white-sneaker-white__shoe_on_feet.jpg"
+  },
+  {
+    "image_id": "easy-02-watch-plain",
+    "scenario": "watch_on_wrist",
+    "stock_id": "fitness_worn_gear",
+    "method": "occlusion_warp_v3",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/easy-02-watch-plain__watch_on_wrist.jpg"
+  },
+  {
+    "image_id": "normal-01-skincare-tile",
+    "scenario": "product_in_hand",
+    "stock_id": "hand_beauty",
+    "method": "occlusion_warp_v3",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/normal-01-skincare-tile__product_in_hand.jpg"
+  },
+  {
+    "image_id": "hard-01-perfume-glass",
+    "scenario": "perfume_in_hand",
+    "stock_id": "hand_beauty",
+    "method": "occlusion_warp_v3",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/hard-01-perfume-glass__perfume_in_hand.jpg"
+  },
+  {
+    "image_id": "veryhard-01-lace-dress",
+    "scenario": "dress_on_model",
+    "stock_id": "fashion_model_studio",
+    "method": "occlusion_warp_v3",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/veryhard-01-lace-dress__dress_on_model.jpg"
+  },
+  {
+    "image_id": "easy-01-red-sneaker",
+    "scenario": "_grid",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/easy-01-red-sneaker__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "normal-02-shoes-fabric",
+    "scenario": "_grid",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/normal-02-shoes-fabric__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "hard-02-white-sneaker-white",
+    "scenario": "_grid",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/hard-02-white-sneaker-white__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "easy-02-watch-plain",
+    "scenario": "_grid",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/easy-02-watch-plain__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "normal-01-skincare-tile",
+    "scenario": "_grid",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/normal-01-skincare-tile__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "hard-01-perfume-glass",
+    "scenario": "_grid",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/hard-01-perfume-glass__mannequin_grid.jpg"
+  },
+  {
+    "image_id": "veryhard-01-lace-dress",
+    "scenario": "_grid",
+    "artifact_path": "/opt/cursor/artifacts/provider-test/app-scenarios/mannequin/grids/veryhard-01-lace-dress__mannequin_grid.jpg"
+  }
+]
