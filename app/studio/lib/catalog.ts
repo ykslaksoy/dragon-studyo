@@ -151,6 +151,7 @@ export const PACKAGES: Record<
         "Abstract crop",
         "Dramatic light",
         "Editorial portrait",
+        "Giyili mannequin",
         "Negative space",
         "Texture makro",
       ],

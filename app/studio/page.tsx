@@ -16,6 +16,7 @@ import {
   PAID_FALLBACK_DESIGN,
   chromaKeyFallback,
   runDekupe,
+  runPaidDekupeFallback,
   type DekupeProgress,
 } from "./lib/dekupe";
 import { runProduceQueue, type FrameJob } from "./lib/produceQueue";
@@ -72,6 +73,9 @@ export default function StudioPage() {
   const [dekupeNotes, setDekupeNotes] = useState<string[]>([]);
   const [showRefineStub, setShowRefineStub] = useState(false);
   const [showPaidStub, setShowPaidStub] = useState(false);
+  const [paidBusy, setPaidBusy] = useState(false);
+  const [paidNote, setPaidNote] = useState<string | null>(null);
+  const [genConfigured, setGenConfigured] = useState<boolean | null>(null);
   const [produceNote, setProduceNote] = useState<string | null>(null);
   const [phase, setPhase] = useState<"wizard" | "producing" | "done">("wizard");
   const [jobs, setJobs] = useState<FrameJob[]>([]);
@@ -143,6 +147,13 @@ export default function StudioPage() {
     setShowPaidStub(false);
     resetUpload();
   };
+
+  useEffect(() => {
+    void fetch("/api/gen")
+      .then((r) => r.json())
+      .then((d: { configured?: boolean }) => setGenConfigured(Boolean(d.configured)))
+      .catch(() => setGenConfigured(false));
+  }, []);
 
   useEffect(() => {
     const saved = loadUpload();
@@ -329,6 +340,39 @@ export default function StudioPage() {
 
   const activeCutout = cutoutUrl ?? previewCutoutUrl;
 
+  const runPaidFallback = async () => {
+    if (!uploadPreview) {
+      setPaidNote("Önce görsel yükle.");
+      return;
+    }
+    setPaidBusy(true);
+    setPaidNote("Photoroom isteği…");
+    try {
+      const blob = await (await fetch(uploadPreview)).blob();
+      const res = await runPaidDekupeFallback(blob);
+      if ("blockedEnv" in res) {
+        setPaidNote(
+          `Bloklandı: ${res.blockedEnv} — ${res.message}. Çekirdek BiRefNet yolu açık.`,
+        );
+        return;
+      }
+      setCutoutUrl(res.cutoutDataUrl);
+      persistCutout({
+        cutoutDataUrl: res.cutoutDataUrl,
+        previewDataUrl: previewCutoutUrl,
+        usedHybrid: false,
+        modelNotes: ["Photoroom ücretli fallback"],
+        quality: "final",
+        sourceHash: sourceHash(uploadPreview),
+      });
+      setPaidNote("Photoroom cutout hazır.");
+    } catch (err) {
+      setPaidNote(err instanceof Error ? err.message : "Photoroom hatası");
+    } finally {
+      setPaidBusy(false);
+    }
+  };
+
   return (
     <div className="relative mx-auto min-h-dvh w-full max-w-[100vw] overflow-x-clip text-white">
       <div
@@ -476,7 +520,13 @@ export default function StudioPage() {
                           }`}
                         >
                           {st === "ready"
-                            ? "Hazır"
+                            ? job.method === "fal_gen"
+                              ? "Hazır · fal GEN"
+                              : job.method === "mannequin_warp_v3"
+                                ? "Hazır · warp v3"
+                                : job.method === "canvas_gen_placeholder"
+                                  ? "Hazır · [GEN] yer tutucu"
+                                  : "Hazır · tuval"
                             : st === "running"
                               ? "İşleniyor"
                               : st === "error"
@@ -758,11 +808,35 @@ export default function StudioPage() {
                             </div>
                           )}
                           {showPaidStub && (
-                            <div className="mt-3 rounded-sm border border-white/10 bg-black/40 p-3 text-[12px] text-white/55">
-                              {PAID_FALLBACK_DESIGN.note} Sağlayıcılar:{" "}
-                              {PAID_FALLBACK_DESIGN.providers.join(", ")}. Şu an
-                              kapalı ({PAID_FALLBACK_DESIGN.enabled ? "açık" : "enabled: false"}).
+                            <div className="mt-3 space-y-2 rounded-sm border border-white/10 bg-black/40 p-3 text-[12px] text-white/55">
+                              <p>
+                                {PAID_FALLBACK_DESIGN.note} Sağlayıcılar:{" "}
+                                {PAID_FALLBACK_DESIGN.providers.join(", ")}.
+                              </p>
+                              <button
+                                type="button"
+                                disabled={paidBusy || !uploadPreview}
+                                onClick={() => void runPaidFallback()}
+                                className="rounded-sm border border-[#8CFF4D]/40 px-3 py-1.5 text-[12px] text-[#8CFF4D] disabled:opacity-40"
+                              >
+                                {paidBusy
+                                  ? "Photoroom…"
+                                  : "Ücretli dekupe dene"}
+                              </button>
+                              {paidNote && (
+                                <p className="text-[11px] text-white/70">
+                                  {paidNote}
+                                </p>
+                              )}
                             </div>
+                          )}
+                          {genConfigured !== null && (
+                            <p className="mt-3 text-[11px] text-white/40">
+                              GEN / fal.ai:{" "}
+                              {genConfigured
+                                ? "FAL_KEY tanımlı — üretken kareler canlı."
+                                : "FAL_KEY yok — mannequin warp v3 / tuval yer tutucu."}
+                            </p>
                           )}
                         </div>
 

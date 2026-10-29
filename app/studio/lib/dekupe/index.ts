@@ -8,6 +8,7 @@
 
 import {
   applyMaskToRgb,
+  boostLowContrastEdges,
   extractAlphaMask,
   guardedHybrid,
   imageDataFromUrl,
@@ -41,19 +42,54 @@ export type DekupeResult = {
 
 export type PaidFallbackProvider = "photoroom" | "remove.bg";
 
-/** Design-only: optional hard-SKU paid fallback — not wired (no free-quota dependency). */
+/** Optional hard-SKU paid fallback — wired at /api/dekupe/paid; needs PHOTOROOM_API_KEY. */
 export type PaidFallbackDesign = {
-  enabled: false;
+  enabled: boolean;
   providers: PaidFallbackProvider[];
+  endpoint: string;
+  blockedEnv: "PHOTOROOM_API_KEY";
   note: string;
 };
 
 export const PAID_FALLBACK_DESIGN: PaidFallbackDesign = {
-  enabled: false,
+  enabled: true,
   providers: ["photoroom", "remove.bg"],
+  endpoint: "/api/dekupe/paid",
+  blockedEnv: "PHOTOROOM_API_KEY",
   note:
-    "Zor SKU (beyaz-üzeri-beyaz, dantel, kürk) için ücretli API opsiyonel; çekirdek yol BiRefNet (MIT).",
+    "Zor SKU (beyaz-üzeri-beyaz, dantel, kürk) için ücretli API opsiyonel; çekirdek yol BiRefNet (MIT). Photoroom: PHOTOROOM_API_KEY.",
 };
+
+/** Call Photoroom paid fallback when key is configured on the server. */
+export async function runPaidDekupeFallback(
+  sourceBlob: Blob,
+): Promise<{ cutoutDataUrl: string } | { blockedEnv: string; message: string }> {
+  const form = new FormData();
+  form.append("image", sourceBlob, "product.png");
+  const res = await fetch(PAID_FALLBACK_DESIGN.endpoint, {
+    method: "POST",
+    body: form,
+  });
+  const data = (await res.json()) as {
+    ok?: boolean;
+    cutoutDataUrl?: string;
+    blockedEnv?: string;
+    message?: string;
+  };
+  if (res.status === 503 && data.blockedEnv) {
+    return {
+      blockedEnv: data.blockedEnv,
+      message: data.message ?? "Ücretli dekupe anahtarı yok",
+    };
+  }
+  if (!res.ok || !data.ok || !data.cutoutDataUrl) {
+    return {
+      blockedEnv: data.blockedEnv ?? PAID_FALLBACK_DESIGN.blockedEnv,
+      message: data.message ?? "Ücretli dekupe başarısız",
+    };
+  }
+  return { cutoutDataUrl: data.cutoutDataUrl };
+}
 
 type AnyModel = {
   (inputs: Record<string, unknown>): Promise<Record<string, unknown>> | Record<string, unknown>;
@@ -315,14 +351,16 @@ async function postprocessCutout(
     );
   }
 
-  mask = morphHoleFill(mask, birefRgba.width, birefRgba.height, 2);
-  notes.push("Hole-fill");
+  mask = morphHoleFill(mask, birefRgba.width, birefRgba.height, 1, 64);
+  notes.push("Hole-fill (küçük delik; dantel/tül korunur)");
+  mask = boostLowContrastEdges(srcRgb, mask);
+  notes.push("Beyaz-üzeri-beyaz kenar güçlendirme");
   mask = refineAlphaEdges(mask, birefRgba.width, birefRgba.height);
   notes.push("Matting-lite");
 
   let rgba = applyMaskToRgb(srcRgb, mask);
   rgba = suppressGreenSpill(rgba);
-  notes.push("Yeşil spill bastırma");
+  notes.push("Yeşil spill bastırma (saç/kürk/dantel)");
 
   return {
     dataUrl: imageDataToDataUrl(rgba),

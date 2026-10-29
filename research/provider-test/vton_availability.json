@@ -1,0 +1,22 @@
+{
+  "ootdiffusion_hf_space": {
+    "license": "CC BY-NC-SA 4.0 (non-commercial)",
+    "commercial_ok": false,
+    "note": "Skipped for delivery artifacts."
+  },
+  "idm_vton_weights": {
+    "license": "Research / verify model card before prod",
+    "commercial_ok": false,
+    "note": "Requires GPU + torch; not run in this CPU benchmark VM."
+  },
+  "fal_try_on": {
+    "license": "Paid API \u2014 commercial per fal ToS",
+    "commercial_ok": true,
+    "note": "scripts/run_fal_all_scenarios.py exits without FAL_KEY."
+  },
+  "local_pipeline": {
+    "license": "Unsplash stock + occlusion warp (this repo)",
+    "commercial_ok": true,
+    "note": "scripts/run_worn_products.py \u2014 fallback when no VTON API."
+  }
+}
