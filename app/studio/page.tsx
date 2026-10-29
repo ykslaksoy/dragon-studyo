@@ -84,7 +84,6 @@ export default function StudioPage() {
   const cancelRef = useRef({ cancelled: false });
 
   const packs = purpose ? PACKAGES[purpose] : [];
-  const selectedPack = packs.find((p) => p.id === packId) ?? null;
 
   const canNext =
     (step === 1 && !!purpose) ||
@@ -93,6 +92,9 @@ export default function StudioPage() {
     step === 4;
 
   const summary = useMemo(() => {
+    const selectedPack = purpose
+      ? (PACKAGES[purpose].find((p) => p.id === packId) ?? null)
+      : null;
     if (!purpose || !channel || !selectedPack) return null;
     const angleLabels = angles.map(
       (id) => ANGLES.find((a) => a.id === id)?.label ?? id,
@@ -110,7 +112,7 @@ export default function StudioPage() {
       total: queued.length,
       truncated: fullList.length > FRAME_QUEUE_LIMIT,
     };
-  }, [purpose, channel, selectedPack, angles]);
+  }, [purpose, channel, packId, angles]);
 
   const toggleAngle = (id: string) => {
     setAngles((prev) =>
@@ -158,7 +160,8 @@ export default function StudioPage() {
   useEffect(() => {
     const saved = loadUpload();
     if (!saved) return;
-    setUploadPreview(saved.dataUrl);
+    // Defer restore so state updates happen outside the effect body.
+    queueMicrotask(() => setUploadPreview(saved.dataUrl));
     void fetch(saved.dataUrl)
       .then((r) => r.blob())
       .then((blob) => {
@@ -167,12 +170,14 @@ export default function StudioPage() {
         });
         setUploadFile(file);
       });
-    const cut = loadCutout();
-    if (cut && cut.sourceHash === sourceHash(saved.dataUrl)) {
-      setCutoutUrl(cut.cutoutDataUrl);
-      setPreviewCutoutUrl(cut.previewDataUrl);
-      setDekupeNotes(cut.modelNotes);
-    }
+    queueMicrotask(() => {
+      const cut = loadCutout();
+      if (cut && cut.sourceHash === sourceHash(saved.dataUrl)) {
+        setCutoutUrl(cut.cutoutDataUrl);
+        setPreviewCutoutUrl(cut.previewDataUrl);
+        setDekupeNotes(cut.modelNotes);
+      }
+    });
   }, []);
 
   const onPickFile = (file: File | null) => {

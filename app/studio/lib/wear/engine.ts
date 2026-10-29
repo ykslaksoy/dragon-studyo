@@ -78,7 +78,7 @@ function cropForPlacement(
   placementKey: string,
 ): HTMLCanvasElement {
   const rgba = getImageData(cutout);
-  let { canvas } = cropOpaque(rgba);
+  const { canvas } = cropOpaque(rgba);
   const cw = canvas.width;
   const ch = canvas.height;
   const out = document.createElement("canvas");
@@ -513,7 +513,7 @@ export async function renderWearFrame(
 
   let warped = warpPerspective(prod, refW, refH, dstQuad);
   warped = clipAlphaToQuad(warped, dstQuad);
-  let composed = compositeWear(bg, warped, cfg.occlusion_polygons ?? []);
+  const composed = compositeWear(bg, warped, cfg.occlusion_polygons ?? []);
 
   // scale to output
   const full = document.createElement("canvas");

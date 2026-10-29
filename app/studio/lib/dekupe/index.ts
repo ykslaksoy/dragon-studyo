@@ -307,7 +307,9 @@ async function postprocessCutout(
   }
 
   const birefRgba = await imageDataFromUrl(birefDataUrl);
-  let { mask, stats } = extractAlphaMask(birefRgba);
+  const extracted = extractAlphaMask(birefRgba);
+  let mask = extracted.mask;
+  const stats = extracted.stats;
   notes.push("BiRefNet (MIT) final");
 
   let usedHybrid = false;

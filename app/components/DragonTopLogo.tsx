@@ -79,8 +79,10 @@ export function DragonTopLogo() {
   useEffect(() => {
     const fromQuery = phaseFromSearch();
     if (fromQuery) {
-      setLocked(true);
-      setPhase(fromQuery);
+      queueMicrotask(() => {
+        setLocked(true);
+        setPhase(fromQuery);
+      });
       if (wantsForcedBlink()) {
         timers.current.push(window.setTimeout(() => runBlink(false), 400));
       }
@@ -89,7 +91,7 @@ export function DragonTopLogo() {
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      setPhase("open");
+      queueMicrotask(() => setPhase("open"));
       return;
     }
 
