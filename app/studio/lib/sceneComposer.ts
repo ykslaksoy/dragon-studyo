@@ -370,7 +370,11 @@ export async function renderSceneFrame(
     ctx.fillRect(8, 8, W - 16, 40);
     ctx.fillStyle = "#ffdcdc";
     ctx.font = "600 12px system-ui,sans-serif";
-    ctx.fillText("[GEN]: Üretken AI gerekir (tuval yer tutucu)", 16, 34);
+    ctx.fillText(
+      "[GEN]: FAL_KEY yok — tuval yer tutucu (mannequin/warp ayrı yol)",
+      16,
+      34,
+    );
   } else if (spec.realism === "canvas_sim") {
     ctx.fillStyle = "rgba(30,30,30,0.7)";
     ctx.fillRect(8, H - 36, W - 16, 28);
