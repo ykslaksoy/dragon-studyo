@@ -18,8 +18,10 @@ import {
   runDekupe,
   runPaidDekupeFallback,
   type DekupeProgress,
+  type DekupeRoi,
 } from "./lib/dekupe";
 import { runProduceQueue, type FrameJob } from "./lib/produceQueue";
+import { CutoutEditor } from "./components/CutoutEditor";
 import {
   clearAllStudioSession,
   loadCutout,
@@ -194,6 +196,7 @@ export default function StudioPage() {
     setPreviewCutoutUrl(null);
     setDekupeNotes([]);
     setProduceNote(null);
+    setShowRefineStub(true);
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = String(reader.result || "");
@@ -231,7 +234,10 @@ export default function StudioPage() {
     }
   };
 
-  const ensureFinalCutout = async (dataUrl: string): Promise<string> => {
+  const ensureFinalCutout = async (
+    dataUrl: string,
+    roi: DekupeRoi | null = null,
+  ): Promise<string> => {
     setFinalBusy(true);
     setDekupeMsg("Final dekupe: BiRefNet + kalite düzeltmeleri…");
     const withTimeout = <T,>(p: Promise<T>, ms: number, label: string) =>
@@ -243,10 +249,15 @@ export default function StudioPage() {
       ]);
     try {
       const res = await withTimeout(
-        runDekupe(dataUrl, "final", (p: DekupeProgress) => {
-          setDekupeMsg(p.message);
-        }),
-        90_000,
+        runDekupe(
+          dataUrl,
+          "final",
+          (p: DekupeProgress) => {
+            setDekupeMsg(p.message);
+          },
+          { roi },
+        ),
+        120_000,
         "BiRefNet",
       );
       setCutoutUrl(res.cutoutDataUrl);
@@ -527,7 +538,11 @@ export default function StudioPage() {
                           {st === "ready"
                             ? job.method === "fal_gen"
                               ? "Hazır · fal GEN"
-                              : job.method === "mannequin_warp_v3"
+                              : job.method === "inhand_composite"
+                                ? "Hazır · elde kompozit"
+                                : job.method === "lifestyle_composite"
+                                  ? "Hazır · lifestyle kompozit"
+                                  : job.method === "mannequin_warp_v3"
                                 ? "Hazır · warp v3"
                                 : job.method === "canvas_gen_placeholder"
                                   ? "Hazır · [GEN] yer tutucu"
@@ -754,7 +769,7 @@ export default function StudioPage() {
                               onClick={() => setShowRefineStub((v) => !v)}
                               className="rounded-sm border border-white/15 px-3 py-2 text-[12px] text-white/55"
                             >
-                              Fırça / rötuş (yakında)
+                              Ürün seç / fırça
                             </button>
                             <button
                               type="button"
@@ -805,12 +820,27 @@ export default function StudioPage() {
                             </p>
                           )}
 
-                          {showRefineStub && (
-                            <div className="mt-3 rounded-sm border border-white/10 bg-black/40 p-3 text-[12px] text-white/55">
-                              Fırça / kenar rötuş arayüzü — iskelet. Çekirdek
-                              kesim BiRefNet; kullanıcı düzeltmesi sonraki
-                              sprint.
-                            </div>
+                          {showRefineStub && uploadPreview && (
+                            <CutoutEditor
+                              sourceUrl={uploadPreview}
+                              cutoutUrl={cutoutUrl}
+                              busy={finalBusy}
+                              onCutWithRoi={(roi) => {
+                                void ensureFinalCutout(uploadPreview, roi);
+                              }}
+                              onSave={(dataUrl) => {
+                                setCutoutUrl(dataUrl);
+                                persistCutout({
+                                  cutoutDataUrl: dataUrl,
+                                  previewDataUrl: previewCutoutUrl,
+                                  usedHybrid: false,
+                                  modelNotes: [...dekupeNotes, "Fırça rötuşu"],
+                                  quality: "final",
+                                  sourceHash: sourceHash(uploadPreview),
+                                });
+                                setDekupeMsg("Rötuş kaydedildi — üretim bu kesimi kullanır.");
+                              }}
+                            />
                           )}
                           {showPaidStub && (
                             <div className="mt-3 space-y-2 rounded-sm border border-white/10 bg-black/40 p-3 text-[12px] text-white/55">
@@ -840,7 +870,7 @@ export default function StudioPage() {
                               GEN / fal.ai:{" "}
                               {genConfigured
                                 ? "FAL_KEY tanımlı — üretken kareler canlı."
-                                : "FAL_KEY yok — mannequin warp v3 / tuval yer tutucu."}
+                                : "FAL_KEY yok — ürün her karede gerçek cutout ile kompozitlenir (elde / lifestyle / tuval)."}
                             </p>
                           )}
                         </div>

@@ -410,3 +410,65 @@ function loadHtmlImage(src: string): Promise<HTMLImageElement> {
     img.src = src;
   });
 }
+
+/**
+ * Keep the main subject: label 8-connected components of mask>thr and drop
+ * components smaller than `minFrac` of the largest one (stray blobs, props
+ * detached from the product). Soft alpha inside kept components is preserved.
+ */
+export function keepMainComponents(
+  mask: Float32Array,
+  w: number,
+  h: number,
+  minFrac = 0.08,
+  thr = 0.35,
+): Float32Array {
+  const labels = new Int32Array(w * h).fill(-1);
+  const areas: number[] = [];
+  const stack = new Int32Array(w * h);
+  for (let start = 0; start < w * h; start++) {
+    if (labels[start] !== -1 || mask[start]! <= thr) continue;
+    const id = areas.length;
+    let area = 0;
+    let sp = 0;
+    stack[sp++] = start;
+    labels[start] = id;
+    while (sp > 0) {
+      const p = stack[--sp]!;
+      area++;
+      const x = p % w;
+      const y = (p - x) / w;
+      for (let dy = -1; dy <= 1; dy++) {
+        const ny = y + dy;
+        if (ny < 0 || ny >= h) continue;
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx;
+          if (nx < 0 || nx >= w || (dx === 0 && dy === 0)) continue;
+          const q = ny * w + nx;
+          if (labels[q] === -1 && mask[q]! > thr) {
+            labels[q] = id;
+            stack[sp++] = q;
+          }
+        }
+      }
+    }
+    areas.push(area);
+  }
+  if (areas.length <= 1) return mask;
+  const maxA = Math.max(...areas);
+  const keep = areas.map((a) => a >= maxA * minFrac);
+  // soft pixels (<=thr) are kept only if adjacent to a kept component: dilate kept set by 2px
+  const keptHard = new Uint8Array(w * h);
+  for (let i = 0; i < w * h; i++) {
+    const l = labels[i]!;
+    if (l >= 0 && keep[l]) keptHard[i] = 1;
+  }
+  const near = dilate(keptHard, w, h, 3);
+  const out = new Float32Array(mask.length);
+  for (let i = 0; i < out.length; i++) {
+    const l = labels[i]!;
+    if (l >= 0) out[i] = keep[l] ? mask[i]! : 0;
+    else out[i] = near[i] ? mask[i]! : 0;
+  }
+  return out;
+}

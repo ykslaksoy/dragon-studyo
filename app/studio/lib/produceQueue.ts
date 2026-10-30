@@ -5,6 +5,7 @@ import {
   type Purpose,
 } from "./catalog";
 import { renderSceneFrame } from "./sceneComposer";
+import { renderInHandScene, renderLifestyleScene } from "./lifestyleFallback";
 import { renderWearFrame } from "./wear/engine";
 import { wearJobForFrame } from "./wear/placements";
 
@@ -13,7 +14,13 @@ export type FrameJob = {
   status: "pending" | "running" | "ready" | "error";
   thumbUrl: string | null;
   error?: string;
-  method?: "canvas" | "mannequin_warp_v3" | "fal_gen" | "canvas_gen_placeholder";
+  method?:
+    | "canvas"
+    | "mannequin_warp_v3"
+    | "fal_gen"
+    | "canvas_gen_placeholder"
+    | "inhand_composite"
+    | "lifestyle_composite";
 };
 
 export function buildJobs(labels: string[]): FrameJob[] {
@@ -81,11 +88,20 @@ export async function runProduceQueue(
           thumbUrl = falUrl;
           method = "fal_gen";
         } else {
-          const wear = wearJobForFrame(spec.baseFrame);
-          if (wear) {
-            thumbUrl = await renderWearFrame(cutoutDataUrl, wear);
-            method = "mannequin_warp_v3";
-          } else {
+          // Keyless fallback: the real product must always be visible.
+          const b = spec.baseFrame.toLowerCase();
+          try {
+            if (/elde|in.hand|ürün reveal/.test(b)) {
+              thumbUrl = await renderInHandScene(cutoutDataUrl);
+              method = "inhand_composite";
+            } else if (/lifestyle|ugc|stok hissi|talking-head/.test(b)) {
+              thumbUrl = await renderLifestyleScene(cutoutDataUrl);
+              method = "lifestyle_composite";
+            } else {
+              thumbUrl = await renderSceneFrame(cutoutDataUrl, purpose, spec);
+              method = "canvas_gen_placeholder";
+            }
+          } catch {
             thumbUrl = await renderSceneFrame(cutoutDataUrl, purpose, spec);
             method = "canvas_gen_placeholder";
           }

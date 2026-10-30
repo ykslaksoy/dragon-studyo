@@ -7,14 +7,11 @@ Gerçek çalıştırma (30 Ekim 2026): `next start` yerelde açıldı, headless 
 
 Anahtarsız davranış (doğrulandı): `GET /api/gen` → `configured:false, blockedEnv:FAL_KEY`; `POST /api/gen` → 503 `MISSING_ENV` ve kuyruk manken warp/tuval yedeğine düşüyor (12/12 kare yine üretildi). `GET /api/dekupe/paid` → `configured:false, blockedEnv:PHOTOROOM_API_KEY`, BiRefNet yolu aktif.
 
-## Hâlâ hatalı (düzeltilmedi)
+## Hâlâ hatalı / sınırlı
 | Madde | Durum | Kanıt |
 |---|---|---|
-| Dantel/gelinlik kesimi | Hatalı: uygulama içi kesim insanı ve buketi blok halinde bırakıyor, isnet ise elbiseyi neredeyse tamamen siliyor | `screens/local-lace-06-uretilen.png`, `screens/cutout-veryhard-01-lace-dress-isnet-general-use.png` |
-| Ürün dışı objeler (parfümde güller) | Hatalı: ürün seçme yok; dekor da ürünle birlikte kesiliyor | `screens/local-perfume-06-uretilen.png` |
-| GEN Lifestyle (anahtarsız warp yedeği) | Hatalı: stok fotoğraf geliyor, ürün görünmüyor | `screens/local-*-06-uretilen.png` (Lifestyle karesi) |
-| GEN Elde (warp v3) | Zayıf: ürün ele kaba yapışıyor, gerçekçi değil | aynı ekranlar (Elde karesi) |
-| Alt bilgi çubuğu | Sabit footer içerik ızgarasının üstüne biniyor | aynı ekranlar |
+| Dantel/gelinlik (buket ve damat elbisenin önünde) | Sınırlı: kutu seçimi damadı dışarıda bırakıyor, ama BiRefNet kutunun içinde de buketi "ürün" sanıyor; elbise ancak fırçayla (Geri getir) elle boyanarak çıkarılabiliyor. Otomatik test fırçası kaba dikdörtgen olduğu için çıktı satılabilir değil. Bu kaynak bir ürün fotoğrafı değil; temiz ürün fotoğrafı ya da ücretli yol (`PHOTOROOM_API_KEY`, `FAL_KEY` ile inpaint) gerekli | `screens/after-lace-01-secim.png` … `-04-uretilen.png` (önce: `local-lace-06-uretilen.png`) |
+| GEN Elde, ayakkabı gibi ele uygun olmayan ürünler | Ürün her zaman görünüyor, ama el pozu şişe tutuşuna göre; ayakkabıda yapay duruyor. Gerçekçi sonuç `FAL_KEY` ister | `screens/after-sneaker-04-uretilen.png` |
 
 ## Kusursuz çalışan
 | Madde | Durum | Kanıt |
@@ -28,6 +25,7 @@ Anahtarsız davranış (doğrulandı): `GET /api/gen` → `configured:false, blo
 ## Eksikti, tamamlandı
 | Madde | Durum | Kanıt |
 |---|---|---|
+| Ürün seçme (kutu) + fırça rötuşu (Sil / Geri getir / Geri al / Kaydet) | Tamamlandı: `CutoutEditor`; BiRefNet yalnız seçilen kutuda çalışıyor, sonra tam boya geri yapıştırılıyor; ayrık küçük parçalar filtreleniyor (`keepMainComponents`) | `app/studio/components/CutoutEditor.tsx`, `dekupe/index.ts`; `screens/after-perfume-01-secim.png`, `-02-kesim.png` |
 | Manken/giyili kareler: oklüzyon warp v3 (PR #10) uygulamaya taşındı | Tamamlandı (PR #14 işi dahil edildi) | `app/studio/lib/wear/engine.ts`, `placements.ts`, `public/mannequin/*` |
 | GEN kareleri (elde, lifestyle, UGC): fal.ai Flux kuyruğu uçtan uca | Yalnız `FAL_KEY` bekliyor; anahtar yoksa önce manken warp, sonra canvas kullanılıyor | `app/api/gen/route.ts`, `produceQueue.ts` |
 | Zor ürünler için ücretli dekupe yedeği (Photoroom) | Yalnız `PHOTOROOM_API_KEY` bekliyor | `app/api/dekupe/paid/route.ts` |
@@ -36,6 +34,10 @@ Anahtarsız davranış (doğrulandı): `GET /api/gen` → `configured:false, blo
 ## Hatalıydı, düzeltildi
 | Madde | Durum | Kanıt |
 |---|---|---|
+| Parfümde güller şişeyle birlikte kesiliyordu | Düzeltildi: kutu seçimiyle yalnız şişe çıkıyor, 12/12 karede gül yok | önce `screens/local-perfume-06-uretilen.png` → sonra `screens/after-perfume-04-uretilen.png` |
+| GEN Lifestyle anahtarsızken ürünsüz stok foto | Düzeltildi: ürün her zaman sahneye yerleştiriliyor (zemin, yansıma, gölge, renk eşleme); hata olursa canvas sahnesi; boş kesim asla geçmiyor | `lifestyleFallback.ts`; `screens/after-{perfume,sneaker}-04-uretilen.png` |
+| GEN Elde kaba yapıştırma | Düzeltildi: stoktaki eski şişe silinip ürün eğik, gölgeli, ışık eşlemeli konuyor; parmaklar ürünün önüne yeniden çiziliyor (ele tutulmuş görünüm) | `screens/after-perfume-04-uretilen.png` (Elde karesi) |
+| Sabit footer sonuç ızgarasını örtüyordu | Düzeltildi: footer yalnız ana sayfada sabit, /studio'da akışta | `SiteFooter.tsx`; `screens/after-*-05-viewport-bottom.png` |
 | Beyazda beyaz ayakkabı (taban deliği / burun kesilmesi) | Düzeltildi ve gerçek akışta doğrulandı: taban/burun tam | `screens/local-sneaker-06-uretilen.png`, `screens/cutout-hard-02-white-sneaker-white-*.png` |
 | Dantel/tül: delik doldurma ağ dokusunu kapatıyordu | Kodda düzeltildi (PR #14), ama gerçek testte kesim hâlâ kötü (aşağıdaki tabloya bakın) | `postprocess.ts` |
 | Saç/tüyde yeşil leke | Düzeltildi: yeşil yansıma bastırma (PR #14) | `postprocess.ts` (`suppressGreenSpill`) |

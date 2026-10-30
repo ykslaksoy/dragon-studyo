@@ -13,6 +13,7 @@ import {
   guardedHybrid,
   imageDataFromUrl,
   imageDataToDataUrl,
+  keepMainComponents,
   morphHoleFill,
   refineAlphaEdges,
   suppressGreenSpill,
@@ -39,6 +40,52 @@ export type DekupeResult = {
   quality: DekupeQuality;
   modelNotes: string[];
 };
+
+/** Normalised product-selection box (0..1 of source width/height). */
+export type DekupeRoi = { x: number; y: number; w: number; h: number };
+
+export type DekupeOptions = { roi?: DekupeRoi | null };
+
+async function cropToRoi(
+  sourceDataUrl: string,
+  roi: DekupeRoi,
+): Promise<{ url: string; sx: number; sy: number; sw: number; sh: number; W: number; H: number }> {
+  const src = await imageDataFromUrl(sourceDataUrl);
+  const W = src.width;
+  const H = src.height;
+  const pad = 0.02;
+  const sx = Math.max(0, Math.floor((roi.x - pad) * W));
+  const sy = Math.max(0, Math.floor((roi.y - pad) * H));
+  const ex = Math.min(W, Math.ceil((roi.x + roi.w + pad) * W));
+  const ey = Math.min(H, Math.ceil((roi.y + roi.h + pad) * H));
+  const sw = Math.max(8, ex - sx);
+  const sh = Math.max(8, ey - sy);
+  const full = document.createElement("canvas");
+  full.width = W;
+  full.height = H;
+  full.getContext("2d")!.putImageData(src, 0, 0);
+  const c = document.createElement("canvas");
+  c.width = sw;
+  c.height = sh;
+  c.getContext("2d")!.drawImage(full, sx, sy, sw, sh, 0, 0, sw, sh);
+  return { url: c.toDataURL("image/png"), sx, sy, sw, sh, W, H };
+}
+
+async function pasteBack(
+  cropCutoutUrl: string,
+  box: { sx: number; sy: number; sw: number; sh: number; W: number; H: number },
+): Promise<string> {
+  const img = await imageDataFromUrl(cropCutoutUrl);
+  const tmp = document.createElement("canvas");
+  tmp.width = img.width;
+  tmp.height = img.height;
+  tmp.getContext("2d")!.putImageData(img, 0, 0);
+  const c = document.createElement("canvas");
+  c.width = box.W;
+  c.height = box.H;
+  c.getContext("2d")!.drawImage(tmp, box.sx, box.sy, box.sw, box.sh);
+  return c.toDataURL("image/png");
+}
 
 export type PaidFallbackProvider = "photoroom" | "remove.bg";
 
@@ -359,6 +406,8 @@ async function postprocessCutout(
   notes.push("Beyaz-üzeri-beyaz kenar güçlendirme");
   mask = refineAlphaEdges(mask, birefRgba.width, birefRgba.height);
   notes.push("Matting-lite");
+  mask = keepMainComponents(mask, birefRgba.width, birefRgba.height);
+  notes.push("Ana nesne filtresi (kopuk parçalar atıldı)");
 
   let rgba = applyMaskToRgb(srcRgb, mask);
   rgba = suppressGreenSpill(rgba);
@@ -380,7 +429,25 @@ export async function runDekupe(
   sourceDataUrl: string,
   quality: DekupeQuality = "final",
   onProgress?: (p: DekupeProgress) => void,
+  options?: DekupeOptions,
 ): Promise<DekupeResult> {
+  const roi = options?.roi;
+  if (roi && roi.w > 0.02 && roi.h > 0.02) {
+    // Product selection: segment only inside the user's box so neighbouring
+    // people / props (bouquet, roses) are not merged with the product.
+    const box = await cropToRoi(sourceDataUrl, roi);
+    const inner = await runDekupe(box.url, quality, onProgress);
+    const cutoutDataUrl = await pasteBack(inner.cutoutDataUrl, box);
+    const previewDataUrl = inner.previewDataUrl
+      ? await pasteBack(inner.previewDataUrl, box)
+      : null;
+    return {
+      ...inner,
+      cutoutDataUrl,
+      previewDataUrl,
+      modelNotes: [...inner.modelNotes, "Ürün seçimi (kutu) uygulandı"],
+    };
+  }
   const notes: string[] = [];
   let previewDataUrl: string | null = null;
   let isnetDataUrl: string | null = null;
