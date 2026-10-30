@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { DekupeRoi } from "../lib/dekupe";
+import { wandMask } from "../lib/dekupe/wand";
 
-type Mode = "select" | "erase" | "restore";
+type Mode = "select" | "erase" | "restore" | "wandAdd" | "wandSub";
 
 const MAX_W = 560;
 
@@ -37,6 +38,9 @@ export function CutoutEditor({
 }) {
   const [mode, setMode] = useState<Mode>(cutoutUrl ? "erase" : "select");
   const [brush, setBrush] = useState(28);
+  const [tol, setTol] = useState(30);
+  const [warn, setWarn] = useState<string | null>(null);
+  const srcDataRef = useRef<ImageData | null>(null);
   const [roi, setRoi] = useState<DekupeRoi | null>(null);
   const [dirty, setDirty] = useState(false);
   const [undoCount, setUndoCount] = useState(0);
@@ -137,6 +141,70 @@ export function CutoutEditor({
     setTick((t) => t + 1);
   };
 
+  const pushUndo = () => {
+    const work = workRef.current;
+    if (!work) return;
+    undoRef.current.push(work.getContext("2d")!.getImageData(0, 0, work.width, work.height));
+    if (undoRef.current.length > 12) undoRef.current.shift();
+    setUndoCount(undoRef.current.length);
+  };
+
+  /** Guided selection: grow a colour region from the click and add/remove it. */
+  const applyWand = (nx: number, ny: number, add: boolean) => {
+    const work = workRef.current;
+    const src = srcRef.current;
+    if (!work || !src) return;
+    if (!srcDataRef.current || srcDataRef.current.width !== work.width) {
+      const c = document.createElement("canvas");
+      c.width = work.width;
+      c.height = work.height;
+      const cx = c.getContext("2d")!;
+      cx.drawImage(src, 0, 0, c.width, c.height);
+      srcDataRef.current = cx.getImageData(0, 0, c.width, c.height);
+    }
+    const sd = srcDataRef.current;
+    const bounds = roi && roi.w > 0.03
+      ? {
+          x0: Math.floor(roi.x * work.width),
+          y0: Math.floor(roi.y * work.height),
+          x1: Math.min(work.width - 1, Math.ceil((roi.x + roi.w) * work.width)),
+          y1: Math.min(work.height - 1, Math.ceil((roi.y + roi.h) * work.height)),
+        }
+      : undefined;
+    const m = wandMask(sd, [{ x: nx * work.width, y: ny * work.height }], tol, bounds);
+    pushUndo();
+    const ctx = work.getContext("2d")!;
+    const cur = ctx.getImageData(0, 0, work.width, work.height);
+    const d = cur.data;
+    for (let i = 0; i < m.length; i++) {
+      const a = m[i];
+      if (!a) continue;
+      const k = i * 4;
+      if (add) {
+        if (a > d[k + 3]) {
+          d[k] = sd.data[k];
+          d[k + 1] = sd.data[k + 1];
+          d[k + 2] = sd.data[k + 2];
+          d[k + 3] = a;
+        }
+      } else {
+        d[k + 3] = Math.round((d[k + 3] * (255 - a)) / 255);
+      }
+    }
+    ctx.putImageData(cur, 0, 0);
+    setDirty(true);
+    setTick((t) => t + 1);
+  };
+
+  const clearAll = () => {
+    const work = workRef.current;
+    if (!work) return;
+    pushUndo();
+    work.getContext("2d")!.clearRect(0, 0, work.width, work.height);
+    setDirty(true);
+    setTick((t) => t + 1);
+  };
+
   const onDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId);
     const p = pos(e);
@@ -145,12 +213,11 @@ export function CutoutEditor({
       setRoi({ x: p.x, y: p.y, w: 0, h: 0 });
       return;
     }
-    const work = workRef.current;
-    if (work) {
-      undoRef.current.push(work.getContext("2d")!.getImageData(0, 0, work.width, work.height));
-      if (undoRef.current.length > 12) undoRef.current.shift();
-      setUndoCount(undoRef.current.length);
+    if (mode === "wandAdd" || mode === "wandSub") {
+      applyWand(p.x, p.y, mode === "wandAdd");
+      return;
     }
+    pushUndo();
     paintingRef.current = true;
     paintAt(p.x, p.y);
   };
@@ -198,7 +265,15 @@ export function CutoutEditor({
         {tab("select", "Ürünü seç (kutu)")}
         {tab("erase", "Fırça: Sil", !cutoutUrl)}
         {tab("restore", "Fırça: Geri getir", !cutoutUrl)}
-        {mode !== "select" && cutoutUrl && (
+        {tab("wandAdd", "Değnek: Ekle", !cutoutUrl)}
+        {tab("wandSub", "Değnek: Çıkar", !cutoutUrl)}
+        {(mode === "wandAdd" || mode === "wandSub") && (
+          <label className="flex items-center gap-2 text-[11px] text-white/60">
+            Tolerans
+            <input type="range" min={8} max={70} value={tol} onChange={(e) => setTol(Number(e.target.value))} />
+          </label>
+        )}
+        {(mode === "erase" || mode === "restore") && cutoutUrl && (
           <label className="flex items-center gap-2 text-[11px] text-white/60">
             Boyut
             <input type="range" min={6} max={90} value={brush} onChange={(e) => setBrush(Number(e.target.value))} />
@@ -208,7 +283,9 @@ export function CutoutEditor({
       <p className="text-[11px] text-white/50">
         {mode === "select"
           ? "Ürünün etrafına kutu çiz; BiRefNet yalnızca bu alanı keser (yanındaki kişi, buket, dekor dışarıda kalır)."
-          : "Fazla kalan yerleri Sil ile kaldır, eksik kalan kenarları Geri getir ile kaynaktan geri boya."}
+          : mode === "wandAdd" || mode === "wandSub"
+            ? "Ürünün (ör. elbisenin) üstüne tıkla: benzer renkli bölge kenarına kadar seçilip kesime eklenir / çıkarılır. Model ürünü yanlış seçtiyse önce Boşalt, sonra Değnek: Ekle ile ürünü parça parça topla. Ürünün büyük kısmı başka bir nesnenin (buket, kişi) arkasındaysa ücretsiz yol yalnız görünen kısmı verir — temiz ürün fotoğrafı ya da ücretli yol (Photoroom / FAL inpaint) gerekir."
+            : "Fazla kalan yerleri Sil ile kaldır, eksik kalan kenarları Geri getir ile kaynaktan geri boya."}
       </p>
       <canvas
         ref={viewRef}
@@ -224,6 +301,7 @@ export function CutoutEditor({
           background: "repeating-conic-gradient(#444 0% 25%, #2a2a2a 0% 50%) 50% / 14px 14px",
         }}
       />
+      {warn && <p className="text-[11px] text-red-300">{warn}</p>}
       <div className="flex flex-wrap gap-2">
         {mode === "select" ? (
           <>
@@ -251,6 +329,13 @@ export function CutoutEditor({
           <>
             <button
               type="button"
+              onClick={clearAll}
+              className="rounded-sm border border-white/20 px-3 py-1.5 text-[12px] text-white/75"
+            >
+              Boşalt
+            </button>
+            <button
+              type="button"
               disabled={!undoCount}
               onClick={undo}
               className="rounded-sm border border-white/20 px-3 py-1.5 text-[12px] text-white/75 disabled:opacity-40"
@@ -263,6 +348,14 @@ export function CutoutEditor({
               onClick={() => {
                 const work = workRef.current;
                 if (!work) return;
+                const d = work.getContext("2d")!.getImageData(0, 0, work.width, work.height).data;
+                let on = 0;
+                for (let i = 3; i < d.length; i += 16) if (d[i] > 40) on++;
+                if (on < (d.length / 16) * 0.005) {
+                  setWarn("Kesim boş görünüyor — kaydedilmedi. Değnek: Ekle ile ürünü seç.");
+                  return;
+                }
+                setWarn(null);
                 onSave(work.toDataURL("image/png"));
                 setDirty(false);
               }}

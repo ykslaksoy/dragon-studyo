@@ -5,6 +5,7 @@
  */
 
 import type { Purpose, FrameSpec } from "./catalog";
+import { trimCutout } from "./lifestyleFallback";
 
 export type SceneSize = { w: number; h: number };
 
@@ -312,9 +313,15 @@ export async function renderSceneFrame(
   const ox = at.ox + ft.ox;
   const oy = at.oy + ft.oy;
 
+  // trim transparent margins (brush/wand-refined cutouts keep full source size)
   let prod: HTMLCanvasElement | HTMLImageElement = cutout;
+  try {
+    prod = trimCutout(cutout);
+  } catch {
+    prod = cutout;
+  }
   if (crop < 0.99) {
-    prod = cropImage(cutout, crop);
+    prod = cropImage(prod, crop);
   }
   prod = featherAlpha(prod, 1);
 
