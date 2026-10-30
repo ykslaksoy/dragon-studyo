@@ -5,9 +5,8 @@ import {
   type Purpose,
 } from "./catalog";
 import { renderSceneFrame } from "./sceneComposer";
-import { renderInHandScene, renderLifestyleScene } from "./lifestyleFallback";
-import { renderWearFrame } from "./wear/engine";
-import { wearJobForFrame } from "./wear/placements";
+import { renderLifestyleScene } from "./lifestyleFallback";
+import { renderWornFrame, type ProductKind } from "./wear/forms";
 
 export type FrameJob = {
   spec: FrameSpec;
@@ -17,6 +16,7 @@ export type FrameJob = {
   method?:
     | "canvas"
     | "mannequin_warp_v3"
+    | "worn_form"
     | "fal_gen"
     | "canvas_gen_placeholder"
     | "inhand_composite"
@@ -66,7 +66,9 @@ export async function runProduceQueue(
   labels: string[],
   onUpdate: (jobs: FrameJob[], readyCount: number) => void,
   signal?: { cancelled: boolean },
+  kind: ProductKind = "other",
 ): Promise<FrameJob[]> {
+  const WORN = /elde|in.hand|ürün reveal|mannequin|giyili|worn|editorial portrait/i;
   const jobs = buildJobs(labels);
   onUpdate(jobs.map((j) => ({ ...j })), 0);
 
@@ -91,9 +93,9 @@ export async function runProduceQueue(
           // Keyless fallback: the real product must always be visible.
           const b = spec.baseFrame.toLowerCase();
           try {
-            if (/elde|in.hand|ürün reveal/.test(b)) {
-              thumbUrl = await renderInHandScene(cutoutDataUrl);
-              method = "inhand_composite";
+            if (WORN.test(b)) {
+              thumbUrl = await renderWornFrame(cutoutDataUrl, kind);
+              method = kind === "bottle" ? "inhand_composite" : "worn_form";
             } else if (/lifestyle|ugc|stok hissi|talking-head/.test(b)) {
               thumbUrl = await renderLifestyleScene(cutoutDataUrl);
               method = "lifestyle_composite";
@@ -107,13 +109,9 @@ export async function runProduceQueue(
           }
         }
       } else {
-        const wear =
-          purpose === "artistic" || /mannequin|giyili|worn/i.test(spec.baseFrame)
-            ? wearJobForFrame(spec.baseFrame)
-            : null;
-        if (wear && /mannequin|giyili|worn|editorial portrait/i.test(spec.baseFrame)) {
-          thumbUrl = await renderWearFrame(cutoutDataUrl, wear);
-          method = "mannequin_warp_v3";
+        if (WORN.test(spec.baseFrame)) {
+          thumbUrl = await renderWornFrame(cutoutDataUrl, kind);
+          method = kind === "bottle" ? "inhand_composite" : "worn_form";
         } else {
           thumbUrl = await renderSceneFrame(cutoutDataUrl, purpose, spec);
           method = "canvas";

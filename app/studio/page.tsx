@@ -22,6 +22,7 @@ import {
 } from "./lib/dekupe";
 import { runProduceQueue, type FrameJob } from "./lib/produceQueue";
 import { CutoutEditor } from "./components/CutoutEditor";
+import { PRODUCT_KINDS, guessKind, type ProductKind } from "./lib/wear/forms";
 import {
   clearAllStudioSession,
   loadCutout,
@@ -75,6 +76,7 @@ export default function StudioPage() {
   const [dekupeNotes, setDekupeNotes] = useState<string[]>([]);
   const [showRefineStub, setShowRefineStub] = useState(false);
   const [showPaidStub, setShowPaidStub] = useState(false);
+  const [productKind, setProductKind] = useState<ProductKind | "auto">("auto");
   const [paidBusy, setPaidBusy] = useState(false);
   const [paidNote, setPaidNote] = useState<string | null>(null);
   const [genConfigured, setGenConfigured] = useState<boolean | null>(null);
@@ -340,6 +342,13 @@ export default function StudioPage() {
 
     const cutout = cutoutUrl ?? (await ensureFinalCutout(uploadPreview));
     if (cancelRef.current.cancelled) return;
+    let kind: ProductKind = productKind === "auto" ? "other" : productKind;
+    if (productKind === "auto") {
+      const img = document.createElement("img");
+      img.src = cutout;
+      await img.decode().catch(() => undefined);
+      kind = guessKind(uploadFile.name, img.width / Math.max(1, img.height));
+    }
 
     await runProduceQueue(
       cutout,
@@ -350,6 +359,7 @@ export default function StudioPage() {
         setReadyCount(ready);
       },
       cancelRef.current,
+      kind,
     );
     if (!cancelRef.current.cancelled) setPhase("done");
   };
@@ -542,8 +552,8 @@ export default function StudioPage() {
                                 ? "Hazır · elde kompozit"
                                 : job.method === "lifestyle_composite"
                                   ? "Hazır · lifestyle kompozit"
-                                  : job.method === "mannequin_warp_v3"
-                                ? "Hazır · warp v3"
+                                  : job.method === "worn_form"
+                                ? "Hazır · manken formu"
                                 : job.method === "canvas_gen_placeholder"
                                   ? "Hazır · [GEN] yer tutucu"
                                   : "Hazır · tuval"
@@ -764,6 +774,21 @@ export default function StudioPage() {
                                 {uploadFile.name}
                               </span>
                             )}
+                            <label className="flex items-center gap-2 text-[12px] text-white/60">
+                              Ürün türü
+                              <select
+                                data-testid="product-kind"
+                                value={productKind}
+                                onChange={(e) => setProductKind(e.target.value as ProductKind | "auto")}
+                                className="rounded-sm border border-white/20 bg-black px-2 py-1.5 text-white/85"
+                              >
+                                {PRODUCT_KINDS.map((k) => (
+                                  <option key={k.id} value={k.id}>
+                                    {k.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
                             <button
                               type="button"
                               onClick={() => setShowRefineStub((v) => !v)}

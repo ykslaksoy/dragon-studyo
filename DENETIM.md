@@ -44,3 +44,18 @@ Anahtarsız davranış (doğrulandı): `GET /api/gen` → `configured:false, blo
 | Dantel/tül: delik doldurma ağ dokusunu kapatıyordu | Kodda düzeltildi (PR #14), ama gerçek testte kesim hâlâ kötü (aşağıdaki tabloya bakın) | `postprocess.ts` |
 | Saç/tüyde yeşil leke | Düzeltildi: yeşil yansıma bastırma (PR #14) | `postprocess.ts` (`suppressGreenSpill`) |
 | Lint 6 hata (effect içinde setState, memo bağımlılığı, prefer-const) | Düzeltildi, lint 0 hata | `app/studio/page.tsx`, `app/components/DragonTopLogo.tsx`, `dekupe/index.ts`, `wear/engine.ts`; `screens/lint.log` |
+
+## Tur 5 — "Mankenle olmamış" düzeltmesi (giyili / elde kareleri)
+
+**Kök neden:** eski manken yolu ürün tipinden bağımsız olarak hep aynı elbise-model stok fotoğrafını kullanıyor, ürünü yanına yapıştırıyordu (bkz. önce: `screens/after-sneaker-04-uretilen.png`, `screens/after-perfume-04-uretilen.png`).
+
+**Yeni:** `app/studio/lib/wear/forms.ts` — ürün tipine göre çizilmiş manken formları (FAL_KEY gerektirmez). Stüdyo'da "Ürün tipi" seçici (Otomatik = dosya adı + en/boy oranı tahmini). Elde / giyili / mannequin / editorial kareleri bu motora yönlenir.
+
+| Tip | Ücretsiz yol (FAL_KEY yok) | Kanıt (sonra) |
+|---|---|---|
+| Ayakkabı | Taban konveks-gövde teğetiyle düzlenir; bacak formu → ayakkabı → çorap kenarı + pantolon paçası **önde** (bilek örtülmesi), hafif perspektif, temas gölgesi | `screens/worn-sneaker-AFTER.jpg`, `worn-sneaker-04-uretilen.png` |
+| Saat | Kayış ekseni PCA ile dikey; en büyük bileşen tutulur (yedek kayış atılır); koyu kadife önkol formu, kayış kol silüetine kırpılır (arkadan dolanır), kenarda gölgelenme | `screens/worn-watch-AFTER.jpg` |
+| Parfüm / kozmetik | El stok fotoğrafı, parmaklar ürünün **önüne** yeniden çizilir | `screens/worn-perfume-AFTER.jpg` |
+| Elbise | Terzi mankeni gövde formu, omuz genişliğine ölçek | `screens/worn-dress-AFTER.jpg` — **dürüst not:** dantel gelinlik kaynağında elbise kişinin üstünde ve buket önünde; dekupe kişiyi de alıyor → satılabilir değil. Düz zeminde askıda/serili elbise fotoğrafıyla çalışır. |
+
+**Hâlâ FAL_KEY / Photoroom / VTON gerektirenler:** gerçek insan modelin ürünü giydiği foto-gerçekçi kareler (ayakta model + ayakkabı, bilekte gerçek ten, elbiseyi giyen model). Ücretsiz yol "manken formu" düzeyindedir ve etiketlenir ("Hazır · manken formu").
