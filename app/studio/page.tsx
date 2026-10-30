@@ -16,9 +16,13 @@ import {
   PAID_FALLBACK_DESIGN,
   chromaKeyFallback,
   runDekupe,
+  runPaidDekupeFallback,
   type DekupeProgress,
+  type DekupeRoi,
 } from "./lib/dekupe";
 import { runProduceQueue, type FrameJob } from "./lib/produceQueue";
+import { CutoutEditor } from "./components/CutoutEditor";
+import { PRODUCT_KINDS, guessKind, type ProductKind } from "./lib/wear/photoreal";
 import {
   clearAllStudioSession,
   loadCutout,
@@ -72,6 +76,10 @@ export default function StudioPage() {
   const [dekupeNotes, setDekupeNotes] = useState<string[]>([]);
   const [showRefineStub, setShowRefineStub] = useState(false);
   const [showPaidStub, setShowPaidStub] = useState(false);
+  const [productKind, setProductKind] = useState<ProductKind | "auto">("auto");
+  const [paidBusy, setPaidBusy] = useState(false);
+  const [paidNote, setPaidNote] = useState<string | null>(null);
+  const [genConfigured, setGenConfigured] = useState<boolean | null>(null);
   const [produceNote, setProduceNote] = useState<string | null>(null);
   const [phase, setPhase] = useState<"wizard" | "producing" | "done">("wizard");
   const [jobs, setJobs] = useState<FrameJob[]>([]);
@@ -80,7 +88,6 @@ export default function StudioPage() {
   const cancelRef = useRef({ cancelled: false });
 
   const packs = purpose ? PACKAGES[purpose] : [];
-  const selectedPack = packs.find((p) => p.id === packId) ?? null;
 
   const canNext =
     (step === 1 && !!purpose) ||
@@ -89,6 +96,9 @@ export default function StudioPage() {
     step === 4;
 
   const summary = useMemo(() => {
+    const selectedPack = purpose
+      ? (PACKAGES[purpose].find((p) => p.id === packId) ?? null)
+      : null;
     if (!purpose || !channel || !selectedPack) return null;
     const angleLabels = angles.map(
       (id) => ANGLES.find((a) => a.id === id)?.label ?? id,
@@ -106,7 +116,7 @@ export default function StudioPage() {
       total: queued.length,
       truncated: fullList.length > FRAME_QUEUE_LIMIT,
     };
-  }, [purpose, channel, selectedPack, angles]);
+  }, [purpose, channel, packId, angles]);
 
   const toggleAngle = (id: string) => {
     setAngles((prev) =>
@@ -145,9 +155,17 @@ export default function StudioPage() {
   };
 
   useEffect(() => {
+    void fetch("/api/gen")
+      .then((r) => r.json())
+      .then((d: { configured?: boolean }) => setGenConfigured(Boolean(d.configured)))
+      .catch(() => setGenConfigured(false));
+  }, []);
+
+  useEffect(() => {
     const saved = loadUpload();
     if (!saved) return;
-    setUploadPreview(saved.dataUrl);
+    // Defer restore so state updates happen outside the effect body.
+    queueMicrotask(() => setUploadPreview(saved.dataUrl));
     void fetch(saved.dataUrl)
       .then((r) => r.blob())
       .then((blob) => {
@@ -156,12 +174,14 @@ export default function StudioPage() {
         });
         setUploadFile(file);
       });
-    const cut = loadCutout();
-    if (cut && cut.sourceHash === sourceHash(saved.dataUrl)) {
-      setCutoutUrl(cut.cutoutDataUrl);
-      setPreviewCutoutUrl(cut.previewDataUrl);
-      setDekupeNotes(cut.modelNotes);
-    }
+    queueMicrotask(() => {
+      const cut = loadCutout();
+      if (cut && cut.sourceHash === sourceHash(saved.dataUrl)) {
+        setCutoutUrl(cut.cutoutDataUrl);
+        setPreviewCutoutUrl(cut.previewDataUrl);
+        setDekupeNotes(cut.modelNotes);
+      }
+    });
   }, []);
 
   const onPickFile = (file: File | null) => {
@@ -178,6 +198,7 @@ export default function StudioPage() {
     setPreviewCutoutUrl(null);
     setDekupeNotes([]);
     setProduceNote(null);
+    setShowRefineStub(true);
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = String(reader.result || "");
@@ -215,7 +236,10 @@ export default function StudioPage() {
     }
   };
 
-  const ensureFinalCutout = async (dataUrl: string): Promise<string> => {
+  const ensureFinalCutout = async (
+    dataUrl: string,
+    roi: DekupeRoi | null = null,
+  ): Promise<string> => {
     setFinalBusy(true);
     setDekupeMsg("Final dekupe: BiRefNet + kalite düzeltmeleri…");
     const withTimeout = <T,>(p: Promise<T>, ms: number, label: string) =>
@@ -227,10 +251,15 @@ export default function StudioPage() {
       ]);
     try {
       const res = await withTimeout(
-        runDekupe(dataUrl, "final", (p: DekupeProgress) => {
-          setDekupeMsg(p.message);
-        }),
-        90_000,
+        runDekupe(
+          dataUrl,
+          "final",
+          (p: DekupeProgress) => {
+            setDekupeMsg(p.message);
+          },
+          { roi },
+        ),
+        120_000,
         "BiRefNet",
       );
       setCutoutUrl(res.cutoutDataUrl);
@@ -313,6 +342,13 @@ export default function StudioPage() {
 
     const cutout = cutoutUrl ?? (await ensureFinalCutout(uploadPreview));
     if (cancelRef.current.cancelled) return;
+    let kind: ProductKind = productKind === "auto" ? "other" : productKind;
+    if (productKind === "auto") {
+      const img = document.createElement("img");
+      img.src = cutout;
+      await img.decode().catch(() => undefined);
+      kind = guessKind(uploadFile.name, img.width / Math.max(1, img.height));
+    }
 
     await runProduceQueue(
       cutout,
@@ -323,11 +359,45 @@ export default function StudioPage() {
         setReadyCount(ready);
       },
       cancelRef.current,
+      kind,
     );
     if (!cancelRef.current.cancelled) setPhase("done");
   };
 
   const activeCutout = cutoutUrl ?? previewCutoutUrl;
+
+  const runPaidFallback = async () => {
+    if (!uploadPreview) {
+      setPaidNote("Önce görsel yükle.");
+      return;
+    }
+    setPaidBusy(true);
+    setPaidNote("Photoroom isteği…");
+    try {
+      const blob = await (await fetch(uploadPreview)).blob();
+      const res = await runPaidDekupeFallback(blob);
+      if ("blockedEnv" in res) {
+        setPaidNote(
+          `Bloklandı: ${res.blockedEnv} — ${res.message}. Çekirdek BiRefNet yolu açık.`,
+        );
+        return;
+      }
+      setCutoutUrl(res.cutoutDataUrl);
+      persistCutout({
+        cutoutDataUrl: res.cutoutDataUrl,
+        previewDataUrl: previewCutoutUrl,
+        usedHybrid: false,
+        modelNotes: ["Photoroom ücretli fallback"],
+        quality: "final",
+        sourceHash: sourceHash(uploadPreview),
+      });
+      setPaidNote("Photoroom cutout hazır.");
+    } catch (err) {
+      setPaidNote(err instanceof Error ? err.message : "Photoroom hatası");
+    } finally {
+      setPaidBusy(false);
+    }
+  };
 
   return (
     <div className="relative mx-auto min-h-dvh w-full max-w-[100vw] overflow-x-clip text-white">
@@ -476,7 +546,17 @@ export default function StudioPage() {
                           }`}
                         >
                           {st === "ready"
-                            ? "Hazır"
+                            ? job.method === "fal_gen"
+                              ? "Hazır · fal GEN"
+                              : job.method === "inhand_composite"
+                                ? "Hazır · elde kompozit"
+                                : job.method === "lifestyle_composite"
+                                  ? "Hazır · lifestyle kompozit"
+                                  : job.method === "worn_photo"
+                                ? "Hazır · giyili foto kompozit"
+                                : job.method === "canvas_gen_placeholder"
+                                  ? "Hazır · [GEN] yer tutucu"
+                                  : "Hazır · tuval"
                             : st === "running"
                               ? "İşleniyor"
                               : st === "error"
@@ -694,12 +774,27 @@ export default function StudioPage() {
                                 {uploadFile.name}
                               </span>
                             )}
+                            <label className="flex items-center gap-2 text-[12px] text-white/60">
+                              Ürün türü
+                              <select
+                                data-testid="product-kind"
+                                value={productKind}
+                                onChange={(e) => setProductKind(e.target.value as ProductKind | "auto")}
+                                className="rounded-sm border border-white/20 bg-black px-2 py-1.5 text-white/85"
+                              >
+                                {PRODUCT_KINDS.map((k) => (
+                                  <option key={k.id} value={k.id}>
+                                    {k.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
                             <button
                               type="button"
                               onClick={() => setShowRefineStub((v) => !v)}
                               className="rounded-sm border border-white/15 px-3 py-2 text-[12px] text-white/55"
                             >
-                              Fırça / rötuş (yakında)
+                              Ürün seç / fırça
                             </button>
                             <button
                               type="button"
@@ -750,19 +845,58 @@ export default function StudioPage() {
                             </p>
                           )}
 
-                          {showRefineStub && (
-                            <div className="mt-3 rounded-sm border border-white/10 bg-black/40 p-3 text-[12px] text-white/55">
-                              Fırça / kenar rötuş arayüzü — iskelet. Çekirdek
-                              kesim BiRefNet; kullanıcı düzeltmesi sonraki
-                              sprint.
-                            </div>
+                          {showRefineStub && uploadPreview && (
+                            <CutoutEditor
+                              sourceUrl={uploadPreview}
+                              cutoutUrl={cutoutUrl}
+                              busy={finalBusy}
+                              onCutWithRoi={(roi) => {
+                                void ensureFinalCutout(uploadPreview, roi);
+                              }}
+                              onSave={(dataUrl) => {
+                                setCutoutUrl(dataUrl);
+                                persistCutout({
+                                  cutoutDataUrl: dataUrl,
+                                  previewDataUrl: previewCutoutUrl,
+                                  usedHybrid: false,
+                                  modelNotes: [...dekupeNotes, "Fırça rötuşu"],
+                                  quality: "final",
+                                  sourceHash: sourceHash(uploadPreview),
+                                });
+                                setDekupeMsg("Rötuş kaydedildi — üretim bu kesimi kullanır.");
+                              }}
+                            />
                           )}
                           {showPaidStub && (
-                            <div className="mt-3 rounded-sm border border-white/10 bg-black/40 p-3 text-[12px] text-white/55">
-                              {PAID_FALLBACK_DESIGN.note} Sağlayıcılar:{" "}
-                              {PAID_FALLBACK_DESIGN.providers.join(", ")}. Şu an
-                              kapalı ({PAID_FALLBACK_DESIGN.enabled ? "açık" : "enabled: false"}).
+                            <div className="mt-3 space-y-2 rounded-sm border border-white/10 bg-black/40 p-3 text-[12px] text-white/55">
+                              <p>
+                                {PAID_FALLBACK_DESIGN.note} Sağlayıcılar:{" "}
+                                {PAID_FALLBACK_DESIGN.providers.join(", ")}.
+                              </p>
+                              <button
+                                type="button"
+                                disabled={paidBusy || !uploadPreview}
+                                onClick={() => void runPaidFallback()}
+                                className="rounded-sm border border-[#8CFF4D]/40 px-3 py-1.5 text-[12px] text-[#8CFF4D] disabled:opacity-40"
+                              >
+                                {paidBusy
+                                  ? "Photoroom…"
+                                  : "Ücretli dekupe dene"}
+                              </button>
+                              {paidNote && (
+                                <p className="text-[11px] text-white/70">
+                                  {paidNote}
+                                </p>
+                              )}
                             </div>
+                          )}
+                          {genConfigured !== null && (
+                            <p className="mt-3 text-[11px] text-white/40">
+                              GEN / fal.ai:{" "}
+                              {genConfigured
+                                ? "FAL_KEY tanımlı — üretken kareler canlı."
+                                : "FAL_KEY yok — ürün her karede gerçek cutout ile kompozitlenir (elde / lifestyle / tuval)."}
+                            </p>
                           )}
                         </div>
 

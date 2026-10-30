@@ -1,0 +1,115 @@
+[
+  {
+    "id": "fitness_worn_gear",
+    "description": "Model in workout pose — visible left sneaker on mat and sports watch on raised left wrist",
+    "license": "Unsplash License (commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photo-1571019613454-1cb2f99b2d8b",
+    "download_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1400&q=85&auto=format",
+    "wear_zones": {
+      "left_foot": {
+        "cx": 0.19,
+        "cy": 0.89,
+        "scale": 0.095,
+        "rotate": -14,
+        "patch_w": 0.24,
+        "patch_h": 0.13
+      },
+      "left_wrist": {
+        "cx": 0.5,
+        "cy": 0.36,
+        "scale": 0.042,
+        "rotate": -48,
+        "patch_w": 0.14,
+        "patch_h": 0.1
+      }
+    }
+  },
+  {
+    "id": "feet_pavement",
+    "description": "Legs and sneakers on pavement (stock feet scene)",
+    "license": "Unsplash License (commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photos/person-wearing-black-and-white-sneakers-85924c800a22",
+    "download_url": "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "sneakers_feet",
+    "description": "Close-up legs with sneakers on pavement — primary shoe wear stock",
+    "license": "Unsplash License (commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photos/person-wearing-black-and-white-sneakers-85924c800a22",
+    "download_url": "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=1400&q=85&auto=format&fit=crop"
+  },
+  {
+    "id": "lace_dress_model",
+    "description": "Full-length model in white lace long-sleeve dress",
+    "license": "Unsplash License (commercial use permitted)",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photos/woman-in-white-lace-long-sleeve-dress-j7SW1zuHnWg",
+    "download_url": "https://images.unsplash.com/photo-1612336307429-faa36aea2f52?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "wrist_watch_stock",
+    "description": "Wrist with watch (reference anatomy for watch composite)",
+    "license": "Unsplash License",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photos/wristwatch-0f0654e20314",
+    "download_url": "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "hand_beauty",
+    "description": "Hand / beauty product context",
+    "license": "Unsplash License",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photos/person-holding-bottle-4c088753af8f",
+    "download_url": "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "fashion_model_studio",
+    "description": "Full-length fashion model studio pose",
+    "license": "Unsplash License",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photos/woman-in-yellow-shirt-9f3515b0c78f",
+    "download_url": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "dress_mannequin",
+    "description": "Boutique dress form / mannequin torso",
+    "license": "Unsplash License",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photos/white-and-black-floral-dress-e08b4cac3105",
+    "download_url": "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "shopping_model",
+    "description": "Model with shopping bags (lifestyle torso)",
+    "license": "Unsplash License",
+    "license_url": "https://unsplash.com/license",
+    "page": "https://unsplash.com/photos/woman-carrying-shopping-bags-763728e1935b",
+    "download_url": "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "vUryUa-R32g",
+    "url": "https://unsplash.com/photos/vUryUa-R32g",
+    "file": "public/wear/foot_scene.jpg, public/wear/foot_sock.png",
+    "use": "ayakkabı giyili (çoraplı ayak; orijinal ayakkabı silindi)",
+    "license": "Unsplash License"
+  },
+  {
+    "id": "SE7gaKWKw2k",
+    "url": "https://unsplash.com/photos/SE7gaKWKw2k",
+    "file": "public/wear/wrist_scene.jpg",
+    "use": "saat giyili (bilek; orijinal saat silindi)",
+    "license": "Unsplash License"
+  },
+  {
+    "id": "pexels-8092768",
+    "file": "public/wear/wrist2_scene.jpg",
+    "source": "https://www.pexels.com/photo/8092768/",
+    "author": "Kaboompics",
+    "title": "A Person's Hand Raised Near Wall",
+    "license": "Pexels License (free for commercial use, no attribution required)",
+    "use": "watch worn scene (top view of wrist; crop x220-820,y1400-2000 → 933²)"
+  }
+]

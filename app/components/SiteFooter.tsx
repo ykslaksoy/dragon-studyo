@@ -1,9 +1,15 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 export function SiteFooter() {
+  // Home is a single fixed-height hero → overlay footer; every other page
+  // (studio results grid, terms) gets an in-flow footer that never covers content.
+  const overlay = usePathname() === "/";
   return (
     <footer
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.06] bg-[#070708]/92 px-[max(1rem,env(safe-area-inset-left))] py-3 pr-[max(1rem,env(safe-area-inset-right))] pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md"
+      className={`${overlay ? "fixed inset-x-0 bottom-0" : "relative mt-auto w-full"} z-50 border-t border-white/[0.06] bg-[#070708]/92 px-[max(1rem,env(safe-area-inset-left))] py-3 pr-[max(1rem,env(safe-area-inset-right))] pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md`}
     >
       <div className="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center text-[11px] tracking-[0.06em] text-white/45">
         <Link

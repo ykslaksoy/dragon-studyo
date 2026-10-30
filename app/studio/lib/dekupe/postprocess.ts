@@ -40,23 +40,145 @@ export function applyMaskToRgb(
   return out;
 }
 
-/** Morphological close + open approximation + blur (hole-fill). */
+/**
+ * Fill only small enclosed background holes inside the FG — do NOT close lace /
+ * tulle / fur mesh (those are intentional alpha gaps). Previous close+open
+ * filled mesh holes and destroyed hard SKUs.
+ */
 export function morphHoleFill(
   mask: Float32Array,
   width: number,
   height: number,
-  radius = 2,
+  radius = 1,
+  maxHolePx = 64,
 ): Float32Array {
   const bin = new Uint8Array(width * height);
   for (let i = 0; i < mask.length; i++) {
-    bin[i] = mask[i]! > 0.5 ? 255 : 0;
+    bin[i] = mask[i]! > 0.5 ? 1 : 0;
   }
-  const closed = dilate(erode(bin, width, height, radius), width, height, radius);
-  const opened = erode(dilate(closed, width, height, radius), width, height, radius);
-  const blurred = boxBlur(opened, width, height, 2);
+  // Flood-fill background from borders → remaining 0s inside FG are holes
+  const visited = new Uint8Array(width * height);
+  const qx = new Int32Array(width * height);
+  const qy = new Int32Array(width * height);
+  let qh = 0;
+  let qt = 0;
+  const push = (x: number, y: number) => {
+    const i = y * width + x;
+    if (visited[i] || bin[i]) return;
+    visited[i] = 1;
+    qx[qt] = x;
+    qy[qt] = y;
+    qt++;
+  };
+  for (let x = 0; x < width; x++) {
+    push(x, 0);
+    push(x, height - 1);
+  }
+  for (let y = 0; y < height; y++) {
+    push(0, y);
+    push(width - 1, y);
+  }
+  while (qh < qt) {
+    const x = qx[qh]!;
+    const y = qy[qh]!;
+    qh++;
+    if (x > 0) push(x - 1, y);
+    if (x + 1 < width) push(x + 1, y);
+    if (y > 0) push(x, y - 1);
+    if (y + 1 < height) push(x, y + 1);
+  }
+
+  // Label enclosed hole components; fill only tiny ones
+  const outBin = new Uint8Array(bin);
+  const seen = new Uint8Array(width * height);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const i = y * width + x;
+      if (bin[i] || visited[i] || seen[i]) continue;
+      // BFS component
+      const cells: number[] = [];
+      let h = 0;
+      qx[0] = x;
+      qy[0] = y;
+      seen[i] = 1;
+      let t = 1;
+      while (h < t) {
+        const cx = qx[h]!;
+        const cy = qy[h]!;
+        h++;
+        const ci = cy * width + cx;
+        cells.push(ci);
+        const nbs: [number, number][] = [
+          [cx - 1, cy],
+          [cx + 1, cy],
+          [cx, cy - 1],
+          [cx, cy + 1],
+        ];
+        for (const [nx, ny] of nbs) {
+          if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+          const ni = ny * width + nx;
+          if (seen[ni] || bin[ni] || visited[ni]) continue;
+          seen[ni] = 1;
+          qx[t] = nx;
+          qy[t] = ny;
+          t++;
+        }
+      }
+      if (cells.length > 0 && cells.length <= maxHolePx) {
+        for (const ci of cells) outBin[ci] = 1;
+      }
+    }
+  }
+
+  const softSrc = new Uint8Array(width * height);
+  for (let i = 0; i < softSrc.length; i++) softSrc[i] = outBin[i]! ? 255 : 0;
+  // light edge soften only (radius 1), preserve lace mesh
+  const soft = dilate(erode(softSrc, width, height, radius), width, height, radius);
+  const blurred = boxBlur(soft, width, height, 1);
   const out = new Float32Array(width * height);
   for (let i = 0; i < out.length; i++) {
-    out[i] = blurred[i]! / 255;
+    // Prefer original alpha in uncertain fringe; filled holes → 1
+    const filled = outBin[i]! && !bin[i]!;
+    out[i] = filled ? Math.max(mask[i]!, blurred[i]! / 255) : mask[i]!;
+  }
+  return out;
+}
+
+/** Boost edge contrast for white-on-white SKUs (sneaker / ceramic). */
+export function boostLowContrastEdges(
+  rgb: ImageData,
+  mask: Float32Array,
+): Float32Array {
+  const { data, width, height } = rgb;
+  const out = mask.slice();
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const p = y * width + x;
+      const m = mask[p]!;
+      if (m < 0.05 || m > 0.95) continue;
+      const i = p * 4;
+      const lum =
+        0.2126 * data[i]! + 0.7152 * data[i + 1]! + 0.0722 * data[i + 2]!;
+      // neighborhood mean luminance
+      let sum = 0;
+      let n = 0;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const j = ((y + dy) * width + (x + dx)) * 4;
+          sum +=
+            0.2126 * data[j]! + 0.7152 * data[j + 1]! + 0.0722 * data[j + 2]!;
+          n++;
+        }
+      }
+      const mean = sum / n;
+      const contrast = Math.abs(lum - mean);
+      if (contrast < 8 && lum > 200) {
+        // near-white fringe → pull toward FG if local FG dominates
+        out[p] = Math.min(1, m + 0.12);
+      } else if (contrast < 8 && lum > 180 && m < 0.55) {
+        out[p] = Math.max(0, m - 0.08);
+      }
+    }
   }
   return out;
 }
@@ -287,4 +409,66 @@ function loadHtmlImage(src: string): Promise<HTMLImageElement> {
     img.crossOrigin = "anonymous";
     img.src = src;
   });
+}
+
+/**
+ * Keep the main subject: label 8-connected components of mask>thr and drop
+ * components smaller than `minFrac` of the largest one (stray blobs, props
+ * detached from the product). Soft alpha inside kept components is preserved.
+ */
+export function keepMainComponents(
+  mask: Float32Array,
+  w: number,
+  h: number,
+  minFrac = 0.08,
+  thr = 0.35,
+): Float32Array {
+  const labels = new Int32Array(w * h).fill(-1);
+  const areas: number[] = [];
+  const stack = new Int32Array(w * h);
+  for (let start = 0; start < w * h; start++) {
+    if (labels[start] !== -1 || mask[start]! <= thr) continue;
+    const id = areas.length;
+    let area = 0;
+    let sp = 0;
+    stack[sp++] = start;
+    labels[start] = id;
+    while (sp > 0) {
+      const p = stack[--sp]!;
+      area++;
+      const x = p % w;
+      const y = (p - x) / w;
+      for (let dy = -1; dy <= 1; dy++) {
+        const ny = y + dy;
+        if (ny < 0 || ny >= h) continue;
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx;
+          if (nx < 0 || nx >= w || (dx === 0 && dy === 0)) continue;
+          const q = ny * w + nx;
+          if (labels[q] === -1 && mask[q]! > thr) {
+            labels[q] = id;
+            stack[sp++] = q;
+          }
+        }
+      }
+    }
+    areas.push(area);
+  }
+  if (areas.length <= 1) return mask;
+  const maxA = Math.max(...areas);
+  const keep = areas.map((a) => a >= maxA * minFrac);
+  // soft pixels (<=thr) are kept only if adjacent to a kept component: dilate kept set by 2px
+  const keptHard = new Uint8Array(w * h);
+  for (let i = 0; i < w * h; i++) {
+    const l = labels[i]!;
+    if (l >= 0 && keep[l]) keptHard[i] = 1;
+  }
+  const near = dilate(keptHard, w, h, 3);
+  const out = new Float32Array(mask.length);
+  for (let i = 0; i < out.length; i++) {
+    const l = labels[i]!;
+    if (l >= 0) out[i] = keep[l] ? mask[i]! : 0;
+    else out[i] = near[i] ? mask[i]! : 0;
+  }
+  return out;
 }

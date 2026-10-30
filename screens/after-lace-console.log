@@ -1,0 +1,8 @@
+warning: No available adapters.
+warning: No available adapters.
+error: Failed to load resource: net::ERR_CONNECTION_CLOSED
+bb2 {"x":303.5,"y":262.234375,"width":562,"height":375}
+warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)

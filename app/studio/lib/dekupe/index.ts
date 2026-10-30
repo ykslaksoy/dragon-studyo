@@ -8,10 +8,12 @@
 
 import {
   applyMaskToRgb,
+  boostLowContrastEdges,
   extractAlphaMask,
   guardedHybrid,
   imageDataFromUrl,
   imageDataToDataUrl,
+  keepMainComponents,
   morphHoleFill,
   refineAlphaEdges,
   suppressGreenSpill,
@@ -39,21 +41,102 @@ export type DekupeResult = {
   modelNotes: string[];
 };
 
+/** Normalised product-selection box (0..1 of source width/height). */
+export type DekupeRoi = { x: number; y: number; w: number; h: number };
+
+export type DekupeOptions = { roi?: DekupeRoi | null };
+
+async function cropToRoi(
+  sourceDataUrl: string,
+  roi: DekupeRoi,
+): Promise<{ url: string; sx: number; sy: number; sw: number; sh: number; W: number; H: number }> {
+  const src = await imageDataFromUrl(sourceDataUrl);
+  const W = src.width;
+  const H = src.height;
+  const pad = 0.02;
+  const sx = Math.max(0, Math.floor((roi.x - pad) * W));
+  const sy = Math.max(0, Math.floor((roi.y - pad) * H));
+  const ex = Math.min(W, Math.ceil((roi.x + roi.w + pad) * W));
+  const ey = Math.min(H, Math.ceil((roi.y + roi.h + pad) * H));
+  const sw = Math.max(8, ex - sx);
+  const sh = Math.max(8, ey - sy);
+  const full = document.createElement("canvas");
+  full.width = W;
+  full.height = H;
+  full.getContext("2d")!.putImageData(src, 0, 0);
+  const c = document.createElement("canvas");
+  c.width = sw;
+  c.height = sh;
+  c.getContext("2d")!.drawImage(full, sx, sy, sw, sh, 0, 0, sw, sh);
+  return { url: c.toDataURL("image/png"), sx, sy, sw, sh, W, H };
+}
+
+async function pasteBack(
+  cropCutoutUrl: string,
+  box: { sx: number; sy: number; sw: number; sh: number; W: number; H: number },
+): Promise<string> {
+  const img = await imageDataFromUrl(cropCutoutUrl);
+  const tmp = document.createElement("canvas");
+  tmp.width = img.width;
+  tmp.height = img.height;
+  tmp.getContext("2d")!.putImageData(img, 0, 0);
+  const c = document.createElement("canvas");
+  c.width = box.W;
+  c.height = box.H;
+  c.getContext("2d")!.drawImage(tmp, box.sx, box.sy, box.sw, box.sh);
+  return c.toDataURL("image/png");
+}
+
 export type PaidFallbackProvider = "photoroom" | "remove.bg";
 
-/** Design-only: optional hard-SKU paid fallback — not wired (no free-quota dependency). */
+/** Optional hard-SKU paid fallback — wired at /api/dekupe/paid; needs PHOTOROOM_API_KEY. */
 export type PaidFallbackDesign = {
-  enabled: false;
+  enabled: boolean;
   providers: PaidFallbackProvider[];
+  endpoint: string;
+  blockedEnv: "PHOTOROOM_API_KEY";
   note: string;
 };
 
 export const PAID_FALLBACK_DESIGN: PaidFallbackDesign = {
-  enabled: false,
+  enabled: true,
   providers: ["photoroom", "remove.bg"],
+  endpoint: "/api/dekupe/paid",
+  blockedEnv: "PHOTOROOM_API_KEY",
   note:
-    "Zor SKU (beyaz-üzeri-beyaz, dantel, kürk) için ücretli API opsiyonel; çekirdek yol BiRefNet (MIT).",
+    "Zor SKU (beyaz-üzeri-beyaz, dantel, kürk) için ücretli API opsiyonel; çekirdek yol BiRefNet (MIT). Photoroom: PHOTOROOM_API_KEY.",
 };
+
+/** Call Photoroom paid fallback when key is configured on the server. */
+export async function runPaidDekupeFallback(
+  sourceBlob: Blob,
+): Promise<{ cutoutDataUrl: string } | { blockedEnv: string; message: string }> {
+  const form = new FormData();
+  form.append("image", sourceBlob, "product.png");
+  const res = await fetch(PAID_FALLBACK_DESIGN.endpoint, {
+    method: "POST",
+    body: form,
+  });
+  const data = (await res.json()) as {
+    ok?: boolean;
+    cutoutDataUrl?: string;
+    blockedEnv?: string;
+    message?: string;
+  };
+  if (res.status === 503 && data.blockedEnv) {
+    return {
+      blockedEnv: data.blockedEnv,
+      message: data.message ?? "Ücretli dekupe anahtarı yok",
+    };
+  }
+  if (!res.ok || !data.ok || !data.cutoutDataUrl) {
+    return {
+      blockedEnv: data.blockedEnv ?? PAID_FALLBACK_DESIGN.blockedEnv,
+      message: data.message ?? "Ücretli dekupe başarısız",
+    };
+  }
+  return { cutoutDataUrl: data.cutoutDataUrl };
+}
 
 type AnyModel = {
   (inputs: Record<string, unknown>): Promise<Record<string, unknown>> | Record<string, unknown>;
@@ -271,7 +354,9 @@ async function postprocessCutout(
   }
 
   const birefRgba = await imageDataFromUrl(birefDataUrl);
-  let { mask, stats } = extractAlphaMask(birefRgba);
+  const extracted = extractAlphaMask(birefRgba);
+  let mask = extracted.mask;
+  const stats = extracted.stats;
   notes.push("BiRefNet (MIT) final");
 
   let usedHybrid = false;
@@ -315,14 +400,18 @@ async function postprocessCutout(
     );
   }
 
-  mask = morphHoleFill(mask, birefRgba.width, birefRgba.height, 2);
-  notes.push("Hole-fill");
+  mask = morphHoleFill(mask, birefRgba.width, birefRgba.height, 1, 64);
+  notes.push("Hole-fill (küçük delik; dantel/tül korunur)");
+  mask = boostLowContrastEdges(srcRgb, mask);
+  notes.push("Beyaz-üzeri-beyaz kenar güçlendirme");
   mask = refineAlphaEdges(mask, birefRgba.width, birefRgba.height);
   notes.push("Matting-lite");
+  mask = keepMainComponents(mask, birefRgba.width, birefRgba.height);
+  notes.push("Ana nesne filtresi (kopuk parçalar atıldı)");
 
   let rgba = applyMaskToRgb(srcRgb, mask);
   rgba = suppressGreenSpill(rgba);
-  notes.push("Yeşil spill bastırma");
+  notes.push("Yeşil spill bastırma (saç/kürk/dantel)");
 
   return {
     dataUrl: imageDataToDataUrl(rgba),
@@ -340,7 +429,25 @@ export async function runDekupe(
   sourceDataUrl: string,
   quality: DekupeQuality = "final",
   onProgress?: (p: DekupeProgress) => void,
+  options?: DekupeOptions,
 ): Promise<DekupeResult> {
+  const roi = options?.roi;
+  if (roi && roi.w > 0.02 && roi.h > 0.02) {
+    // Product selection: segment only inside the user's box so neighbouring
+    // people / props (bouquet, roses) are not merged with the product.
+    const box = await cropToRoi(sourceDataUrl, roi);
+    const inner = await runDekupe(box.url, quality, onProgress);
+    const cutoutDataUrl = await pasteBack(inner.cutoutDataUrl, box);
+    const previewDataUrl = inner.previewDataUrl
+      ? await pasteBack(inner.previewDataUrl, box)
+      : null;
+    return {
+      ...inner,
+      cutoutDataUrl,
+      previewDataUrl,
+      modelNotes: [...inner.modelNotes, "Ürün seçimi (kutu) uygulandı"],
+    };
+  }
   const notes: string[] = [];
   let previewDataUrl: string | null = null;
   let isnetDataUrl: string | null = null;

@@ -5,6 +5,7 @@
  */
 
 import type { Purpose, FrameSpec } from "./catalog";
+import { trimCutout } from "./lifestyleFallback";
 
 export type SceneSize = { w: number; h: number };
 
@@ -312,9 +313,15 @@ export async function renderSceneFrame(
   const ox = at.ox + ft.ox;
   const oy = at.oy + ft.oy;
 
+  // trim transparent margins (brush/wand-refined cutouts keep full source size)
   let prod: HTMLCanvasElement | HTMLImageElement = cutout;
+  try {
+    prod = trimCutout(cutout);
+  } catch {
+    prod = cutout;
+  }
   if (crop < 0.99) {
-    prod = cropImage(cutout, crop);
+    prod = cropImage(prod, crop);
   }
   prod = featherAlpha(prod, 1);
 
@@ -370,7 +377,11 @@ export async function renderSceneFrame(
     ctx.fillRect(8, 8, W - 16, 40);
     ctx.fillStyle = "#ffdcdc";
     ctx.font = "600 12px system-ui,sans-serif";
-    ctx.fillText("[GEN]: Üretken AI gerekir (tuval yer tutucu)", 16, 34);
+    ctx.fillText(
+      "[GEN]: FAL_KEY yok — tuval yer tutucu (mannequin/warp ayrı yol)",
+      16,
+      34,
+    );
   } else if (spec.realism === "canvas_sim") {
     ctx.fillStyle = "rgba(30,30,30,0.7)";
     ctx.fillRect(8, H - 36, W - 16, 28);

@@ -1,0 +1,7 @@
+warning: No available adapters.
+warning: No available adapters.
+bb2 {"x":303.5,"y":262.734375,"width":562,"height":375}
+warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
