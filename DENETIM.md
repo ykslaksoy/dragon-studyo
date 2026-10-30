@@ -47,10 +47,10 @@ Anahtarsız davranış (doğrulandı): `GET /api/gen` → `configured:false, blo
 
 ## Tur 5 — Giyili/elde kareler: çizim mankenler kaldırıldı, foto-kompozit
 
-- `forms.ts` (çizim ayak/bilek/el/elbise formları) **silindi**. Yerine `app/studio/lib/wear/photoreal.ts`: gerçek stok fotoğraf + ürün kesimi + oklüzyon + perspektif + ton eşleme (luma/karşıt kanal ortalama aktarımı) + temas gölgesi + grain. FAL_KEY gerekmez; kesim BiRefNet.
-- **Ayakkabı**: Unsplash vUryUa-R32g (çorap giyili ayak). Orijinal ayakkabı OpenCV ile silindi, çorap ayrı katman → ürünün üst ağzının **önüne** geri bindiriliyor; taban hizalama, zemin gölgesi. Sonuç: inandırıcı giyili. Kusur: yaka sağında küçük beyaz kalıntı.
-- **Saat**: Unsplash SE7gaKWKw2k (dövmeli bilek). Eski saat silindi; kayış bilek siluetine kırpılıyor (arkadan dolanıyor), kasa üstte. Sonuç: bilekte duruyor ama kasa büyük/kayış kısa → yarı inandırıcı, "yapıştırma" hissi kısmen var.
-- **Parfüm/cilt bakımı**: mevcut el stoğu + parmak üst katmanı. Sonuç: **başarısız** — cam şişede BiRefNet kesimi arka plan dikdörtgeni bırakıyor, açı uyumsuz; hâlâ yapıştırılmış görünüyor.
-- **Elbise**: dürüstçe yapılamıyor → `null`, stüdyo karesi kullanılır; gerçek giyim için VTON (FAL_KEY) şart.
-- Ekran görüntüleri: `screens/AFTER-photoreal-{sneaker,watch,perfume}.jpg` (önce: `screens/after-sneaker-04-uretilen.png`).
-- Kalan engeller: sabit stok pozları (her ürün aynı ayak/bilek), cam/şeffaf ürün kesimi, elbise ve insan modelde deneme için FAL_KEY/VTON veya Photoroom.
+- `forms.ts` (çizim formlar) **silindi**. `app/studio/lib/wear/photoreal.ts`: gerçek stok foto + BiRefNet kesimi + oklüzyon + perspektif + ton eşleme + temas gölgesi. FAL_KEY gerekmez.
+- **Ayakkabı** (Unsplash vUryUa-R32g): çoraplı gerçek ayakta giyili; çorap ağzı ürünün önünde. Giyili ✔. Kusur: yaka sağında küçük beyaz kalıntı (bu turda dokunulmadı).
+- **Saat** (Unsplash SE7gaKWKw2k), 5c: kasa bilek ölçeğine küçültüldü (caseD 150), bilek siluet poligonu fotoğraftan yeniden çizildi; kayış bileğin üst kenarında arkaya dönüyor, kasa kenardan taşabiliyor. Giyili ✔ (yarı-iyi): kayış ucu/toka bilek alt kenarından biraz taşıyor ve altında eski saat silme izi (açık leke) hafif görünüyor.
+- **Parfüm/cilt bakımı** (el stoğu hand_beauty), 5c: cam kesiminde yumuşak alfa kutusu `hardenAlpha` ile kaldırıldı; şişe stok tutuşa göre −120° döndürüldü; başparmak/parmaklar şişenin önünde; eski şişe silme yaması yumuşatıldı; "source-atop" kaynaklı koyu dörtgen hatası düzeltildi; stok şişe etiketi ("OTERRA") parmak arasından kesildi. Etiket: "Elde — gerçek el fotoğrafı + ürün kompoziti (stok: Unsplash)", yöntem `worn_photo`. Elde ✔.
+- **Elbise**: ücretsiz yolla dürüst giyili/askıda foto yapılamadı (kaynak gelinlik modelde, ürün tam ayrılamıyor; uygun lisanslı hayalet-manken stoğu eklenmedi) → `null`, stüdyo karesi. Sahte try-on üretilmedi; gerçek giyim için VTON (FAL_KEY) gerekli.
+- Ekranlar: `screens/AFTER-photoreal-{sneaker,watch,perfume}.jpg`.
+- Kalan engeller: sabit stok pozları, saat stok temizliğinde iz, elbise için VTON/FAL_KEY veya Photoroom.

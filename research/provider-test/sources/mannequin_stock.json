@@ -7,8 +7,22 @@
     "page": "https://unsplash.com/photo-1571019613454-1cb2f99b2d8b",
     "download_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1400&q=85&auto=format",
     "wear_zones": {
-      "left_foot": { "cx": 0.19, "cy": 0.89, "scale": 0.095, "rotate": -14, "patch_w": 0.24, "patch_h": 0.13 },
-      "left_wrist": { "cx": 0.50, "cy": 0.36, "scale": 0.042, "rotate": -48, "patch_w": 0.14, "patch_h": 0.1 }
+      "left_foot": {
+        "cx": 0.19,
+        "cy": 0.89,
+        "scale": 0.095,
+        "rotate": -14,
+        "patch_w": 0.24,
+        "patch_h": 0.13
+      },
+      "left_wrist": {
+        "cx": 0.5,
+        "cy": 0.36,
+        "scale": 0.042,
+        "rotate": -48,
+        "patch_w": 0.14,
+        "patch_h": 0.1
+      }
     }
   },
   {
@@ -74,5 +88,19 @@
     "license_url": "https://unsplash.com/license",
     "page": "https://unsplash.com/photos/woman-carrying-shopping-bags-763728e1935b",
     "download_url": "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1400&q=85&auto=format"
+  },
+  {
+    "id": "vUryUa-R32g",
+    "url": "https://unsplash.com/photos/vUryUa-R32g",
+    "file": "public/wear/foot_scene.jpg, public/wear/foot_sock.png",
+    "use": "ayakkabı giyili (çoraplı ayak; orijinal ayakkabı silindi)",
+    "license": "Unsplash License"
+  },
+  {
+    "id": "SE7gaKWKw2k",
+    "url": "https://unsplash.com/photos/SE7gaKWKw2k",
+    "file": "public/wear/wrist_scene.jpg",
+    "use": "saat giyili (bilek; orijinal saat silindi)",
+    "license": "Unsplash License"
   }
 ]

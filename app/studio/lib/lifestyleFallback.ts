@@ -134,7 +134,7 @@ export async function renderLifestyleScene(
   ctx.filter = "none";
   // floor line in crop space (~0.565 of stock height → floor surface)
   const floorY = H * 0.93;
-  let prod = trimCutout(cut);
+  let prod = hardenAlpha(trimCutout(cut));
   prod = colorMatch(prod, c, [0, Math.round(H * 0.25), W, Math.round(H * 0.5)], 0.3);
   const maxH = H * 0.5, maxW = W * 0.46;
   const s = Math.min(maxH / prod.height, maxW / prod.width);
@@ -166,11 +166,26 @@ export async function renderLifestyleScene(
   return c.toDataURL("image/jpeg", 0.9);
 }
 
+/** Glass/clear products: BiRefNet leaves a soft semi-opaque box — keep only
+ *  the confident core, then feather 1px. */
+function hardenAlpha(c: HTMLCanvasElement): HTMLCanvasElement {
+  const ctx = c.getContext("2d")!;
+  const d = ctx.getImageData(0, 0, c.width, c.height);
+  for (let i = 3; i < d.data.length; i += 4) d.data[i] = d.data[i]! > 140 ? 255 : 0;
+  ctx.putImageData(d, 0, 0);
+  const o = canvas(c.width, c.height);
+  const oc = o.getContext("2d")!;
+  oc.filter = "blur(0.8px)";
+  oc.drawImage(c, 0, 0);
+  return o;
+}
+
 /** In-hand: product replaces the bottle held in the hand stock. */
 export async function renderInHandScene(
   cutoutSrc: string,
   out = { w: 720, h: 720 },
   stockUrl = "/mannequin/hand_beauty.jpg",
+  caption = "Elde — gerçek el fotoğrafı + ürün kompoziti (stok: Unsplash)",
 ): Promise<string> {
   const [stock, cut] = await Promise.all([loadImage(stockUrl), loadImage(cutoutSrc)]);
   const RW = 1400, RH = 933; // reference coords
@@ -187,42 +202,54 @@ export async function renderInHandScene(
   bgc.filter = "blur(40px)";
   // sample backdrop from left dark area, shifted into place
   bgc.drawImage(base, 200, 60, 600, 420, 520, 120, 600, 420);
-  b.save();
-  polyPath(b, bottle);
-  b.clip();
-  b.drawImage(bg, 0, 0);
-  b.restore();
+  // feathered patch (a hard clip left a visible dark quad)
+  const pm = canvas(RW, RH);
+  const pmc = pm.getContext("2d")!;
+  pmc.filter = "blur(14px)";
+  pmc.fillStyle = "#000";
+  polyPath(pmc, bottle);
+  pmc.fill();
+  pmc.filter = "none";
+  pmc.globalCompositeOperation = "source-in";
+  pmc.drawImage(bg, 0, 0);
+  b.drawImage(pm, 0, 0);
+  b.drawImage(pm, 0, 0);
 
   // 2) product, rotated to the grip axis, right end under the fingers
-  let prod = trimCutout(cut);
+  let prod = hardenAlpha(trimCutout(cut));
   prod = colorMatch(prod, original, [900, 250, 300, 300], 0.25);
-  const angle = (-24 * Math.PI) / 180;
-  const targetLen = 420; // along grip axis
-  const longSide = Math.max(prod.width, prod.height);
-  const portrait = prod.height > prod.width * 1.15;
-  const s = Math.min(targetLen / longSide, 330 / Math.min(prod.width, prod.height));
+  // stock bottle axis: base (945,260) → cap (710,395) ≈ 150°; an upright
+  // product's cap points to −90°, so rotate by −120° to match the grip pose
+  const angle = (-120 * Math.PI) / 180;
+  const portrait = false;
+  const s = 340 / Math.max(prod.width, prod.height);
   const pw = prod.width * s, ph = prod.height * s;
-  const cx = 860, cy = 330; // grip centre (between thumb and index)
+  const cx = 862, cy = 318; // bottle centre in the stock grip
   // contact/ambient shadow on fingers
   const sh = silhouette(prod);
   b.save();
   b.translate(cx + 10, cy + 18);
   b.rotate(portrait ? angle + Math.PI / 2 : angle);
-  b.globalAlpha = 0.4;
-  b.filter = "blur(14px)";
+  b.globalAlpha = 0.16;
+  b.filter = "blur(10px)";
   b.drawImage(sh, -pw / 2, -ph / 2, pw, ph);
   b.restore();
   b.save();
   b.translate(cx, cy);
   b.rotate(portrait ? angle + Math.PI / 2 : angle);
-  b.drawImage(prod, -pw / 2, -ph / 2, pw, ph);
-  // grade: warm side light like the stock (left-lit), darker toward fingers
-  b.globalCompositeOperation = "source-atop";
-  const gr = b.createLinearGradient(-pw / 2, 0, pw / 2, 0);
-  gr.addColorStop(0, "rgba(255,190,120,0.10)");
-  gr.addColorStop(1, "rgba(0,0,0,0.28)");
-  b.fillStyle = gr;
-  b.fillRect(-pw / 2, -ph / 2, pw, ph);
+  // grade on the product only (source-atop on the opaque base painted a dark quad)
+  {
+    const g = canvas(prod.width, prod.height);
+    const gc = g.getContext("2d")!;
+    gc.drawImage(prod, 0, 0);
+    gc.globalCompositeOperation = "source-atop";
+    const gr = gc.createLinearGradient(0, 0, prod.width, 0);
+    gr.addColorStop(0, "rgba(255,190,120,0.10)");
+    gr.addColorStop(1, "rgba(0,0,0,0.28)");
+    gc.fillStyle = gr;
+    gc.fillRect(0, 0, prod.width, prod.height);
+    b.drawImage(g, -pw / 2, -ph / 2, pw, ph);
+  }
   b.restore();
 
   // 3) re-draw gripping hand (thumb + index/middle) on top, feathered
@@ -232,6 +259,12 @@ export async function renderInHandScene(
   m.filter = "blur(7px)";
   m.fillStyle = "#000";
   polyPath(m, hand);
+  m.fill();
+  m.filter = "none";
+  // the stock bottle's own label peeks out between thumb and fingers → cut it out
+  m.globalCompositeOperation = "destination-out";
+  m.filter = "blur(4px)";
+  polyPath(m, [[900, 285], [962, 262], [972, 352], [912, 372]]);
   m.fill();
   m.filter = "none";
   m.globalCompositeOperation = "source-in";
@@ -245,6 +278,6 @@ export async function renderInHandScene(
   const ctx = c.getContext("2d")!;
   ctx.drawImage(base, sx, 0, S, S, 0, 0, out.w, out.h);
   assertVisible(prod, pw * (out.w / S), ph * (out.h / S), out.w, out.h);
-  label(ctx, out.w, "Elde — kavrama kompoziti (FAL_KEY ile foto-gerçekçi)");
+  label(ctx, out.w, caption);
   return c.toDataURL("image/jpeg", 0.9);
 }
