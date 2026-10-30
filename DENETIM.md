@@ -54,3 +54,10 @@ Anahtarsız davranış (doğrulandı): `GET /api/gen` → `configured:false, blo
 - **Elbise**: ücretsiz yolla dürüst giyili/askıda foto yapılamadı (kaynak gelinlik modelde, ürün tam ayrılamıyor; uygun lisanslı hayalet-manken stoğu eklenmedi) → `null`, stüdyo karesi. Sahte try-on üretilmedi; gerçek giyim için VTON (FAL_KEY) gerekli.
 - Ekranlar: `screens/AFTER-photoreal-{sneaker,watch,perfume}.jpg`.
 - Kalan engeller: sabit stok pozları, saat stok temizliğinde iz, elbise için VTON/FAL_KEY veya Photoroom.
+
+### Tur 5d — temizlik (AFTER2 ekranları)
+- **Saat**: bilek alt kenarı poligonu fotoğraftaki kenara sıkılaştırıldı → kayış ucu/toka artık bilek dışına taşmıyor, kenarda kesilip arkaya dönüyor. `wrist_scene.jpg` yeniden temizlendi (önkoldan Poisson klon + kenar çentikleri inpaint) → kasa altındaki açık iz giderildi. Giyili ✔.
+- **Ayakkabı**: `foot_scene.jpg` çorap altındaki beyaz kalıntı/bulanık bant, çorap alfası korunarak koyu fon gradyanıyla dolduruldu → topuk/çorap birleşiminde leke yok. Giyili ✔.
+- **Parfüm**: cam alfa eşiği 140→185 (kenar saçağı azaldı). Şişe alt köşesinde çok küçük amber nokta kalabiliyor. Elde ✔.
+- **Elbise**: değişmedi — ücretsiz dürüst yol yok, VTON/FAL_KEY gerekir.
+- Ekranlar: `screens/AFTER2-photoreal-{watch,sneaker,perfume}.jpg`.

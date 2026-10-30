@@ -331,7 +331,7 @@ function grain(ctx: CanvasRenderingContext2D, w: number, h: number, amt: number)
 const WRIST = {
   W: 933,
   // real arm silhouette (from the photo)
-  arm: [[0, 470], [80, 420], [200, 385], [330, 345], [440, 290], [560, 195], [700, 110], [830, 0], [933, 0], [933, 290], [820, 345], [680, 440], [655, 500], [630, 548], [560, 565], [470, 650], [0, 933]] as Pt[],
+  arm: [[0, 470], [80, 420], [200, 385], [330, 345], [440, 290], [560, 195], [700, 110], [830, 0], [933, 0], [933, 290], [820, 340], [700, 418], [625, 472], [555, 515], [470, 610], [0, 933]] as Pt[],
   // the removed original watch: case centre / size / strap direction —
   // our watch is laid exactly over that footprint (hides any inpaint residue)
   strapRot: (-21 * Math.PI) / 180, // vertical strap → original bracelet direction

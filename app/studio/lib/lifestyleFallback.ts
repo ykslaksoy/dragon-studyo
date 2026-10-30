@@ -171,7 +171,7 @@ export async function renderLifestyleScene(
 function hardenAlpha(c: HTMLCanvasElement): HTMLCanvasElement {
   const ctx = c.getContext("2d")!;
   const d = ctx.getImageData(0, 0, c.width, c.height);
-  for (let i = 3; i < d.data.length; i += 4) d.data[i] = d.data[i]! > 140 ? 255 : 0;
+  for (let i = 3; i < d.data.length; i += 4) d.data[i] = d.data[i]! > 185 ? 255 : 0;
   ctx.putImageData(d, 0, 0);
   const o = canvas(c.width, c.height);
   const oc = o.getContext("2d")!;
