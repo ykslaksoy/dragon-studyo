@@ -45,17 +45,12 @@ Anahtarsız davranış (doğrulandı): `GET /api/gen` → `configured:false, blo
 | Saç/tüyde yeşil leke | Düzeltildi: yeşil yansıma bastırma (PR #14) | `postprocess.ts` (`suppressGreenSpill`) |
 | Lint 6 hata (effect içinde setState, memo bağımlılığı, prefer-const) | Düzeltildi, lint 0 hata | `app/studio/page.tsx`, `app/components/DragonTopLogo.tsx`, `dekupe/index.ts`, `wear/engine.ts`; `screens/lint.log` |
 
-## Tur 5 — "Mankenle olmamış" düzeltmesi (giyili / elde kareleri)
+## Tur 5 — Giyili/elde kareler: çizim mankenler kaldırıldı, foto-kompozit
 
-**Kök neden:** eski manken yolu ürün tipinden bağımsız olarak hep aynı elbise-model stok fotoğrafını kullanıyor, ürünü yanına yapıştırıyordu (bkz. önce: `screens/after-sneaker-04-uretilen.png`, `screens/after-perfume-04-uretilen.png`).
-
-**Yeni:** `app/studio/lib/wear/forms.ts` — ürün tipine göre çizilmiş manken formları (FAL_KEY gerektirmez). Stüdyo'da "Ürün tipi" seçici (Otomatik = dosya adı + en/boy oranı tahmini). Elde / giyili / mannequin / editorial kareleri bu motora yönlenir.
-
-| Tip | Ücretsiz yol (FAL_KEY yok) | Kanıt (sonra) |
-|---|---|---|
-| Ayakkabı | Taban konveks-gövde teğetiyle düzlenir; bacak formu → ayakkabı → çorap kenarı + pantolon paçası **önde** (bilek örtülmesi), hafif perspektif, temas gölgesi | `screens/worn-sneaker-AFTER.jpg`, `worn-sneaker-04-uretilen.png` |
-| Saat | Kayış ekseni PCA ile dikey; en büyük bileşen tutulur (yedek kayış atılır); koyu kadife önkol formu, kayış kol silüetine kırpılır (arkadan dolanır), kenarda gölgelenme | `screens/worn-watch-AFTER.jpg` |
-| Parfüm / kozmetik | El stok fotoğrafı, parmaklar ürünün **önüne** yeniden çizilir | `screens/worn-perfume-AFTER.jpg` |
-| Elbise | Terzi mankeni gövde formu, omuz genişliğine ölçek | `screens/worn-dress-AFTER.jpg` — **dürüst not:** dantel gelinlik kaynağında elbise kişinin üstünde ve buket önünde; dekupe kişiyi de alıyor → satılabilir değil. Düz zeminde askıda/serili elbise fotoğrafıyla çalışır. |
-
-**Hâlâ FAL_KEY / Photoroom / VTON gerektirenler:** gerçek insan modelin ürünü giydiği foto-gerçekçi kareler (ayakta model + ayakkabı, bilekte gerçek ten, elbiseyi giyen model). Ücretsiz yol "manken formu" düzeyindedir ve etiketlenir ("Hazır · manken formu").
+- `forms.ts` (çizim ayak/bilek/el/elbise formları) **silindi**. Yerine `app/studio/lib/wear/photoreal.ts`: gerçek stok fotoğraf + ürün kesimi + oklüzyon + perspektif + ton eşleme (luma/karşıt kanal ortalama aktarımı) + temas gölgesi + grain. FAL_KEY gerekmez; kesim BiRefNet.
+- **Ayakkabı**: Unsplash vUryUa-R32g (çorap giyili ayak). Orijinal ayakkabı OpenCV ile silindi, çorap ayrı katman → ürünün üst ağzının **önüne** geri bindiriliyor; taban hizalama, zemin gölgesi. Sonuç: inandırıcı giyili. Kusur: yaka sağında küçük beyaz kalıntı.
+- **Saat**: Unsplash SE7gaKWKw2k (dövmeli bilek). Eski saat silindi; kayış bilek siluetine kırpılıyor (arkadan dolanıyor), kasa üstte. Sonuç: bilekte duruyor ama kasa büyük/kayış kısa → yarı inandırıcı, "yapıştırma" hissi kısmen var.
+- **Parfüm/cilt bakımı**: mevcut el stoğu + parmak üst katmanı. Sonuç: **başarısız** — cam şişede BiRefNet kesimi arka plan dikdörtgeni bırakıyor, açı uyumsuz; hâlâ yapıştırılmış görünüyor.
+- **Elbise**: dürüstçe yapılamıyor → `null`, stüdyo karesi kullanılır; gerçek giyim için VTON (FAL_KEY) şart.
+- Ekran görüntüleri: `screens/AFTER-photoreal-{sneaker,watch,perfume}.jpg` (önce: `screens/after-sneaker-04-uretilen.png`).
+- Kalan engeller: sabit stok pozları (her ürün aynı ayak/bilek), cam/şeffaf ürün kesimi, elbise ve insan modelde deneme için FAL_KEY/VTON veya Photoroom.

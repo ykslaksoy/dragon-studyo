@@ -6,7 +6,7 @@ import {
 } from "./catalog";
 import { renderSceneFrame } from "./sceneComposer";
 import { renderLifestyleScene } from "./lifestyleFallback";
-import { renderWornFrame, type ProductKind } from "./wear/forms";
+import { renderWornFrame, type ProductKind } from "./wear/photoreal";
 
 export type FrameJob = {
   spec: FrameSpec;
@@ -16,7 +16,7 @@ export type FrameJob = {
   method?:
     | "canvas"
     | "mannequin_warp_v3"
-    | "worn_form"
+    | "worn_photo"
     | "fal_gen"
     | "canvas_gen_placeholder"
     | "inhand_composite"
@@ -93,9 +93,10 @@ export async function runProduceQueue(
           // Keyless fallback: the real product must always be visible.
           const b = spec.baseFrame.toLowerCase();
           try {
-            if (WORN.test(b)) {
-              thumbUrl = await renderWornFrame(cutoutDataUrl, kind);
-              method = kind === "bottle" ? "inhand_composite" : "worn_form";
+            const worn = WORN.test(b) ? await renderWornFrame(cutoutDataUrl, kind) : null;
+            if (worn) {
+              thumbUrl = worn;
+              method = kind === "bottle" ? "inhand_composite" : "worn_photo";
             } else if (/lifestyle|ugc|stok hissi|talking-head/.test(b)) {
               thumbUrl = await renderLifestyleScene(cutoutDataUrl);
               method = "lifestyle_composite";
@@ -109,9 +110,10 @@ export async function runProduceQueue(
           }
         }
       } else {
-        if (WORN.test(spec.baseFrame)) {
-          thumbUrl = await renderWornFrame(cutoutDataUrl, kind);
-          method = kind === "bottle" ? "inhand_composite" : "worn_form";
+        const worn = WORN.test(spec.baseFrame) ? await renderWornFrame(cutoutDataUrl, kind) : null;
+        if (worn) {
+          thumbUrl = worn;
+          method = kind === "bottle" ? "inhand_composite" : "worn_photo";
         } else {
           thumbUrl = await renderSceneFrame(cutoutDataUrl, purpose, spec);
           method = "canvas";

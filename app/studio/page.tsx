@@ -22,7 +22,7 @@ import {
 } from "./lib/dekupe";
 import { runProduceQueue, type FrameJob } from "./lib/produceQueue";
 import { CutoutEditor } from "./components/CutoutEditor";
-import { PRODUCT_KINDS, guessKind, type ProductKind } from "./lib/wear/forms";
+import { PRODUCT_KINDS, guessKind, type ProductKind } from "./lib/wear/photoreal";
 import {
   clearAllStudioSession,
   loadCutout,
@@ -552,8 +552,8 @@ export default function StudioPage() {
                                 ? "Hazır · elde kompozit"
                                 : job.method === "lifestyle_composite"
                                   ? "Hazır · lifestyle kompozit"
-                                  : job.method === "worn_form"
-                                ? "Hazır · manken formu"
+                                  : job.method === "worn_photo"
+                                ? "Hazır · giyili foto kompozit"
                                 : job.method === "canvas_gen_placeholder"
                                   ? "Hazır · [GEN] yer tutucu"
                                   : "Hazır · tuval"
