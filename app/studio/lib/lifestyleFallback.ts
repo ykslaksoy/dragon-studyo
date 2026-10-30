@@ -172,6 +172,24 @@ function hardenAlpha(c: HTMLCanvasElement): HTMLCanvasElement {
   const ctx = c.getContext("2d")!;
   const d = ctx.getImageData(0, 0, c.width, c.height);
   for (let i = 3; i < d.data.length; i += 4) d.data[i] = d.data[i]! > 185 ? 255 : 0;
+  // drop small detached specks (e.g. a refraction blob under the bottle)
+  {
+    const w = c.width, h = c.height, lab = new Int32Array(w * h).fill(-1);
+    const sizes: number[] = [];
+    for (let p0 = 0; p0 < w * h; p0++) {
+      if (lab[p0] !== -1 || d.data[p0 * 4 + 3] === 0) continue;
+      const id = sizes.length; let n = 0; const st = [p0]; lab[p0] = id;
+      while (st.length) {
+        const p = st.pop()!; n++;
+        const x = p % w, y = (p - x) / w;
+        for (const q of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, y > 0 ? p - w : -1, y < h - 1 ? p + w : -1])
+          if (q >= 0 && lab[q] === -1 && d.data[q * 4 + 3]! > 0) { lab[q] = id; st.push(q); }
+      }
+      sizes.push(n);
+    }
+    const big = Math.max(...sizes, 0);
+    for (let p = 0; p < w * h; p++) if (lab[p]! >= 0 && sizes[lab[p]!]! < big * 0.02) d.data[p * 4 + 3] = 0;
+  }
   ctx.putImageData(d, 0, 0);
   const o = canvas(c.width, c.height);
   const oc = o.getContext("2d")!;
@@ -196,7 +214,7 @@ export async function renderInHandScene(
   original.getContext("2d")!.drawImage(base, 0, 0);
 
   // 1) inpaint original bottle + drip with blurred dark backdrop
-  const bottle: Pt[] = [[690, 345], [770, 270], [945, 225], [985, 300], [975, 420], [820, 430], [740, 470], [720, 520], [700, 470]];
+  const bottle: Pt[] = [[690, 345], [770, 270], [945, 225], [985, 300], [975, 420], [880, 465], [820, 470], [740, 480], [720, 520], [700, 470]];
   const bg = canvas(RW, RH);
   const bgc = bg.getContext("2d")!;
   bgc.filter = "blur(40px)";

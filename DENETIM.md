@@ -61,3 +61,9 @@ Anahtarsız davranış (doğrulandı): `GET /api/gen` → `configured:false, blo
 - **Parfüm**: cam alfa eşiği 140→185 (kenar saçağı azaldı). Şişe alt köşesinde çok küçük amber nokta kalabiliyor. Elde ✔.
 - **Elbise**: değişmedi — ücretsiz dürüst yol yok, VTON/FAL_KEY gerekir.
 - Ekranlar: `screens/AFTER2-photoreal-{watch,sneaker,perfume}.jpg`.
+
+### Tur 5e — saat sarılma + parfüm leke (AFTER3 ekranları)
+- **Saat**: kayış artık düz katman değil; `wrapCylinder` kayışı bilek silindirine izdüşürüyor (kasa dışında d′ = c + R·sin((d−c)/R), R=125): bilek kenarına yaklaştıkça sıkışıyor, yüzey normaline göre koyulaşıyor ve eğik bakışa uygun hafif yay çiziyor; 90°'yi geçen kısım (bileğin arkası) çizilmiyor + siluete kırpılıyor. Kayış sağındaki açık deri lekesi Poisson klonla giderildi. Sınır: tek stok poz, kayış ucu siluette yine net bir kenarla bitiyor (gerçek arka kayış görünmüyor).
+- **Parfüm**: cam kesiminde ana gövdeden kopuk küçük parçalar (%2 altı) atılıyor + stok şişe yaması büyütüldü → şişe–avuç köşesindeki amber nokta yok. Parmaklar önde.
+- **Ayakkabı**: değişmedi (AFTER2 kopyası).
+- Ekranlar: `screens/AFTER3-photoreal-{watch,perfume,sneaker}.jpg`.

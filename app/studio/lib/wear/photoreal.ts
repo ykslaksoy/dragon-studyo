@@ -337,6 +337,7 @@ const WRIST = {
   strapRot: (-21 * Math.PI) / 180, // vertical strap → original bracelet direction
   caseAt: [552, 282] as Pt,
   caseD: 150,
+  wrapR: 125, // case centre → bottom wrist edge ≈ caseD/2 + wrapR (scene px)
 };
 
 function principalAngle(c: HTMLCanvasElement): number {
@@ -349,6 +350,35 @@ function principalAngle(c: HTMLCanvasElement): number {
     sxx += (x - mx) ** 2; syy += (y - my) ** 2; sxy += (x - mx) * (y - my);
   }
   return 0.5 * Math.atan2(2 * sxy, sxx - syy);
+}
+
+function wrapCylinder(src: HTMLCanvasElement, cy: number, c: number, R: number): { c: HTMLCanvasElement; cy: number } {
+  const half = Math.ceil(c + R);
+  const out = canvas(src.width, half * 2);
+  const o = out.getContext("2d")!;
+  for (let j = 0; j < half * 2; j++) {
+    const dp = j - half;
+    const a = Math.abs(dp);
+    let d = dp, shade = 0, bend = 0;
+    if (a > c) {
+      const t = Math.min(0.999, (a - c) / R);
+      const th = Math.asin(t);
+      d = Math.sign(dp) * (c + R * th);
+      shade = 1 - Math.cos(th);
+      bend = 0.16 * R * (1 - Math.cos(th)); // oblique view of the band → elliptic arc
+    }
+    const sy = cy + d;
+    if (sy < 0 || sy >= src.height) continue;
+    o.drawImage(src, 0, sy, src.width, 1, -bend, j, src.width, 1);
+    if (shade > 0) {
+      o.save();
+      o.globalCompositeOperation = "source-atop";
+      o.fillStyle = `rgba(28,16,8,${Math.min(0.92, 1.1 * Math.pow(shade, 0.6)).toFixed(3)})`;
+      o.fillRect(0, j, src.width, 1);
+      o.restore();
+    }
+  }
+  return { c: out, cy: half };
 }
 
 async function renderWatch(cutSrc: string): Promise<string> {
@@ -389,17 +419,22 @@ async function renderWatch(cutSrc: string): Promise<string> {
   const l = layer.getContext("2d")!;
   l.translate(WRIST.caseAt[0], WRIST.caseAt[1]);
   l.rotate(WRIST.strapRot);
-  l.drawImage(watch, -caseX * k, -caseY * k);
+  // wrap-around: project the flat strap onto the wrist cylinder. Rows beyond
+  // the case are compressed d' = c + R·sin((d−c)/R) and shaded by the surface
+  // normal, so the strap visibly curves away and disappears behind the wrist
+  // (everything past θ = 90° is on the hidden side and is dropped).
+  const wrapped = wrapCylinder(watch, caseY * k, WRIST.caseD * 0.5, WRIST.wrapR);
+  l.drawImage(wrapped.c, -caseX * k, -wrapped.cy);
   l.setTransform(1, 0, 0, 1, 0, 0);
   // strap falls off toward the arm edges (curvature), warm key from the left
   l.globalCompositeOperation = "source-atop";
   const nx = Math.cos(rot), ny = Math.sin(rot);
   const half = 190;
   const g = l.createLinearGradient(WRIST.caseAt[0] - nx * half, WRIST.caseAt[1] - ny * half, WRIST.caseAt[0] + nx * half, WRIST.caseAt[1] + ny * half);
-  g.addColorStop(0, "rgba(0,0,0,0.42)");
+  g.addColorStop(0, "rgba(0,0,0,0)");
   g.addColorStop(0.3, "rgba(0,0,0,0.0)");
   g.addColorStop(0.7, "rgba(0,0,0,0.0)");
-  g.addColorStop(1, "rgba(0,0,0,0.42)");
+  g.addColorStop(1, "rgba(0,0,0,0)");
   l.fillStyle = g;
   l.fillRect(0, 0, W, W);
   // occlusion: strap wraps behind the wrist → keep only inside the real arm;
