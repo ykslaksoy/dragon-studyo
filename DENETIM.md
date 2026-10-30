@@ -72,3 +72,11 @@ Anahtarsız davranış (doğrulandı): `GET /api/gen` → `configured:false, blo
 - **Saat**: kayış artık siluette düz kesilmiyor: maske kayış kalınlığı kadar (T=9px) silüetin dışına uzatıldı, bu bant koyu ve yumuşak (blur) bir "dönen kenar" olarak boyanıyor; silindir izdüşümü R=138 ile kenarı biraz aşıyor → kayış bileğin altına dönüyormuş gibi okunuyor. Alt bilek kenarındaki küçük koyu çentik inpaint ile temizlendi. Sınır: bileğin arka tarafındaki kayış parçası ayrı bir segment olarak görünmüyor (bu stok açıda zaten görünmez); kasa üst kenarında hafif koyu kenar çizgisi var. Uzak yüz görünen gerçek bir bilek stoğu bulunamadı (Unsplash aramada uygun lisanslı çıplak/saatli alternatif yok).
 - **Parfüm / Ayakkabı**: değişmedi (yeniden dışa aktarıldı).
 - Ekranlar: `screens/AFTER4-photoreal-{watch,perfume,sneaker}.jpg`.
+
+### Tur 5g — saat: yeni bilek stoğu, kayış bileğin arkasına dolanıyor
+- Yeni stok: Pexels 8092768 (Kaboompics, Pexels Lisansı, ticari kullanım serbest) → `public/wear/wrist2_scene.jpg`. Önkol yukarıdan görünüyor, sade duvar; kayış bileği enine kesiyor ve **her iki** siluette silindir sarımı (`wrapCylinder`, flatC 45 / R 80) + kenar koyulaşmasıyla bileğin arkasına dönerek kayboluyor.
+- Hata düzeltmesi: tutma maskesinde poligon + daire tek path/nonzero ile çiziliyordu; ters sarım kasa bölgesini deliyordu → ayrı `fill` çağrıları.
+- Etiket: "stok: Pexels".
+- Parfüm ve sneaker değişmedi (AFTER4 ile görsel olarak aynı).
+- Ekranlar: `screens/AFTER5-photoreal-{watch,perfume,sneaker}.jpg`.
+- Kalan sınırlama: stokta görünen iç bilek (avuç tarafı); saat kadranı iç bilekte duruyor. Kasa düz kompozit, bilekte gerçek temas deformasyonu yok. Gerçek insan modelde deneme için hâlâ VTON gerekir (bu turda engel değil).

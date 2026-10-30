@@ -102,5 +102,14 @@
     "file": "public/wear/wrist_scene.jpg",
     "use": "saat giyili (bilek; orijinal saat silindi)",
     "license": "Unsplash License"
+  },
+  {
+    "id": "pexels-8092768",
+    "file": "public/wear/wrist2_scene.jpg",
+    "source": "https://www.pexels.com/photo/8092768/",
+    "author": "Kaboompics",
+    "title": "A Person's Hand Raised Near Wall",
+    "license": "Pexels License (free for commercial use, no attribution required)",
+    "use": "watch worn scene (top view of wrist; crop x220-820,y1400-2000 → 933²)"
   }
 ]

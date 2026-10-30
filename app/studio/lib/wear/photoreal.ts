@@ -329,15 +329,18 @@ function grain(ctx: CanvasRenderingContext2D, w: number, h: number, amt: number)
 
 // wrist_scene.jpg = 933×933 crop (x−300) of the original
 const WRIST = {
+  // wrist2_scene.jpg: Pexels 8092768 (Kaboompics, Pexels License), crop
+  // x220–820 / y1400–2000 → 933². Bare forearm seen from above, plain wall:
+  // the strap crosses the wrist and disappears behind BOTH silhouettes.
   W: 933,
-  // real arm silhouette (from the photo)
-  arm: [[0, 470], [80, 420], [200, 385], [330, 345], [440, 290], [560, 195], [700, 110], [830, 0], [933, 0], [933, 290], [820, 340], [700, 418], [625, 472], [555, 515], [470, 610], [0, 933]] as Pt[],
-  // the removed original watch: case centre / size / strap direction —
-  // our watch is laid exactly over that footprint (hides any inpaint residue)
-  strapRot: (-21 * Math.PI) / 180, // vertical strap → original bracelet direction
-  caseAt: [552, 282] as Pt,
-  caseD: 150,
-  wrapR: 138, // case centre → bottom wrist edge ≈ caseD/2 + wrapR (scene px)
+  scene: "/wear/wrist2_scene.jpg",
+  arm: [[385, 560], [379, 620], [358, 700], [345, 740], [332, 780], [319, 820], [304, 860], [285, 933], [580, 933], [581, 820], [592, 780], [599, 740], [611, 700], [652, 660], [700, 620], [700, 560]] as Pt[],
+  strapRot: (-72.8 * Math.PI) / 180, // vertical strap → across the forearm
+  caseAt: [470, 755] as Pt,
+  caseD: 160,
+  flatC: 45,  // flat part of the band under the case
+  wrapR: 80,  // flatC + wrapR ≈ half wrist width (≈122 px)
+  toneRect: [400, 680, 160, 120] as [number, number, number, number],
 };
 
 function principalAngle(c: HTMLCanvasElement): number {
@@ -382,7 +385,7 @@ function wrapCylinder(src: HTMLCanvasElement, cy: number, c: number, R: number):
 }
 
 async function renderWatch(cutSrc: string): Promise<string> {
-  const [scene, cutImg] = await Promise.all([loadImage("/wear/wrist_scene.jpg"), loadImage(cutSrc)]);
+  const [scene, cutImg] = await Promise.all([loadImage(WRIST.scene), loadImage(cutSrc)]);
   const W = WRIST.W;
   let watch = largestComponent(trimCutout(cutImg));
   watch = rotate(watch, Math.PI / 2 - principalAngle(watch)); // strap vertical
@@ -411,7 +414,7 @@ async function renderWatch(cutSrc: string): Promise<string> {
   const base = canvas(W, W);
   const b = base.getContext("2d")!;
   b.drawImage(scene, 0, 0, W, W);
-  watch = toneMatch(watch, base, [420, 150, 300, 250], 0.4);
+  watch = toneMatch(watch, base, WRIST.toneRect, 0.4);
 
   const arm = polyPath(WRIST.arm);
   const rot = WRIST.strapRot + Math.PI / 2; // strap direction (⟂ forearm)
@@ -423,7 +426,7 @@ async function renderWatch(cutSrc: string): Promise<string> {
   // the case are compressed d' = c + R·sin((d−c)/R) and shaded by the surface
   // normal, so the strap visibly curves away and disappears behind the wrist
   // (everything past θ = 90° is on the hidden side and is dropped).
-  const wrapped = wrapCylinder(watch, caseY * k, WRIST.caseD * 0.5, WRIST.wrapR);
+  const wrapped = wrapCylinder(watch, caseY * k, WRIST.flatC, WRIST.wrapR);
   l.drawImage(wrapped.c, -caseX * k, -wrapped.cy);
   l.setTransform(1, 0, 0, 1, 0, 0);
   // strap falls off toward the arm edges (curvature), warm key from the left
@@ -445,12 +448,12 @@ async function renderWatch(cutSrc: string): Promise<string> {
   const T = 9;
   l.globalCompositeOperation = "destination-in";
   l.fillStyle = "#000";
-  const keep = new Path2D(arm);
-  keep.moveTo(WRIST.caseAt[0] + WRIST.caseD * 0.56, WRIST.caseAt[1]);
+  const keep = new Path2D();
   keep.arc(WRIST.caseAt[0], WRIST.caseAt[1], WRIST.caseD * 0.56, 0, Math.PI * 2);
   const km = canvas(W, W);
   const kc = km.getContext("2d")!;
-  kc.fill(keep, "nonzero");
+  kc.fill(arm); // separate fills: polygon winding must not punch a hole
+  kc.fill(keep);
   kc.lineJoin = "round";
   kc.lineWidth = T * 2;
   kc.stroke(arm);
@@ -485,7 +488,7 @@ async function renderWatch(cutSrc: string): Promise<string> {
   const out = canvas(OUT, OUT);
   const o = out.getContext("2d")!;
   o.drawImage(base, 0, 0, OUT, OUT);
-  label(o, "Giyili — gerçek bilek fotoğrafı + ürün kompoziti (stok: Unsplash) · insan modelde deneme için FAL_KEY/VTON");
+  label(o, "Giyili — gerçek bilek fotoğrafı + ürün kompoziti (stok: Pexels) · insan modelde deneme için FAL_KEY/VTON");
   return out.toDataURL("image/jpeg", 0.92);
 }
 
