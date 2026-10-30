@@ -337,7 +337,7 @@ const WRIST = {
   strapRot: (-21 * Math.PI) / 180, // vertical strap → original bracelet direction
   caseAt: [552, 282] as Pt,
   caseD: 150,
-  wrapR: 125, // case centre → bottom wrist edge ≈ caseD/2 + wrapR (scene px)
+  wrapR: 138, // case centre → bottom wrist edge ≈ caseD/2 + wrapR (scene px)
 };
 
 function principalAngle(c: HTMLCanvasElement): number {
@@ -439,12 +439,31 @@ async function renderWatch(cutSrc: string): Promise<string> {
   l.fillRect(0, 0, W, W);
   // occlusion: strap wraps behind the wrist → keep only inside the real arm;
   // the case itself sits on top of the wrist and may overhang the outline
+  // occlusion with strap thickness: the band stands ~T px off the skin, so at
+  // the silhouette it continues a little past the outline and turns away
+  // (edge-on far-side segment) instead of being cut flush with the skin.
+  const T = 9;
   l.globalCompositeOperation = "destination-in";
   l.fillStyle = "#000";
   const keep = new Path2D(arm);
   keep.moveTo(WRIST.caseAt[0] + WRIST.caseD * 0.56, WRIST.caseAt[1]);
   keep.arc(WRIST.caseAt[0], WRIST.caseAt[1], WRIST.caseD * 0.56, 0, Math.PI * 2);
-  l.fill(keep, "nonzero");
+  const km = canvas(W, W);
+  const kc = km.getContext("2d")!;
+  kc.fill(keep, "nonzero");
+  kc.lineJoin = "round";
+  kc.lineWidth = T * 2;
+  kc.stroke(arm);
+  l.filter = "blur(1.5px)"; // soft, rounded far edge instead of a cut
+  l.drawImage(km, 0, 0);
+  l.filter = "none";
+  // edge-on rim / turning band: dark, rounded falloff across the silhouette
+  l.globalCompositeOperation = "source-atop";
+  l.filter = "blur(3px)";
+  l.strokeStyle = "rgba(25,15,8,0.75)";
+  l.lineWidth = T * 2.2;
+  l.stroke(arm);
+  l.filter = "none";
   l.globalCompositeOperation = "source-over";
 
   // contact shadow of case + strap on the skin

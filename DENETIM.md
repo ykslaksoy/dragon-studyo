@@ -67,3 +67,8 @@ Anahtarsız davranış (doğrulandı): `GET /api/gen` → `configured:false, blo
 - **Parfüm**: cam kesiminde ana gövdeden kopuk küçük parçalar (%2 altı) atılıyor + stok şişe yaması büyütüldü → şişe–avuç köşesindeki amber nokta yok. Parmaklar önde.
 - **Ayakkabı**: değişmedi (AFTER2 kopyası).
 - Ekranlar: `screens/AFTER3-photoreal-{watch,perfume,sneaker}.jpg`.
+
+### Tur 5f — saat kayışı arka yüz/kalınlık (AFTER4 ekranları)
+- **Saat**: kayış artık siluette düz kesilmiyor: maske kayış kalınlığı kadar (T=9px) silüetin dışına uzatıldı, bu bant koyu ve yumuşak (blur) bir "dönen kenar" olarak boyanıyor; silindir izdüşümü R=138 ile kenarı biraz aşıyor → kayış bileğin altına dönüyormuş gibi okunuyor. Alt bilek kenarındaki küçük koyu çentik inpaint ile temizlendi. Sınır: bileğin arka tarafındaki kayış parçası ayrı bir segment olarak görünmüyor (bu stok açıda zaten görünmez); kasa üst kenarında hafif koyu kenar çizgisi var. Uzak yüz görünen gerçek bir bilek stoğu bulunamadı (Unsplash aramada uygun lisanslı çıplak/saatli alternatif yok).
+- **Parfüm / Ayakkabı**: değişmedi (yeniden dışa aktarıldı).
+- Ekranlar: `screens/AFTER4-photoreal-{watch,perfume,sneaker}.jpg`.
